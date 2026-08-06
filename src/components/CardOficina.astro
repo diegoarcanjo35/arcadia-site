@@ -1,0 +1,85 @@
+---
+import { ROTULO_STATUS, formatarData } from '../lib/oficinas.js';
+const { oficina } = Astro.props;
+const aberta = ['inscricoes_abertas', 'ultimas_vagas'].includes(oficina.status);
+---
+<article class:list={['card', { aberta }]}>
+  <a href={`/oficinas/${oficina.slug}`}>
+    <div class="arte">
+      {oficina.arte_key
+        ? <img src={`/midia/${oficina.arte_key}?v=card`} alt={oficina.arte_alt || ''} loading="lazy" />
+        : <div class="sem-arte" aria-hidden="true"><img src="/simbolo.svg" alt="" /></div>}
+      {oficina.status && (
+        <span class:list={['selo', oficina.status]}>{ROTULO_STATUS[oficina.status]}</span>
+      )}
+    </div>
+
+    <div class="texto">
+      <h3>{oficina.nome}</h3>
+      {oficina.subtitulo && <p class="sub">{oficina.subtitulo}</p>}
+      <p class="resumo">{oficina.resumo}</p>
+
+      <dl class="meta">
+        {oficina.data_inicio && (
+          <div><dt>Início</dt><dd>{formatarData(oficina.data_inicio)}</dd></div>
+        )}
+        {oficina.formato && (
+          <div><dt>Formato</dt><dd>{oficina.formato}</dd></div>
+        )}
+        {aberta && oficina.vagas_restantes != null && (
+          <div><dt>Vagas</dt><dd>{oficina.vagas_restantes} restantes</dd></div>
+        )}
+      </dl>
+    </div>
+  </a>
+</article>
+
+<style>
+  .card {
+    border: 1px solid var(--linha);
+    border-radius: var(--raio);
+    overflow: hidden;
+    background: var(--papel);
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .card:hover { border-color: var(--ocre); transform: translateY(-2px); }
+  .card.aberta { border-color: var(--terracota); }
+  .card > a { text-decoration: none; color: inherit; display: block; }
+
+  .arte { position: relative; aspect-ratio: 4 / 3; background: var(--creme); }
+  .arte img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .sem-arte {
+    width: 100%; height: 100%;
+    display: grid; place-items: center;
+    background: var(--creme);
+  }
+  .sem-arte img { width: 46px; height: auto; opacity: 0.28; object-fit: contain; }
+
+  .selo {
+    position: absolute;
+    top: var(--e-1); left: var(--e-1);
+    font-size: var(--t-xs);
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--apagado);
+    color: #fff;
+    letter-spacing: 0.02em;
+  }
+  .selo.inscricoes_abertas { background: var(--terracota); }
+  .selo.ultimas_vagas { background: var(--ocre); color: var(--tinta); }
+  .selo.em_breve { background: var(--corpo); }
+
+  .texto { padding: var(--e-2) var(--e-2) var(--e-3); }
+  h3 { margin: 0 0 0.2rem; font-size: var(--t-lg); }
+  .sub { margin: 0 0 0.5rem; color: var(--terracota); font-size: var(--t-sm); }
+  .resumo { margin: 0 0 var(--e-2); font-size: var(--t-sm); color: var(--corpo); }
+
+  .meta { display: flex; flex-wrap: wrap; gap: var(--e-2); margin: 0; }
+  .meta dt {
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--apagado);
+  }
+  .meta dd { margin: 0; font-size: var(--t-sm); color: var(--tinta); }
+</style>

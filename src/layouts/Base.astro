@@ -1,0 +1,69 @@
+---
+import '../styles/marca.css';
+import Cabecalho from '../components/Cabecalho.astro';
+import Rodape from '../components/Rodape.astro';
+
+const {
+  titulo,
+  descricao,
+  imagem = '/og-padrao.png',
+  tipo = 'website',
+} = Astro.props;
+
+const url = new URL(Astro.url.pathname, Astro.site);
+const tituloCompleto = titulo ? `${titulo} · Arcádia Psicologia` : 'Arcádia Psicologia';
+---
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{tituloCompleto}</title>
+    <meta name="description" content={descricao} />
+    <link rel="canonical" href={url} />
+
+    {/* Open Graph — ausente no site anterior. Sem isso, colar o link no
+        WhatsApp mostrava só a URL crua, sem imagem nem descrição. */}
+    <meta property="og:type" content={tipo} />
+    <meta property="og:title" content={tituloCompleto} />
+    <meta property="og:description" content={descricao} />
+    <meta property="og:url" content={url} />
+    <meta property="og:image" content={new URL(imagem, Astro.site)} />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content="Arcádia Psicologia" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href="/simbolo.svg" type="image/svg+xml" />
+
+    {/* Fontes servidas pelo próprio site — ver src/styles/marca.css.
+        Nenhuma requisição a terceiros parte desta página. */}
+    <link rel="preload" href="/fontes/cardo-latin-ext-700-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fontes/inter-latin-ext-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+    <Cabecalho />
+    <main id="conteudo">
+      <slot />
+    </main>
+    <Rodape />
+
+    <style>
+      .pular {
+        position: absolute;
+        left: -9999px;
+        top: 0;
+        background: var(--terracota);
+        color: #fff;
+        padding: var(--e-1) var(--e-2);
+        z-index: 100;
+        text-decoration: none;
+      }
+      .pular:focus { left: 0; }
+      main { min-height: 60vh; }
+    </style>
+  </body>
+</html>

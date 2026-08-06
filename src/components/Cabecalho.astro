@@ -1,0 +1,75 @@
+---
+const rota = Astro.url.pathname;
+const itens = [
+  { href: '/', rotulo: 'Início' },
+  { href: '/a-arcadia', rotulo: 'A Arcádia' },
+  { href: '/servicos', rotulo: 'Serviços' },
+  { href: '/oficinas', rotulo: 'Oficinas' },
+  { href: '/equipe', rotulo: 'Equipe' },
+  { href: '/artigos', rotulo: 'Artigos' },
+  { href: '/contato', rotulo: 'Contato' },
+];
+const ativo = (href) => (href === '/' ? rota === '/' : rota.startsWith(href));
+---
+<header>
+  <div class="faixa">
+    <a class="marca" href="/" aria-label="Arcádia Psicologia, página inicial">
+      <img src="/logo.svg" alt="" width="150" height="135" />
+    </a>
+
+    <nav aria-label="Principal">
+      <ul>
+        {itens.map((i) => (
+          <li>
+            <a href={i.href} aria-current={ativo(i.href) ? 'page' : undefined}>{i.rotulo}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  header {
+    border-bottom: 1px solid var(--linha);
+    background: var(--papel);
+  }
+  .faixa {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: var(--e-2) var(--e-3);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--e-3);
+    flex-wrap: wrap;
+  }
+  .marca img { display: block; height: 62px; width: auto; }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: var(--e-3);
+    margin: 0;
+    padding: 0;
+    flex-wrap: wrap;
+  }
+  nav a {
+    text-decoration: none;
+    color: var(--corpo);
+    font-size: var(--t-sm);
+    letter-spacing: 0.01em;
+    padding-bottom: 2px;
+    border-bottom: 1.5px solid transparent;
+  }
+  nav a:hover { color: var(--terracota); }
+  nav a[aria-current='page'] {
+    color: var(--terracota);
+    border-bottom-color: var(--ocre);
+  }
+
+  @media (max-width: 720px) {
+    .faixa { justify-content: center; text-align: center; }
+    nav ul { justify-content: center; gap: var(--e-2); }
+  }
+</style>

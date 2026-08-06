@@ -1,0 +1,168 @@
+---
+import Base from '../layouts/Base.astro';
+import CardOficina from '../components/CardOficina.astro';
+import { listarOficinas } from '../lib/dados.js';
+
+export const prerender = false;
+
+const oficinas = await listarOficinas();
+const abertas = oficinas.filter((o) => ['inscricoes_abertas', 'ultimas_vagas'].includes(o.status));
+const destaque = abertas.slice(0, 3);
+---
+<Base
+  titulo={null}
+  descricao="Clínica de psicologia com atendimento clínico, oficinas terapêuticas e produção editorial."
+>
+  <section class="capa">
+    <div class="dentro">
+      <p class="sobre">Clínica de psicologia</p>
+      <h1>Um espaço para escutar o que ainda não tem nome.</h1>
+      <p class="chamada">
+        Atendimento clínico, oficinas terapêuticas em grupo e um percurso de
+        cuidado construído com tempo e presença.
+      </p>
+      <div class="acoes">
+        <a class="botao" href="/oficinas">Ver oficinas</a>
+        <a class="botao vazado" href="/contato">Falar com a Arcádia</a>
+      </div>
+    </div>
+    <div class="arcos" aria-hidden="true">
+      <img src="/simbolo.svg" alt="" />
+    </div>
+  </section>
+
+  {destaque.length > 0 && (
+    <section class="secao">
+      <div class="cabeca">
+        <h2>Turmas abertas</h2>
+        <a href="/oficinas">Todas as oficinas →</a>
+      </div>
+      <div class="grade">
+        {destaque.map((o) => <CardOficina oficina={o} />)}
+      </div>
+    </section>
+  )}
+
+  <section class="secao faixa-creme">
+    <div class="tres">
+      <div>
+        <h3>Atendimento clínico</h3>
+        <p>Psicoterapia individual, presencial e online, em processo continuado.</p>
+      </div>
+      <div>
+        <h3>Oficinas em grupo</h3>
+        <p>Percursos temáticos com número reduzido de participantes e duração definida.</p>
+      </div>
+      <div>
+        <h3>Produção editorial</h3>
+        <p>Artigos e materiais escritos pela equipe, abertos a quem quiser ler.</p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .capa {
+    background: var(--creme);
+    position: relative;
+    overflow: hidden;
+  }
+  .dentro {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: var(--e-6) var(--e-3);
+    position: relative;
+    z-index: 2;
+  }
+  .sobre {
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-size: var(--t-xs);
+    color: var(--terracota);
+    margin: 0 0 var(--e-2);
+    font-weight: 600;
+  }
+  h1 {
+    font-size: var(--t-3xl);
+    margin: 0 0 var(--e-2);
+    max-width: 18ch;
+  }
+  .chamada {
+    max-width: 52ch;
+    font-size: var(--t-lg);
+    color: var(--corpo);
+    margin: 0 0 var(--e-3);
+  }
+  .acoes { display: flex; gap: var(--e-2); flex-wrap: wrap; }
+
+  .arcos {
+    position: absolute;
+    right: -60px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.09;
+    z-index: 1;
+  }
+  .arcos img { width: 420px; height: auto; }
+
+  .secao {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: var(--e-5) var(--e-3);
+  }
+  .cabeca {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--e-2);
+    margin-bottom: var(--e-3);
+    flex-wrap: wrap;
+  }
+  .cabeca h2 { font-size: var(--t-2xl); margin: 0; }
+  .cabeca a { text-decoration: none; font-size: var(--t-sm); }
+
+  .grade {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--e-3);
+  }
+
+  .faixa-creme {
+    background: var(--creme-suave);
+    max-width: none;
+    border-top: 1px solid var(--linha);
+    border-bottom: 1px solid var(--linha);
+  }
+  .tres {
+    max-width: 1120px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: var(--e-4);
+  }
+  .tres h3 { font-size: var(--t-lg); margin: 0 0 0.4rem; }
+  .tres p { margin: 0; font-size: var(--t-sm); }
+
+  @media (max-width: 720px) {
+    h1 { font-size: var(--t-2xl); }
+    .arcos { display: none; }
+    .dentro { padding: var(--e-5) var(--e-3); }
+  }
+</style>
+
+<style is:global>
+  .botao {
+    display: inline-block;
+    background: var(--terracota);
+    color: #fff;
+    text-decoration: none;
+    padding: 0.7rem 1.4rem;
+    border-radius: var(--raio);
+    font-size: var(--t-sm);
+    font-weight: 500;
+    border: 1.5px solid var(--terracota);
+  }
+  .botao:hover { background: var(--terracota-escuro); border-color: var(--terracota-escuro); color: #fff; }
+  .botao.vazado { background: transparent; color: var(--terracota); }
+  .botao.vazado:hover { background: var(--terracota); color: #fff; }
+</style>

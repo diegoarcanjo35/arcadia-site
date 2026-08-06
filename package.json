@@ -1,0 +1,23 @@
+{
+  "name": "arcadia-psicologia",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "wrangler dev",
+    "deploy": "astro build && wrangler deploy",
+    "db:local": "wrangler d1 execute arcadia --local --file=./migrations/0001_inicial.sql",
+    "db:remote": "wrangler d1 execute arcadia --remote --file=./migrations/0001_inicial.sql",
+    "db:seed": "wrangler d1 execute arcadia --local --file=./migrations/0002_exemplo.sql"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^14.2.0",
+    "astro": "^7.2.0",
+    "marked": "^14.1.4"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

@@ -1,0 +1,123 @@
+/* Arcádia Psicologia — tokens da marca
+ *
+ * Fonte: kit de marca entregue em 6 de agosto de 2026.
+ * O contraste desta paleta foi medido no diagnóstico: o menor par em uso
+ * ficou em 5,85:1, acima do mínimo de 4,5:1 do WCAG 2.1 AA.
+ * Ao criar combinação nova de cor, medir antes de usar.
+ */
+
+/* Fontes servidas pelo próprio site.
+ *
+ * Não usar o CDN do Google Fonts: cada visita entregaria o IP do visitante
+ * a um terceiro sem base legal declarada — num site de clínica de psicologia
+ * isso é exposição desnecessária. Servido daqui, o navegador não faz nenhuma
+ * requisição externa.
+ *
+ * O site anterior carregava a fonte da marca por http e em .otf; woff2 é
+ * cerca de metade do peso e não quebra a conexão https.
+ */
+@font-face {
+  font-family: 'Cardo';
+  src: url('/fontes/cardo-latin-ext-400-normal.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Cardo';
+  src: url('/fontes/cardo-latin-ext-700-normal.woff2') format('woff2');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('/fontes/inter-latin-ext-300-normal.woff2') format('woff2');
+  font-weight: 300; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('/fontes/inter-latin-ext-400-normal.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('/fontes/inter-latin-ext-500-normal.woff2') format('woff2');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('/fontes/inter-latin-ext-600-normal.woff2') format('woff2');
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+
+:root {
+  /* cor */
+  --terracota: #a62b0c;
+  --terracota-escuro: #7e1f07;
+  --ocre: #c8873c;
+  --creme: #f3f0e7;
+  --creme-suave: #faf8f3;
+  --tinta: #221a14;
+  --corpo: #3a2e25;
+  --apagado: #7a6e63;
+  --linha: #e3dbcb;
+  --papel: #ffffff;
+
+  /* tipografia — Cardo nos títulos, Inter nos textos */
+  --fonte-titulo: 'Cardo', Georgia, serif;
+  --fonte-texto: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* escala tipográfica */
+  --t-xs: 0.8125rem;
+  --t-sm: 0.9375rem;
+  --t-base: 1.0625rem;
+  --t-lg: 1.25rem;
+  --t-xl: 1.625rem;
+  --t-2xl: 2.25rem;
+  --t-3xl: 3rem;
+
+  /* espaçamento */
+  --e-1: 0.5rem;
+  --e-2: 1rem;
+  --e-3: 1.5rem;
+  --e-4: 2.5rem;
+  --e-5: 4rem;
+  --e-6: 6rem;
+
+  /* medida de leitura */
+  --medida: 68ch;
+  --raio: 4px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--fonte-texto);
+  font-size: var(--t-base);
+  line-height: 1.65;
+  color: var(--corpo);
+  background: var(--papel);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--fonte-titulo);
+  color: var(--tinta);
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+a { color: var(--terracota); }
+a:hover { color: var(--terracota-escuro); }
+
+/* Foco visível — requisito de acessibilidade e hoje ausente no site */
+:focus-visible {
+  outline: 2px solid var(--terracota);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

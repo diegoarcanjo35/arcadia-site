@@ -1,0 +1,101 @@
+---
+// Correções que o diagnóstico apontou no rodapé anterior:
+//  · o ano estava congelado em 2024
+//  · "Psícóloga" saía com erro de digitação ao lado do CRP
+//  · "Política de Privacidade" não era link e a página não existia
+//  · o item "Facebook" não levava a lugar nenhum
+const ano = new Date().getFullYear();
+---
+<footer>
+  <div class="faixa">
+    <div class="col marca-col">
+      <img src="/logo-creme.svg" alt="Arcádia Psicologia" width="150" height="135" />
+    </div>
+
+    <div class="col">
+      <h2>Navegação</h2>
+      <ul>
+        <li><a href="/a-arcadia">A Arcádia</a></li>
+        <li><a href="/servicos">Serviços</a></li>
+        <li><a href="/oficinas">Oficinas</a></li>
+        <li><a href="/equipe">Equipe</a></li>
+        <li><a href="/artigos">Artigos</a></li>
+      </ul>
+    </div>
+
+    <div class="col">
+      <h2>Contato</h2>
+      <ul>
+        <li><a href="/contato">Fale conosco</a></li>
+        <li><a href="https://instagram.com/arcadiapsi" rel="me noopener">Instagram</a></li>
+      </ul>
+    </div>
+
+    <div class="col">
+      <h2>Institucional</h2>
+      <ul>
+        <li><a href="/politica-de-privacidade">Política de Privacidade</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="base">
+    <p>Arcádia Psicologia · {ano}</p>
+    <p class="crp">Responsável técnica: Wanda Meyer, psicóloga · CRP <span data-preencher>—</span></p>
+  </div>
+</footer>
+
+<style>
+  footer {
+    background: var(--tinta);
+    color: var(--creme);
+    margin-top: var(--e-6);
+  }
+  .faixa {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: var(--e-5) var(--e-3) var(--e-4);
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: var(--e-4);
+  }
+  .marca-col img { height: 78px; width: auto; opacity: 0.95; }
+
+  h2 {
+    font-family: var(--fonte-texto);
+    font-size: var(--t-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ocre);
+    margin: 0 0 var(--e-2);
+    font-weight: 600;
+  }
+  ul { list-style: none; margin: 0; padding: 0; }
+  li { margin-bottom: 0.55rem; }
+  a {
+    color: var(--creme);
+    text-decoration: none;
+    font-size: var(--t-sm);
+    opacity: 0.85;
+  }
+  a:hover { opacity: 1; color: var(--ocre); }
+
+  .base {
+    border-top: 1px solid rgba(243, 240, 231, 0.16);
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: var(--e-2) var(--e-3) var(--e-4);
+    display: flex;
+    justify-content: space-between;
+    gap: var(--e-2);
+    flex-wrap: wrap;
+  }
+  .base p { margin: 0; font-size: var(--t-xs); opacity: 0.7; }
+
+  @media (max-width: 860px) {
+    .faixa { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 520px) {
+    .faixa { grid-template-columns: 1fr; }
+  }
+</style>

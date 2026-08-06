@@ -1,0 +1,84 @@
+---
+import Base from '../../layouts/Base.astro';
+import CardOficina from '../../components/CardOficina.astro';
+import { listarOficinas } from '../../lib/dados.js';
+
+export const prerender = false;
+
+const todas = await listarOficinas();
+const abertas = todas.filter((o) => ['inscricoes_abertas', 'ultimas_vagas'].includes(o.status));
+const emBreve = todas.filter((o) => o.status === 'em_breve');
+// Turmas encerradas continuam visíveis: o histórico segue gerando busca orgânica.
+const anteriores = todas.filter((o) => ['encerrada', 'realizada'].includes(o.status));
+---
+<Base
+  titulo="Oficinas"
+  descricao="Oficinas terapêuticas em grupo da Arcádia Psicologia: turmas abertas, próximas turmas e edições anteriores."
+>
+  <div class="topo">
+    <div class="dentro">
+      <h1>Oficinas</h1>
+      <p>
+        Percursos temáticos em grupo, com número reduzido de participantes e
+        duração definida. Cada oficina tem página própria, com data, formato e
+        inscrição.
+      </p>
+    </div>
+  </div>
+
+  <div class="corpo">
+    {abertas.length > 0 && (
+      <section>
+        <h2>Inscrições abertas</h2>
+        <div class="grade">{abertas.map((o) => <CardOficina oficina={o} />)}</div>
+      </section>
+    )}
+
+    {emBreve.length > 0 && (
+      <section>
+        <h2>Próximas turmas</h2>
+        <div class="grade">{emBreve.map((o) => <CardOficina oficina={o} />)}</div>
+      </section>
+    )}
+
+    {anteriores.length > 0 && (
+      <section>
+        <h2>Edições anteriores</h2>
+        <p class="nota">
+          Mantidas no ar porque continuam sendo encontradas em busca. Para ser
+          avisada de uma turma nova, entre na lista de espera da oficina.
+        </p>
+        <div class="grade">{anteriores.map((o) => <CardOficina oficina={o} />)}</div>
+      </section>
+    )}
+
+    {todas.length === 0 && <p class="vazio">Nenhuma oficina publicada no momento.</p>}
+  </div>
+</Base>
+
+<style>
+  .topo { background: var(--creme); border-bottom: 1px solid var(--linha); }
+  .dentro { max-width: 1120px; margin: 0 auto; padding: var(--e-5) var(--e-3); }
+  h1 { font-size: var(--t-3xl); margin: 0 0 var(--e-2); }
+  .dentro p { max-width: 58ch; margin: 0; font-size: var(--t-lg); }
+
+  .corpo { max-width: 1120px; margin: 0 auto; padding: var(--e-4) var(--e-3) 0; }
+  section { margin-bottom: var(--e-5); }
+  h2 {
+    font-size: var(--t-xl);
+    margin: 0 0 var(--e-2);
+    padding-bottom: var(--e-1);
+    border-bottom: 2px solid var(--ocre);
+    display: inline-block;
+  }
+  .nota { font-size: var(--t-sm); color: var(--apagado); max-width: 60ch; margin: 0 0 var(--e-3); }
+  .grade {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--e-3);
+    margin-top: var(--e-2);
+  }
+  .vazio { color: var(--apagado); }
+
+  @media (max-width: 720px) { h1 { font-size: var(--t-2xl); } }
+</style>

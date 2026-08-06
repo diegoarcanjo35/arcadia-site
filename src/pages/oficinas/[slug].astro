@@ -1,0 +1,252 @@
+---
+import Base from '../../layouts/Base.astro';
+import { buscarOficina } from '../../lib/dados.js';
+import { ROTULO_STATUS, formatarData } from '../../lib/oficinas.js';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+const oficina = await buscarOficina(slug);
+if (!oficina) return Astro.redirect('/oficinas', 302);
+
+const turma = oficina.turmaAberta;
+const aberta = Boolean(turma);
+
+// Dados estruturados de evento — é o que faz o Google destacar oficinas
+// nos resultados. Não existia nada disso no site anterior.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'EducationEvent',
+  name: oficina.nome,
+  description: oficina.resumo,
+  url: new URL(`/oficinas/${oficina.slug}`, Astro.site).toString(),
+  organizer: { '@type': 'Organization', name: 'Arcádia Psicologia' },
+  ...(turma?.data_inicio ? { startDate: turma.data_inicio } : {}),
+  eventAttendanceMode:
+    turma?.formato === 'online'
+      ? 'https://schema.org/OnlineEventAttendanceMode'
+      : 'https://schema.org/OfflineEventAttendanceMode',
+  eventStatus: 'https://schema.org/EventScheduled',
+};
+---
+<Base titulo={oficina.nome} descricao={oficina.resumo} tipo="article">
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <div class="topo">
+    <div class="dentro">
+      <nav class="trilha" aria-label="Você está em">
+        <a href="/oficinas">Oficinas</a> <span aria-hidden="true">›</span> <span>{oficina.nome}</span>
+      </nav>
+      {turma && <span class:list={['selo', turma.status]}>{ROTULO_STATUS[turma.status]}</span>}
+      <h1>{oficina.nome}</h1>
+      {oficina.subtitulo && <p class="sub">{oficina.subtitulo}</p>}
+    </div>
+  </div>
+
+  <div class="colunas">
+    <article class="texto">
+      <p class="resumo">{oficina.resumo}</p>
+
+      <h2>Sobre a oficina</h2>
+      <p>{oficina.descricao}</p>
+
+      {oficina.por_que_participar && (
+        <>
+          <h2>Por que participar</h2>
+          <p>{oficina.por_que_participar}</p>
+        </>
+      )}
+
+      {oficina.publico_alvo && (
+        <>
+          <h2>Para quem é</h2>
+          <p>{oficina.publico_alvo}</p>
+        </>
+      )}
+
+      {oficina.facilitadoras?.length > 0 && (
+        <>
+          <h2>Quem conduz</h2>
+          <ul class="equipe">
+            {oficina.facilitadoras.map((f) => (
+              <li>
+                <strong>{f.nome}</strong>
+                <span>CRP {f.crp}</span>
+                {f.papel === 'cofacilitadora' && <em>cofacilitação</em>}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </article>
+
+    <aside>
+      <div class="caixa">
+        {turma ? (
+          <>
+            <h2>Inscrição</h2>
+            <dl>
+              {turma.data_inicio && (<><dt>Início</dt><dd>{formatarData(turma.data_inicio)}</dd></>)}
+              {turma.formato && (<><dt>Formato</dt><dd>{turma.formato}</dd></>)}
+              {turma.encontros && (<><dt>Encontros</dt><dd>{turma.encontros}</dd></>)}
+              {turma.carga_horaria && (<><dt>Carga horária</dt><dd>{turma.carga_horaria}h</dd></>)}
+              {turma.vagas_restantes != null && (
+                <><dt>Vagas</dt><dd>{turma.vagas_restantes} de {turma.vagas_total}</dd></>
+              )}
+            </dl>
+
+            <form method="POST" action="/api/inscricao">
+              <input type="hidden" name="turma_id" value={turma.id} />
+
+              <label>Nome<input type="text" name="nome" required autocomplete="name" /></label>
+              <label>E-mail<input type="email" name="email" required autocomplete="email" /></label>
+              <label>WhatsApp<input type="tel" name="telefone" autocomplete="tel" /></label>
+
+              {/* Consentimento explícito. Não há campo de relato pessoal:
+                  o formulário antigo coletava queixa clínica sem tratamento
+                  adequado de dado sensível — isso não se repete aqui. */}
+              <label class="aceite">
+                <input type="checkbox" name="consentimento" value="1" required />
+                <span>
+                  Concordo que meus dados de contato sejam usados para falar sobre esta
+                  oficina, conforme a <a href="/politica-de-privacidade">Política de Privacidade</a>.
+                </span>
+              </label>
+
+              <button type="submit">
+                {turma.vagas_restantes === 0 ? 'Entrar na lista de espera' : 'Quero me inscrever'}
+              </button>
+            </form>
+
+            <a class="zap" href="#" data-whatsapp>Prefiro falar no WhatsApp</a>
+          </>
+        ) : (
+          <>
+            <h2>Turma encerrada</h2>
+            <p class="aviso">
+              Não há turma aberta desta oficina no momento. Deixe seu contato e
+              avisamos quando abrir a próxima.
+            </p>
+            <form method="POST" action="/api/inscricao">
+              <input type="hidden" name="turma_id" value={oficina.turmas?.[0]?.id} />
+              <label>Nome<input type="text" name="nome" required /></label>
+              <label>E-mail<input type="email" name="email" required /></label>
+              <label class="aceite">
+                <input type="checkbox" name="consentimento" value="1" required />
+                <span>Concordo com a <a href="/politica-de-privacidade">Política de Privacidade</a>.</span>
+              </label>
+              <button type="submit">Avisem-me da próxima turma</button>
+            </form>
+          </>
+        )}
+      </div>
+    </aside>
+  </div>
+</Base>
+
+<style>
+  .topo { background: var(--creme); border-bottom: 1px solid var(--linha); }
+  .dentro { max-width: 1120px; margin: 0 auto; padding: var(--e-4) var(--e-3) var(--e-5); }
+  .trilha { font-size: var(--t-sm); margin-bottom: var(--e-2); color: var(--apagado); }
+  .trilha a { text-decoration: none; }
+  h1 { font-size: var(--t-3xl); margin: 0.4rem 0 0.3rem; max-width: 20ch; }
+  .sub { font-size: var(--t-lg); color: var(--terracota); margin: 0; }
+
+  .selo {
+    display: inline-block;
+    font-size: var(--t-xs);
+    padding: 3px 12px;
+    border-radius: 999px;
+    background: var(--terracota);
+    color: #fff;
+    letter-spacing: 0.02em;
+  }
+  .selo.ultimas_vagas { background: var(--ocre); color: var(--tinta); }
+
+  .colunas {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: var(--e-4) var(--e-3) 0;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: var(--e-5);
+    align-items: start;
+  }
+  .texto { max-width: var(--medida); }
+  .resumo { font-size: var(--t-lg); color: var(--tinta); }
+  .texto h2 {
+    font-size: var(--t-xl);
+    margin: var(--e-4) 0 var(--e-1);
+    padding-bottom: 4px;
+    border-bottom: 2px solid var(--ocre);
+    display: inline-block;
+  }
+
+  .equipe { list-style: none; padding: 0; margin: var(--e-2) 0 0; }
+  .equipe li {
+    padding: var(--e-1) 0;
+    border-bottom: 1px solid var(--linha);
+    display: flex;
+    gap: var(--e-2);
+    align-items: baseline;
+    flex-wrap: wrap;
+  }
+  .equipe span { font-size: var(--t-sm); color: var(--apagado); }
+  .equipe em { font-size: var(--t-xs); color: var(--ocre); font-style: normal; }
+
+  aside { position: sticky; top: var(--e-2); }
+  .caixa {
+    border: 1px solid var(--linha);
+    border-top: 3px solid var(--terracota);
+    border-radius: var(--raio);
+    padding: var(--e-3);
+    background: var(--creme-suave);
+  }
+  .caixa h2 { font-size: var(--t-lg); margin: 0 0 var(--e-2); }
+
+  dl { display: grid; grid-template-columns: minmax(0,auto) minmax(0,1fr); gap: 0.4rem var(--e-1); margin: 0 0 var(--e-3); align-items: baseline; }
+  dt { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--apagado); }
+  dd { margin: 0; font-size: var(--t-sm); color: var(--tinta); text-align: right; white-space: nowrap; }
+
+  form { display: grid; gap: var(--e-2); }
+  label { display: grid; gap: 0.3rem; font-size: var(--t-sm); color: var(--corpo); }
+  input[type='text'], input[type='email'], input[type='tel'] {
+    font: inherit;
+    font-size: var(--t-sm);
+    padding: 0.55rem 0.7rem;
+    border: 1px solid var(--linha);
+    border-radius: var(--raio);
+    background: var(--papel);
+  }
+  input:focus { border-color: var(--terracota); }
+
+  .aceite { grid-template-columns: auto 1fr; align-items: start; gap: 0.55rem; font-size: var(--t-xs); }
+  .aceite span { line-height: 1.45; }
+
+  button {
+    font: inherit;
+    font-size: var(--t-sm);
+    font-weight: 500;
+    background: var(--terracota);
+    color: #fff;
+    border: 0;
+    padding: 0.75rem 1rem;
+    border-radius: var(--raio);
+    cursor: pointer;
+  }
+  button:hover { background: var(--terracota-escuro); }
+
+  .zap {
+    display: block;
+    text-align: center;
+    margin-top: var(--e-2);
+    font-size: var(--t-sm);
+  }
+  .aviso { font-size: var(--t-sm); color: var(--corpo); margin: 0 0 var(--e-2); }
+
+  @media (max-width: 900px) {
+    .colunas { grid-template-columns: 1fr; }
+    aside { position: static; }
+    h1 { font-size: var(--t-2xl); }
+  }
+</style>
