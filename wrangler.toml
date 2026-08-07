@@ -2,40 +2,50 @@ name = "arcadia-psicologia"
 compatibility_date = "2026-08-06"
 compatibility_flags = ["nodejs_compat"]
 
-# O ponto de entrada do Worker e os arquivos estaticos sao gerados pelo
-# adapter do Astro - nao declarar `main` nem `assets` aqui.
+# O ponto de entrada do Worker e os arquivos estáticos são gerados pelo
+# adapter do Astro — não declarar `main` nem `assets` aqui.
 
 # ---------------------------------------------------------------- banco
+# Criar com:  npx wrangler d1 create arcadia
+# e colar o database_id devolvido pelo comando.
 [[d1_databases]]
 binding = "DB"
 database_name = "arcadia"
 database_id = "c98b8af9-a5ad-4035-826a-60a9276db48f"
 
-# ---------------------------------------------------------------- sessoes
+# ---------------------------------------------------------------- sessões
 # Exigido pelo adapter do Astro.
+# Criar com:  npx wrangler kv namespace create SESSION
 [[kv_namespaces]]
 binding = "SESSION"
 id = "1107f024f20c49f898001b270b739703"
 
 # ---------------------------------------------------------------- arquivos
 # Artes das oficinas e fotos da equipe.
-# Usamos KV, e nao R2, porque ativar o R2 exige cadastrar metodo de pagamento
-# na conta, mesmo dentro dos 10 GB gratuitos. O KV nao exige. As artes sao
-# redimensionadas no navegador antes do upload (ver src/lib/imagem.js), entao
-# cada uma fica em 80-150 KB e 1 GB comporta milhares delas.
+#
+# Usamos KV, e não R2, por um motivo específico: ativar o R2 exige cadastrar
+# método de pagamento na conta, mesmo permanecendo dentro dos 10 GB gratuitos.
+# O KV não exige. Como as artes são redimensionadas no navegador antes do
+# upload (ver src/lib/imagem.js), cada uma fica em torno de 80–150 KB, e
+# 1 GB de KV comporta milhares delas — folga de sobra para o uso da clínica.
+#
+# Se um dia o volume justificar, migrar para R2 é trocar este bloco e o
+# adaptador em src/lib/midia.js. O limite de 25 MB por valor no KV é o teto real.
+#
+# Criar com:  npx wrangler kv namespace create MIDIA
 [[kv_namespaces]]
 binding = "MIDIA"
 id = "140824fb3efc4e18a3aba689da84d266"
 
 [vars]
-FUSO = "America/Sao_Paulo"
-CIDADE = "PREENCHER"
+FUSO = "America/Sao_Paulo"          # o site atual está em UTC, 3h à frente de Brasília
+CIDADE = "Brasília"                 # cidade de atuação — hoje não aparece em lugar nenhum
 EMAIL_REMETENTE = "PREENCHER"
 
 # ---------------------------------------------------------------- segredos
 # Nunca versionar. Definir com:  npx wrangler secret put NOME
-#   RESEND_API_KEY   -> envio de confirmacao de inscricao
+#   RESEND_API_KEY   -> envio de confirmação de inscrição
 #
-# A autenticacao do /admin NAO fica aqui: e responsabilidade do Cloudflare
-# Access (Zero Trust > Access > Applications). Nenhuma senha e armazenada
-# neste projeto, de proposito.
+# Autenticação do /admin NÃO é feita aqui: fica a cargo do Cloudflare Access
+# (Zero Trust > Access > Applications), gratuito até 50 usuários.
+# Nenhuma senha é armazenada neste projeto — de propósito.
