@@ -10,7 +10,8 @@
     "deploy": "astro build && wrangler deploy",
     "db:local": "wrangler d1 execute arcadia --local --file=./migrations/0001_inicial.sql",
     "db:remote": "wrangler d1 execute arcadia --remote --file=./migrations/0001_inicial.sql",
-    "db:seed": "wrangler d1 execute arcadia --local --file=./migrations/0002_exemplo.sql"
+    "db:seed": "wrangler d1 execute arcadia --local --file=./migrations/0002_exemplo.sql",
+    "build:pages": "astro build && node scripts/pages-build.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.2.0",

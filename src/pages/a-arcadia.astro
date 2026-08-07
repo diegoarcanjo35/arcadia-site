@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import AguardandoConteudo from '../components/AguardandoConteudo.astro';
+
+export const prerender = true;
+---
+<Base titulo="A Arcádia" descricao="A história, a proposta e o conceito de marca da Arcádia Psicologia.">
+  <div class="topo">
+    <div class="dentro"><h1>A Arcádia</h1></div>
+  </div>
+  <div class="corpo">
+    <AguardandoConteudo itens={["o texto de apresentação da clínica", "a origem do nome e o conceito da marca", "a abordagem de trabalho"]} />
+  </div>
+</Base>
+
+<style>
+  .topo { background: var(--creme); border-bottom: 1px solid var(--linha); }
+  .dentro { max-width: 1120px; margin: 0 auto; padding: var(--e-5) var(--e-3); }
+  h1 { font-size: var(--t-3xl); margin: 0; }
+  .corpo { max-width: 1120px; margin: 0 auto; padding: var(--e-4) var(--e-3) 0; }
+  @media (max-width: 720px) { h1 { font-size: var(--t-2xl); } }
+</style>

@@ -119,4 +119,4 @@ const detalhes = Object.fromEntries(
   ])
 );
 
-export const EXEMPLO = { indice: oficinas, detalhes };
+export const EXEMPLO = { indice: oficinas, detalhes, equipe: facilitadoras };

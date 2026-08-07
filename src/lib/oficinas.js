@@ -145,6 +145,19 @@ export async function registrarInscricao(db, { turmaId, nome, email, telefone, c
   return { ok: true, tipo, turma };
 }
 
+/** Equipe publicada, na ordem definida no painel. */
+export async function listarFacilitadoras(db) {
+  const { results } = await db
+    .prepare(
+      `SELECT nome, crp, bio, foto_key, slug
+         FROM facilitadoras
+        WHERE ativa = 1
+        ORDER BY ordem, nome`
+    )
+    .all();
+  return results;
+}
+
 /* ---------------------------------------------------------------- auxiliares */
 
 function comVagasRestantes(t) {

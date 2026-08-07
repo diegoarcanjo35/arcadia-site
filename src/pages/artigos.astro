@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import AguardandoConteudo from '../components/AguardandoConteudo.astro';
+
+export const prerender = true;
+---
+<Base titulo="Artigos" descricao="Textos escritos pela equipe da Arcádia Psicologia.">
+  <div class="topo">
+    <div class="dentro"><h1>Artigos</h1></div>
+  </div>
+  <div class="corpo">
+    <AguardandoConteudo itens={["migração dos 4 artigos já publicados, com os endereços preservados", "definição de quem escreve e com que frequência"]} />
+  </div>
+</Base>
+
+<style>
+  .topo { background: var(--creme); border-bottom: 1px solid var(--linha); }
+  .dentro { max-width: 1120px; margin: 0 auto; padding: var(--e-5) var(--e-3); }
+  h1 { font-size: var(--t-3xl); margin: 0; }
+  .corpo { max-width: 1120px; margin: 0 auto; padding: var(--e-4) var(--e-3) 0; }
+  @media (max-width: 720px) { h1 { font-size: var(--t-2xl); } }
+</style>

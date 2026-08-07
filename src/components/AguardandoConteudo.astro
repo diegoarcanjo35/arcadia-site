@@ -1,0 +1,50 @@
+---
+/**
+ * Marcador honesto para página cuja estrutura existe mas cujo conteúdo
+ * ainda depende da clínica.
+ *
+ * Preferível a texto inventado: quem abrir entende que falta material,
+ * e ninguém publica no ar uma descrição de serviço clínico que a
+ * profissional não escreveu.
+ *
+ * Cada página que usar isto deve sair da lista assim que o texto chegar.
+ */
+const { itens = [] } = Astro.props;
+---
+<div class="aviso">
+  <p class="rotulo">Conteúdo em preparação</p>
+  <p>
+    Esta página já está estruturada e publicada, aguardando o material da
+    clínica. Nada aqui foi escrito por terceiros: preferimos deixar o espaço
+    reservado a preencher com texto genérico.
+  </p>
+
+  {itens.length > 0 && (
+    <>
+      <p class="sub">O que entra aqui:</p>
+      <ul>{itens.map((i) => <li>{i}</li>)}</ul>
+    </>
+  )}
+</div>
+
+<style>
+  .aviso {
+    border: 1px dashed var(--linha);
+    border-radius: var(--raio);
+    background: var(--creme-suave);
+    padding: var(--e-3);
+    max-width: var(--medida);
+  }
+  .rotulo {
+    font-size: var(--t-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--terracota);
+    font-weight: 600;
+    margin: 0 0 var(--e-1);
+  }
+  .aviso p { margin: 0 0 var(--e-2); font-size: var(--t-sm); }
+  .sub { font-weight: 600; color: var(--tinta); margin-bottom: 0.4rem !important; }
+  ul { margin: 0; padding-left: var(--e-3); }
+  li { font-size: var(--t-sm); margin-bottom: 0.35rem; color: var(--corpo); }
+</style>

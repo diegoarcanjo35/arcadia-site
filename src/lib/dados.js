@@ -47,6 +47,12 @@ export async function listarSlugs() {
   return db ? q.listarSlugs(db) : Object.keys(EXEMPLO.detalhes);
 }
 
+export async function listarFacilitadoras() {
+  const db = await pegarDB();
+  if (db) return q.listarFacilitadoras(db);
+  return EXEMPLO.equipe;
+}
+
 /** Verdadeiro quando a página está mostrando dados de exemplo, não o banco. */
 export async function usandoExemplo() {
   return (await pegarDB()) === null;

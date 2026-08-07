@@ -1,0 +1,192 @@
+---
+import Base from '../layouts/Base.astro';
+
+export const prerender = true;
+
+// Esta política descreve o que o site REALMENTE coleta. Se um campo novo for
+// adicionado a qualquer formulário, esta página precisa ser atualizada junto —
+// política que não corresponde ao sistema é pior do que não ter política.
+const atualizacao = '7 de agosto de 2026';
+---
+<Base
+  titulo="Política de Privacidade"
+  descricao="Como a Arcádia Psicologia trata os dados pessoais coletados por este site, em atendimento à Lei nº 13.709/2018 (LGPD)."
+>
+  <div class="topo">
+    <div class="dentro">
+      <h1>Política de Privacidade</h1>
+      <p class="atualizacao">Última atualização: {atualizacao}</p>
+    </div>
+  </div>
+
+  <article class="texto">
+    <p class="abertura">
+      Esta política explica quais dados este site coleta, para que servem, por
+      quanto tempo ficam guardados e o que você pode pedir a respeito deles.
+      Está escrita para ser lida, não para se proteger de você.
+    </p>
+
+    <h2>Quem é responsável</h2>
+    <p>
+      A responsável pelo tratamento dos dados — a <strong>controladora</strong>, no
+      vocabulário da LGPD — é <strong>Wanda Meyer Mattos</strong>, psicóloga inscrita
+      no CRP 01/28668, que atua sob o nome Arcádia Psicologia, com endereço
+      profissional na CLN 412, Bloco D, salas 102 e 103, Brasília — DF.
+    </p>
+    <p>
+      Para qualquer assunto relacionado a esta política, o contato é
+      <a href="mailto:wanda@meyermattos.com.br">wanda@meyermattos.com.br</a>.
+    </p>
+
+    <h2>Que dados este site coleta</h2>
+    <p>
+      Apenas o que você digita voluntariamente ao se inscrever em uma oficina ou
+      entrar em lista de espera:
+    </p>
+    <ul>
+      <li><strong>Nome</strong> — para identificar sua inscrição e falar com você pelo nome.</li>
+      <li><strong>E-mail</strong> — para confirmar a inscrição e avisar sobre a turma.</li>
+      <li><strong>Telefone</strong> — opcional, para contato mais rápido por WhatsApp.</li>
+      <li><strong>Registro do seu consentimento</strong> — data e hora em que você marcou o aceite.</li>
+    </ul>
+
+    <div class="destaque">
+      <h3>O que este site deliberadamente não coleta</h3>
+      <p>
+        Não há nenhum campo neste site pedindo relato pessoal, queixa, sintoma,
+        histórico clínico ou qualquer informação sobre sua saúde. Essa ausência
+        é uma decisão de projeto, não um esquecimento: dado de saúde é
+        classificado como <strong>dado pessoal sensível</strong> pela LGPD e não deve
+        transitar por formulário de site.
+      </p>
+      <p>
+        Se você precisa falar sobre algo assim, use o contato direto — e, ainda
+        assim, apenas o necessário para marcar uma conversa.
+      </p>
+    </div>
+
+    <h2>Por que podemos tratar esses dados</h2>
+    <p>
+      A base legal é o <strong>seu consentimento</strong> (art. 7º, I da LGPD), dado no
+      momento em que você marca a caixa de aceite antes de enviar o formulário.
+      Sem essa marcação, o envio não é aceito. Uma vez inscrita, o tratamento
+      também se apoia na <strong>execução do que foi combinado</strong> com você
+      (art. 7º, V) — ou seja, avisar sobre a oficina em que você se inscreveu.
+    </p>
+
+    <h2>Com quem os dados são compartilhados</h2>
+    <p>
+      Com ninguém, para fins comerciais. Seus dados não são vendidos, cedidos
+      nem usados para publicidade de terceiros.
+    </p>
+    <p>
+      Existem apenas dois tipos de terceiro envolvidos, ambos atuando como
+      <strong>operadores</strong> — quer dizer, processam dados sob instrução da Arcádia
+      e não podem usá-los para outra finalidade:
+    </p>
+    <ul>
+      <li>
+        a <strong>infraestrutura que hospeda o site e o banco de dados</strong>, onde as
+        inscrições ficam armazenadas;
+      </li>
+      <li>
+        o <strong>serviço de envio de e-mail</strong>, usado exclusivamente para disparar
+        a confirmação da sua inscrição.
+      </li>
+    </ul>
+    <p>
+      Também pode haver compartilhamento se houver <strong>ordem judicial</strong> ou
+      obrigação legal — hipótese em que a Arcádia comunica você, salvo se a lei
+      proibir o aviso.
+    </p>
+
+    <h2>Por quanto tempo ficam guardados</h2>
+    <ul>
+      <li>
+        <strong>Inscrições:</strong> enquanto durar a turma e por até 2 (dois) anos após
+        seu encerramento, prazo em que ainda faz sentido retomar contato sobre
+        oficinas semelhantes.
+      </li>
+      <li>
+        <strong>Lista de espera:</strong> até a abertura da turma seguinte ou até você
+        pedir a remoção, o que vier primeiro.
+      </li>
+    </ul>
+    <p>Passado o prazo, os registros são eliminados.</p>
+
+    <h2>Seus direitos</h2>
+    <p>A LGPD garante a você, a qualquer momento e sem custo, o direito de:</p>
+    <ul>
+      <li>confirmar se existe algum tratamento de dados seus e acessar esses dados;</li>
+      <li>corrigir informação incompleta, desatualizada ou errada;</li>
+      <li>pedir a eliminação dos dados tratados com base no consentimento;</li>
+      <li>revogar o consentimento, o que interrompe os avisos sobre oficinas;</li>
+      <li>saber com quais terceiros os dados foram compartilhados;</li>
+      <li>solicitar a portabilidade dos dados a outro fornecedor.</li>
+    </ul>
+    <p>
+      Basta escrever para <a href="mailto:wanda@meyermattos.com.br">wanda@meyermattos.com.br</a>.
+      O prazo de resposta é de até 15 dias.
+    </p>
+
+    <h2>Cookies e medição</h2>
+    <p>
+      Este site não usa cookies para publicidade nem para rastrear você em
+      outros sites. Ferramentas de medição de audiência, quando ativas, servem
+      para entender quantas pessoas visitam quais páginas — não para identificar
+      indivíduos.
+    </p>
+
+    <h2>Segurança</h2>
+    <p>
+      A conexão é criptografada (HTTPS), o acesso ao painel administrativo é
+      restrito e autenticado, e nenhuma senha de usuária é armazenada por este
+      site. Nenhum sistema é infalível: se ocorrer um incidente que possa gerar
+      risco relevante a você, a Arcádia comunicará você e a Autoridade Nacional
+      de Proteção de Dados, como manda a lei.
+    </p>
+
+    <h2>Mudanças nesta política</h2>
+    <p>
+      Se algo mudar no que coletamos ou em como tratamos os dados, esta página é
+      atualizada e a data no topo muda junto. Alterações relevantes serão
+      comunicadas por e-mail a quem estiver inscrito.
+    </p>
+  </article>
+</Base>
+
+<style>
+  .topo { background: var(--creme); border-bottom: 1px solid var(--linha); }
+  .dentro { max-width: 1120px; margin: 0 auto; padding: var(--e-5) var(--e-3); }
+  h1 { font-size: var(--t-3xl); margin: 0 0 var(--e-1); }
+  .atualizacao { margin: 0; font-size: var(--t-sm); color: var(--apagado); }
+
+  .texto {
+    max-width: var(--medida);
+    margin: 0 auto;
+    padding: var(--e-4) var(--e-3) 0;
+  }
+  .abertura { font-size: var(--t-lg); color: var(--tinta); }
+  .texto h2 {
+    font-size: var(--t-xl);
+    margin: var(--e-4) 0 var(--e-1);
+    padding-bottom: 4px;
+    border-bottom: 2px solid var(--ocre);
+    display: inline-block;
+  }
+  .texto h3 { font-size: var(--t-lg); margin: 0 0 var(--e-1); }
+  .texto p { margin: 0 0 var(--e-2); }
+  .texto ul { margin: 0 0 var(--e-2); padding-left: var(--e-3); }
+  .texto li { margin-bottom: 0.5rem; }
+
+  .destaque {
+    background: var(--creme-suave);
+    border-left: 3px solid var(--terracota);
+    border-radius: 0 var(--raio) var(--raio) 0;
+    padding: var(--e-3);
+    margin: var(--e-3) 0;
+  }
+  .destaque p:last-child { margin-bottom: 0; }
+
+  @media (max-width: 720px) { h1 { font-size: var(--t-2xl); } }
+</style>

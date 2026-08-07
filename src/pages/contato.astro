@@ -1,0 +1,145 @@
+---
+import Base from '../layouts/Base.astro';
+
+export const prerender = true;
+
+// O site anterior não tinha telefone, WhatsApp, endereço, mapa nem horário —
+// o único canal era um formulário de e-mail, o meio de menor taxa de resposta
+// disponível para uma clínica no Brasil. Esta página existe para corrigir isso.
+//
+// PENDENTE: número de WhatsApp e horário de atendimento, a confirmar com a clínica.
+const WHATSAPP = null; // ex.: '5561999999999'
+const EMAIL = 'wanda@meyermattos.com.br';
+const ENDERECO = 'CLN 412, Bloco D, salas 102 e 103 — Brasília, DF';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Psychologist',
+  name: 'Arcádia Psicologia',
+  email: EMAIL,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'CLN 412, Bloco D, salas 102 e 103',
+    addressLocality: 'Brasília',
+    addressRegion: 'DF',
+    addressCountry: 'BR',
+  },
+};
+---
+<Base
+  titulo="Contato"
+  descricao="Fale com a Arcádia Psicologia. Atendimento clínico e oficinas em Brasília, presencial e online."
+>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <div class="topo">
+    <div class="dentro">
+      <h1>Contato</h1>
+      <p>Para agendar uma conversa, tirar dúvida sobre uma oficina ou falar sobre atendimento.</p>
+    </div>
+  </div>
+
+  <div class="colunas">
+    <section class="canais">
+      <h2>Canais</h2>
+
+      <dl>
+        <div>
+          <dt>E-mail</dt>
+          <dd><a href={`mailto:${EMAIL}`}>{EMAIL}</a></dd>
+        </div>
+
+        {WHATSAPP ? (
+          <div>
+            <dt>WhatsApp</dt>
+            <dd><a href={`https://wa.me/${WHATSAPP}`} rel="noopener">Abrir conversa</a></dd>
+          </div>
+        ) : (
+          <div>
+            <dt>WhatsApp</dt>
+            <dd class="pendente">a definir com a clínica</dd>
+          </div>
+        )}
+
+        <div>
+          <dt>Endereço</dt>
+          <dd>{ENDERECO}</dd>
+        </div>
+
+        <div>
+          <dt>Atendimento</dt>
+          <dd class="pendente">horários a definir</dd>
+        </div>
+      </dl>
+    </section>
+
+    <aside class="nota">
+      <h2>Antes de escrever</h2>
+      <p>
+        Este canal é para agendamento e informações. <strong>Não descreva aqui
+        queixas, sintomas ou histórico de saúde</strong> — esse tipo de conversa
+        pertence ao atendimento, não a um formulário de site.
+      </p>
+      <p>
+        Se você está em sofrimento agudo ou risco imediato, procure o CVV pelo
+        <strong>188</strong>, gratuito e 24 horas, ou o serviço de emergência
+        mais próximo.
+      </p>
+      <p class="fim">
+        Como tratamos seus dados está descrito na
+        <a href="/politica-de-privacidade">Política de Privacidade</a>.
+      </p>
+    </aside>
+  </div>
+</Base>
+
+<style>
+  .topo { background: var(--creme); border-bottom: 1px solid var(--linha); }
+  .dentro { max-width: 1120px; margin: 0 auto; padding: var(--e-5) var(--e-3); }
+  h1 { font-size: var(--t-3xl); margin: 0 0 var(--e-1); }
+  .dentro p { margin: 0; font-size: var(--t-lg); max-width: 54ch; }
+
+  .colunas {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: var(--e-4) var(--e-3) 0;
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: var(--e-5);
+    align-items: start;
+  }
+  h2 {
+    font-size: var(--t-xl);
+    margin: 0 0 var(--e-2);
+    padding-bottom: 4px;
+    border-bottom: 2px solid var(--ocre);
+    display: inline-block;
+  }
+
+  dl { margin: 0; }
+  dl > div {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: var(--e-2);
+    padding: var(--e-2) 0;
+    border-bottom: 1px solid var(--linha);
+  }
+  dt { font-size: var(--t-xs); text-transform: uppercase; letter-spacing: 0.1em; color: var(--apagado); }
+  dd { margin: 0; }
+  .pendente { color: var(--apagado); font-style: italic; font-size: var(--t-sm); }
+
+  .nota {
+    background: var(--creme-suave);
+    border-left: 3px solid var(--terracota);
+    border-radius: 0 var(--raio) var(--raio) 0;
+    padding: var(--e-3);
+  }
+  .nota h2 { font-size: var(--t-lg); border: 0; margin-bottom: var(--e-1); }
+  .nota p { font-size: var(--t-sm); margin: 0 0 var(--e-2); }
+  .fim { margin-bottom: 0 !important; color: var(--apagado); }
+
+  @media (max-width: 900px) {
+    .colunas { grid-template-columns: 1fr; }
+    h1 { font-size: var(--t-2xl); }
+  }
+</style>
