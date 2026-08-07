@@ -1,0 +1,58 @@
+---
+import Admin from '../../../layouts/Admin.astro';
+import { listarOficinasAdmin } from '../../../lib/admin.js';
+import { pegarDB } from '../../../lib/env.js';
+
+export const prerender = false;
+
+const db = await pegarDB();
+const oficinas = db ? await listarOficinasAdmin(db) : [];
+---
+<Admin titulo="Oficinas" atual="/admin/oficinas">
+  <p class="acoes" style="margin-bottom:1rem">
+    <a class="botao" href="/admin/oficinas/nova">Nova oficina</a>
+  </p>
+
+  <div class="cartao">
+    {oficinas.length === 0 ? (
+      <p class="vazio">Nenhuma oficina cadastrada ainda.</p>
+    ) : (
+      <table>
+        <thead>
+          <tr><th>Oficina</th><th>Situação</th><th>Turmas</th><th>Inscritos</th><th></th></tr>
+        </thead>
+        <tbody>
+          {oficinas.map((o) => (
+            <tr>
+              <td>
+                <strong>{o.nome}</strong>
+                {o.subtitulo && <><br /><span class="fraco">{o.subtitulo}</span></>}
+                <br /><span class="fraco">/oficinas/{o.slug}</span>
+              </td>
+              <td>
+                <span class:list={['selo', o.publicada ? 'aberta' : 'rascunho']}>
+                  {o.publicada ? 'publicada' : 'rascunho'}
+                </span>
+              </td>
+              <td>{o.turmas}</td>
+              <td>{o.inscritos}</td>
+              <td>
+                <a class="botao discreto" href={`/admin/oficinas/${o.id}`}>editar</a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )}
+  </div>
+
+  <p class="nota">
+    Uma oficina em <strong>rascunho</strong> não aparece no site. Publique só
+    quando o texto estiver pronto — é mais seguro que deixar meia descrição no ar.
+  </p>
+</Admin>
+
+<style>
+  .fraco { color: #8a7f72; font-size: 0.82rem; }
+  .nota { font-size: 0.85rem; color: #6b6259; }
+</style>

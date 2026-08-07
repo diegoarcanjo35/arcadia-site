@@ -1,0 +1,101 @@
+---
+import Admin from '../../layouts/Admin.astro';
+import { resumoPainel, listarInscricoes } from '../../lib/admin.js';
+import { formatarData } from '../../lib/oficinas.js';
+import { pegarDB } from '../../lib/env.js';
+
+export const prerender = false;
+
+const db = await pegarDB();
+const resumo = db ? await resumoPainel(db) : null;
+const recentes = db ? (await listarInscricoes(db, {})).slice(0, 8) : [];
+
+// O que falta preencher vira lista de tarefa, não número solto: "3 textos
+// vazios" só ajuda se disser onde clicar para resolver.
+const pendencias = [];
+if (resumo?.textos_vazios > 0) {
+  pendencias.push([`${resumo.textos_vazios} página(s) sem texto`, '/admin/paginas']);
+}
+if (resumo?.config_vazias > 0) {
+  pendencias.push([`${resumo.config_vazias} dado(s) de contato em branco`, '/admin/paginas']);
+}
+if (resumo?.oficinas_rascunho > 0) {
+  pendencias.push([`${resumo.oficinas_rascunho} oficina(s) ainda não publicada(s)`, '/admin/oficinas']);
+}
+---
+<Admin titulo="Resumo" atual="/admin">
+  {!db && <p class="recado ruim">Banco de dados indisponível.</p>}
+
+  {db && (
+    <>
+      <div class="numeros">
+        <a class="numero" href="/admin/inscricoes?status=recebida">
+          <strong>{resumo.a_responder}</strong>
+          <span>a responder</span>
+        </a>
+        <a class="numero" href="/admin/inscricoes">
+          <strong>{resumo.inscricoes}</strong>
+          <span>inscrições no total</span>
+        </a>
+        <a class="numero" href="/admin/oficinas">
+          <strong>{resumo.turmas_abertas}</strong>
+          <span>turmas com inscrição aberta</span>
+        </a>
+        <a class="numero" href="/admin/oficinas">
+          <strong>{resumo.oficinas_publicadas}</strong>
+          <span>oficinas publicadas</span>
+        </a>
+      </div>
+
+      {pendencias.length > 0 && (
+        <div class="cartao">
+          <h2 style="margin-top:0">Pendências</h2>
+          <ul class="pendencias">
+            {pendencias.map(([texto, href]) => (
+              <li><a href={href}>{texto}</a></li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <h2>Últimas inscrições</h2>
+      <div class="cartao">
+        {recentes.length === 0 ? (
+          <p class="vazio">Nenhuma inscrição ainda.</p>
+        ) : (
+          <table>
+            <thead>
+              <tr><th>Nome</th><th>Oficina</th><th>Tipo</th><th>Situação</th><th>Quando</th></tr>
+            </thead>
+            <tbody>
+              {recentes.map((i) => (
+                <tr>
+                  <td><strong>{i.nome}</strong><br /><span class="fraco">{i.email}</span></td>
+                  <td>{i.oficina_nome ?? '—'}</td>
+                  <td>{i.tipo === 'inscricao' ? 'Inscrição' : i.tipo === 'lista_espera' ? 'Lista de espera' : 'Interesse'}</td>
+                  <td><span class:list={['selo', { aberta: i.status === 'confirmada' }]}>{i.status}</span></td>
+                  <td>{formatarData(i.criado_em) ?? i.criado_em}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        <p style="margin:1rem 0 0"><a href="/admin/inscricoes">Ver todas →</a></p>
+      </div>
+    </>
+  )}
+</Admin>
+
+<style>
+  .numeros { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 0.9rem; }
+  .numero {
+    background: #fff; border: 1px solid #e4ded4; border-radius: 8px;
+    padding: 1rem 1.1rem; text-decoration: none; color: inherit; display: block;
+  }
+  .numero:hover { border-color: #b8552f; }
+  .numero strong { display: block; font-size: 1.9rem; line-height: 1.1; color: #b8552f; }
+  .numero span { font-size: 0.8rem; color: #6b6259; }
+  .pendencias { margin: 0; padding-left: 1.1rem; }
+  .pendencias li { margin-bottom: 0.35rem; font-size: 0.9rem; }
+  .fraco { color: #8a7f72; font-size: 0.82rem; }
+</style>

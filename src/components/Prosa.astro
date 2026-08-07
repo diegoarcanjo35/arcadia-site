@@ -1,0 +1,29 @@
+---
+/**
+ * Exibe texto escrito pela clínica no painel.
+ *
+ * Quebra em parágrafos por linha em branco e nada mais. Não interpreta HTML de
+ * propósito: o texto vem de um campo de formulário, e permitir marcação ali
+ * significaria que uma tag colada de um documento do Word poderia quebrar o
+ * layout — ou pior. Astro escapa o conteúdo automaticamente.
+ *
+ * Se um dia a clínica precisar de negrito e links, o caminho é interpretar
+ * markdown aqui dentro, num lugar só, e não abrir o portão para HTML cru.
+ */
+const { texto } = Astro.props;
+
+const paragrafos = String(texto ?? '')
+  .replace(/\r\n/g, '\n')
+  .split(/\n\s*\n/)
+  .map((p) => p.trim())
+  .filter(Boolean);
+---
+<div class="prosa">
+  {paragrafos.map((p) => <p>{p}</p>)}
+</div>
+
+<style>
+  .prosa { max-width: var(--medida, 68ch); }
+  .prosa p { margin: 0 0 1em; }
+  .prosa p:last-child { margin-bottom: 0; }
+</style>

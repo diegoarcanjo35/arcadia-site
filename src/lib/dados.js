@@ -7,30 +7,10 @@
  * Em `astro dev` puro não há runtime do Cloudflare — nesse caso caímos no
  * conjunto de exemplo, só para conseguir ver o layout sem subir nada.
  * O exemplo NUNCA é usado quando existe banco.
- *
- * Nota de versão: a partir do Astro 6 o acesso deixou de ser
- * `Astro.locals.runtime.env` e passou a ser o módulo `cloudflare:workers`.
  */
 import * as q from './oficinas.js';
 import { EXEMPLO } from './exemplo.js';
-
-let _env;
-
-async function pegarEnv() {
-  if (_env !== undefined) return _env;
-  try {
-    const mod = await import('cloudflare:workers');
-    _env = mod.env ?? null;
-  } catch {
-    _env = null; // rodando fora do runtime do Cloudflare
-  }
-  return _env;
-}
-
-async function pegarDB() {
-  const env = await pegarEnv();
-  return env?.DB ?? null;
-}
+import { pegarDB } from './env.js';
 
 export async function listarOficinas() {
   const db = await pegarDB();
@@ -65,6 +45,40 @@ export async function registrarInscricao(dados) {
   const db = await pegarDB();
   if (!db) return { ok: false, erro: 'sem_banco' };
   return q.registrarInscricao(db, dados);
+}
+
+/**
+ * Texto de uma página institucional, editável pelo painel.
+ * Sem banco ou sem texto gravado, devolve nulo — e a página mostra o aviso
+ * honesto de "conteúdo em preparação" em vez de inventar parágrafo.
+ */
+export async function buscarConteudo(chave) {
+  const db = await pegarDB();
+  if (!db) return null;
+  try {
+    const r = await db
+      .prepare(`SELECT titulo, corpo FROM conteudos WHERE chave = ?`)
+      .bind(chave)
+      .first();
+    return r?.corpo ? r : null;
+  } catch {
+    // A tabela pode não existir ainda se a migração 0004 não tiver rodado.
+    // Nesse caso a página cai no aviso de conteúdo em preparação, que é
+    // exatamente o comportamento anterior — nada quebra na cara do visitante.
+    return null;
+  }
+}
+
+/** Valores curtos de contato (WhatsApp, horário, e-mail). Sempre um objeto. */
+export async function buscarConfiguracoes() {
+  const db = await pegarDB();
+  if (!db) return {};
+  try {
+    const { results } = await db.prepare(`SELECT chave, valor FROM configuracoes`).all();
+    return Object.fromEntries(results.map((r) => [r.chave, r.valor]));
+  } catch {
+    return {};
+  }
 }
 
 /** Verdadeiro quando a página está mostrando dados de exemplo, não o banco. */

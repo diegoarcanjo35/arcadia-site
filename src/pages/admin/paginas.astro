@@ -1,0 +1,74 @@
+---
+import Admin from '../../layouts/Admin.astro';
+import { listarConteudos, listarConfiguracoes } from '../../lib/admin.js';
+import { pegarDB } from '../../lib/env.js';
+
+export const prerender = false;
+
+const db = await pegarDB();
+const textos = db ? await listarConteudos(db) : [];
+const config = db ? await listarConfiguracoes(db) : [];
+const volta = Astro.url.pathname;
+
+const ONDE_APARECE = {
+  'a-arcadia': '/a-arcadia',
+  servicos: '/servicos',
+  artigos: '/artigos',
+};
+---
+<Admin titulo="Páginas" atual="/admin/paginas">
+  <p class="intro">
+    Enquanto um texto estiver em branco, a página correspondente continua no ar
+    com o aviso de "conteúdo em preparação". É proposital: melhor um espaço
+    reservado do que parágrafo genérico sobre atendimento clínico.
+  </p>
+
+  {textos.map((t) => (
+    <>
+      <h2>
+        {t.titulo ?? t.chave}
+        {ONDE_APARECE[t.chave] && (
+          <a class="ver" href={ONDE_APARECE[t.chave]} target="_blank" rel="noopener">ver ↗</a>
+        )}
+        {!t.corpo && <span class="selo rascunho">em branco</span>}
+      </h2>
+      <form class="cartao" method="POST" action="/api/admin/salvar">
+        <input type="hidden" name="acao" value="conteudo.salvar" />
+        <input type="hidden" name="chave" value={t.chave} />
+        <input type="hidden" name="volta" value={volta} />
+        <label>Título da página
+          <input type="text" name="titulo" maxlength="200" value={t.titulo ?? ''} />
+        </label>
+        <label>Texto
+          <textarea name="corpo" maxlength="40000" style="min-height:12rem">{t.corpo ?? ''}</textarea>
+          <span class="ajuda">
+            Uma linha em branco separa parágrafos. Não é preciso saber código.
+          </span>
+        </label>
+        <button type="submit">Salvar</button>
+      </form>
+    </>
+  ))}
+
+  <h2>Contato</h2>
+  <form class="cartao" method="POST" action="/api/admin/salvar">
+    <input type="hidden" name="acao" value="config.salvar" />
+    <input type="hidden" name="volta" value={volta} />
+    {config.map((c) => (
+      <>
+        <input type="hidden" name="chave" value={c.chave} />
+        <label>{c.rotulo}
+          <input type="text" name={`valor_${c.chave}`} value={c.valor ?? ''} maxlength="400" />
+          {c.ajuda && <span class="ajuda">{c.ajuda}</span>}
+        </label>
+      </>
+    ))}
+    <button type="submit">Salvar contato</button>
+  </form>
+</Admin>
+
+<style>
+  .intro { font-size: 0.9rem; color: #6b6259; max-width: 60ch; }
+  h2 { display: flex; align-items: center; gap: 0.75rem; }
+  .ver { font-size: 0.78rem; font-weight: 400; }
+</style>

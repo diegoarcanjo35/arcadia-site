@@ -1,0 +1,112 @@
+---
+import Admin from '../../layouts/Admin.astro';
+import { listarFacilitadorasAdmin } from '../../lib/admin.js';
+import { urlDe } from '../../lib/midia.js';
+import { pegarDB } from '../../lib/env.js';
+
+export const prerender = false;
+
+const db = await pegarDB();
+const equipe = db ? await listarFacilitadorasAdmin(db) : [];
+const volta = Astro.url.pathname;
+---
+<Admin titulo="Equipe" atual="/admin/equipe">
+  {equipe.map((f) => (
+    <div class="cartao">
+      <div class="cabeca">
+        {urlDe(f.foto_key)
+          ? <img class="retrato" src={urlDe(f.foto_key)} alt={`Retrato de ${f.nome}`} />
+          : <div class="retrato vazio-foto">sem foto</div>}
+        <div>
+          <strong>{f.nome}</strong>
+          <div class="fraco">CRP {f.crp} · /equipe#{f.slug}</div>
+          <div class="fraco">{f.oficinas} oficina(s)</div>
+        </div>
+      </div>
+
+      <form method="POST" action="/api/admin/salvar">
+        <input type="hidden" name="acao" value="facilitadora.salvar" />
+        <input type="hidden" name="id" value={f.id} />
+        <input type="hidden" name="volta" value={volta} />
+        <div class="linha">
+          <label>Nome <span class="obrigatorio">*</span>
+            <input type="text" name="nome" required value={f.nome} />
+          </label>
+          <label>CRP<input type="text" name="crp" value={f.crp} /></label>
+          <label>Ordem<input type="number" name="ordem" value={f.ordem} /></label>
+        </div>
+        <label>Biografia
+          <textarea name="bio">{f.bio ?? ''}</textarea>
+        </label>
+        <label class="caixa">
+          <input type="checkbox" name="ativa" value="1" checked={Boolean(f.ativa)} />
+          Aparece na página Equipe
+        </label>
+        <div class="acoes"><button type="submit">Salvar</button></div>
+      </form>
+
+      <details class="foto">
+        <summary>Foto</summary>
+        <form method="POST" action="/api/admin/salvar" enctype="multipart/form-data">
+          <input type="hidden" name="acao" value="midia.enviar" />
+          <input type="hidden" name="colecao" value="equipe" />
+          <input type="hidden" name="dono" value={f.slug} />
+          <input type="hidden" name="id" value={f.id} />
+          <input type="hidden" name="volta" value={volta} />
+          <label>Enviar foto<input type="file" name="arquivo" accept="image/*" required /></label>
+          <button type="submit">Enviar</button>
+        </form>
+        {f.foto_key && (
+          <form method="POST" action="/api/admin/salvar" style="margin-top:0.5rem">
+            <input type="hidden" name="acao" value="midia.remover" />
+            <input type="hidden" name="colecao" value="equipe" />
+            <input type="hidden" name="chave" value={f.foto_key} />
+            <input type="hidden" name="id" value={f.id} />
+            <input type="hidden" name="volta" value={volta} />
+            <button class="discreto" type="submit">Remover foto</button>
+          </form>
+        )}
+      </details>
+
+      {f.oficinas === 0 && (
+        <form method="POST" action="/api/admin/salvar" style="margin-top:0.75rem"
+              onsubmit="return confirm(`Apagar ${f.nome}?`)">
+          <input type="hidden" name="acao" value="facilitadora.apagar" />
+          <input type="hidden" name="id" value={f.id} />
+          <input type="hidden" name="volta" value={volta} />
+          <button class="discreto" type="submit">Apagar</button>
+        </form>
+      )}
+    </div>
+  ))}
+
+  <h2>Acrescentar alguém</h2>
+  <form class="cartao" method="POST" action="/api/admin/salvar">
+    <input type="hidden" name="acao" value="facilitadora.salvar" />
+    <input type="hidden" name="volta" value={volta} />
+    <div class="linha">
+      <label>Nome <span class="obrigatorio">*</span><input type="text" name="nome" required /></label>
+      <label>CRP<input type="text" name="crp" placeholder="01/28668" /></label>
+      <label>Ordem<input type="number" name="ordem" value="0" /></label>
+    </div>
+    <label>Biografia<textarea name="bio"></textarea></label>
+    <label class="caixa">
+      <input type="checkbox" name="ativa" value="1" checked />
+      Aparece na página Equipe
+    </label>
+    <div class="acoes"><button type="submit">Acrescentar</button></div>
+  </form>
+</Admin>
+
+<style>
+  .cabeca { display: flex; gap: 0.9rem; align-items: center; margin-bottom: 1rem; }
+  .retrato { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; }
+  .vazio-foto {
+    display: flex; align-items: center; justify-content: center;
+    background: #ece7df; color: #8a7f72; font-size: 0.7rem; text-align: center;
+  }
+  .caixa { display: flex; align-items: center; gap: 0.5rem; }
+  .caixa input { width: auto; margin: 0; }
+  .fraco { color: #8a7f72; font-size: 0.82rem; }
+  .foto summary { cursor: pointer; font-size: 0.85rem; color: #b8552f; margin-top: 0.5rem; }
+</style>

@@ -1,15 +1,21 @@
 ---
 import Base from '../layouts/Base.astro';
-
-export const prerender = true;
+import { buscarConfiguracoes } from '../lib/dados.js';
 
 // O site anterior não tinha telefone, WhatsApp, endereço, mapa nem horário —
 // o único canal era um formulário de e-mail, o meio de menor taxa de resposta
 // disponível para uma clínica no Brasil. Esta página existe para corrigir isso.
 //
-// PENDENTE: número de WhatsApp e horário de atendimento, a confirmar com a clínica.
-const WHATSAPP = null; // ex.: '5561999999999'
-const EMAIL = 'wanda@meyermattos.com.br';
+// Os valores agora vêm do painel (Páginas → Contato), não do código: mudar o
+// horário de atendimento não pode depender de um deploy.
+export const prerender = false;
+
+const cfg = await buscarConfiguracoes();
+
+const EMAIL = cfg['contato.email'] || 'wanda@meyermattos.com.br';
+const WHATSAPP = (cfg['contato.whatsapp'] || '').replace(/\D/g, '') || null;
+const HORARIO = cfg['contato.horario'] || null;
+const INSTAGRAM = (cfg['contato.instagram'] || '').replace(/^@/, '') || null;
 const ENDERECO = 'CLN 412, Bloco D, salas 102 e 103 — Brasília, DF';
 
 const jsonLd = {
@@ -17,6 +23,8 @@ const jsonLd = {
   '@type': 'Psychologist',
   name: 'Arcádia Psicologia',
   email: EMAIL,
+  ...(WHATSAPP ? { telephone: `+${WHATSAPP}` } : {}),
+  ...(HORARIO ? { openingHours: HORARIO } : {}),
   address: {
     '@type': 'PostalAddress',
     streetAddress: 'CLN 412, Bloco D, salas 102 e 103',
@@ -49,15 +57,21 @@ const jsonLd = {
           <dd><a href={`mailto:${EMAIL}`}>{EMAIL}</a></dd>
         </div>
 
-        {WHATSAPP ? (
+        <div>
+          <dt>WhatsApp</dt>
+          <dd>
+            {WHATSAPP
+              ? <a href={`https://wa.me/${WHATSAPP}`} rel="noopener">Abrir conversa</a>
+              : <span class="pendente">a definir com a clínica</span>}
+          </dd>
+        </div>
+
+        {INSTAGRAM && (
           <div>
-            <dt>WhatsApp</dt>
-            <dd><a href={`https://wa.me/${WHATSAPP}`} rel="noopener">Abrir conversa</a></dd>
-          </div>
-        ) : (
-          <div>
-            <dt>WhatsApp</dt>
-            <dd class="pendente">a definir com a clínica</dd>
+            <dt>Instagram</dt>
+            <dd>
+              <a href={`https://instagram.com/${INSTAGRAM}`} rel="noopener">@{INSTAGRAM}</a>
+            </dd>
           </div>
         )}
 
@@ -68,7 +82,7 @@ const jsonLd = {
 
         <div>
           <dt>Atendimento</dt>
-          <dd class="pendente">horários a definir</dd>
+          <dd>{HORARIO ?? <span class="pendente">horários a definir</span>}</dd>
         </div>
       </dl>
     </section>

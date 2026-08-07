@@ -1,15 +1,24 @@
 ---
 import Base from '../layouts/Base.astro';
 import AguardandoConteudo from '../components/AguardandoConteudo.astro';
+import Prosa from '../components/Prosa.astro';
+import { buscarConteudo } from '../lib/dados.js';
 
-export const prerender = true;
+// Deixou de ser estática: o texto agora vem do banco e a clínica edita pelo
+// painel, sem precisar de mim para trocar uma frase.
+export const prerender = false;
+
+const conteudo = await buscarConteudo('servicos');
+const titulo = conteudo?.titulo || 'Serviços';
 ---
-<Base titulo="Serviços" descricao="Atendimento clínico, oficinas em grupo e demais serviços da Arcádia Psicologia.">
+<Base titulo={titulo} descricao="Atendimento clínico, oficinas em grupo e demais serviços da Arcádia Psicologia.">
   <div class="topo">
-    <div class="dentro"><h1>Serviços</h1></div>
+    <div class="dentro"><h1>{titulo}</h1></div>
   </div>
   <div class="corpo">
-    <AguardandoConteudo itens={["descrição do atendimento clínico individual", "modalidades: presencial e online", "como funciona o primeiro contato"]} />
+    {conteudo?.corpo
+      ? <Prosa texto={conteudo.corpo} />
+      : <AguardandoConteudo itens={["descrição do atendimento clínico individual", "modalidades: presencial e online", "como funciona o primeiro contato"]} />}
   </div>
 </Base>
 

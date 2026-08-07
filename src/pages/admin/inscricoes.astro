@@ -1,0 +1,121 @@
+---
+import Admin from '../../layouts/Admin.astro';
+import { listarInscricoes, STATUS_INSCRICAO } from '../../lib/admin.js';
+import { formatarData } from '../../lib/oficinas.js';
+import { pegarDB } from '../../lib/env.js';
+
+export const prerender = false;
+
+const db = await pegarDB();
+const p = Astro.url.searchParams;
+
+const filtro = {
+  status: p.get('status') ?? '',
+  busca: p.get('busca') ?? '',
+};
+
+const linhas = db ? await listarInscricoes(db, filtro) : [];
+
+// A query da exportação acompanha o filtro da tela: exportar tem que devolver
+// o que a pessoa está vendo, não a tabela inteira.
+const qs = new URLSearchParams();
+if (filtro.status) qs.set('status', filtro.status);
+if (filtro.busca) qs.set('busca', filtro.busca);
+const linkCsv = `/api/admin/inscricoes.csv${qs.toString() ? '?' + qs : ''}`;
+
+const volta = Astro.url.pathname + Astro.url.search;
+
+const ROTULO_TIPO = {
+  inscricao: 'Inscrição',
+  lista_espera: 'Lista de espera',
+  interesse: 'Interesse',
+};
+---
+<Admin titulo="Inscrições" atual="/admin/inscricoes">
+  <form class="cartao filtros" method="GET">
+    <div class="linha">
+      <label>Buscar por nome ou e-mail
+        <input type="search" name="busca" value={filtro.busca} placeholder="parte do nome…" />
+      </label>
+      <label>Situação
+        <select name="status">
+          <option value="">todas</option>
+          {STATUS_INSCRICAO.map((s) => (
+            <option value={s} selected={filtro.status === s}>{s}</option>
+          ))}
+        </select>
+      </label>
+      <div style="flex:0 0 auto">
+        <button type="submit">Filtrar</button>
+        <a class="botao discreto" href={linkCsv}>Exportar CSV</a>
+      </div>
+    </div>
+  </form>
+
+  <p class="contagem">
+    {linhas.length} registro(s){linhas.length === 500 && ' — mostrando os 500 mais recentes'}
+  </p>
+
+  <div class="cartao">
+    {linhas.length === 0 ? (
+      <p class="vazio">Nenhuma inscrição com esse filtro.</p>
+    ) : (
+      <table>
+        <thead>
+          <tr>
+            <th>Pessoa</th><th>Oficina</th><th>Tipo</th>
+            <th>Recebida</th><th>Situação</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {linhas.map((i) => (
+            <tr>
+              <td>
+                <strong>{i.nome}</strong><br />
+                <a href={`mailto:${i.email}`}>{i.email}</a>
+                {i.telefone && <><br /><span class="fraco">{i.telefone}</span></>}
+              </td>
+              <td>
+                {i.oficina_nome ?? '—'}
+                {i.data_inicio && <><br /><span class="fraco">{formatarData(i.data_inicio)}</span></>}
+              </td>
+              <td>{ROTULO_TIPO[i.tipo] ?? i.tipo}</td>
+              <td class="fraco">{formatarData(i.criado_em) ?? i.criado_em}</td>
+              <td>
+                <form method="POST" action="/api/admin/salvar" class="embutido">
+                  <input type="hidden" name="acao" value="inscricao.status" />
+                  <input type="hidden" name="id" value={i.id} />
+                  <input type="hidden" name="volta" value={volta} />
+                  <select name="status" onchange="this.form.submit()">
+                    {STATUS_INSCRICAO.map((s) => (
+                      <option value={s} selected={i.status === s}>{s}</option>
+                    ))}
+                  </select>
+                </form>
+              </td>
+              <td>
+                {/* Apagar é o pedido de exclusão de dados da LGPD, e é
+                    diferente de cancelar: cancelar guarda a linha. */}
+                <form method="POST" action="/api/admin/salvar" class="embutido"
+                      onsubmit="return confirm('Apagar definitivamente os dados desta pessoa? Para apenas retirá-la da turma, use ‘cancelada’.')">
+                  <input type="hidden" name="acao" value="inscricao.apagar" />
+                  <input type="hidden" name="id" value={i.id} />
+                  <input type="hidden" name="volta" value={volta} />
+                  <button class="discreto" type="submit" title="Apagar dados (LGPD)">apagar</button>
+                </form>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )}
+  </div>
+</Admin>
+
+<style>
+  .filtros { padding-bottom: 0.35rem; }
+  .filtros label { margin-bottom: 0.5rem; }
+  .contagem { font-size: 0.85rem; color: #6b6259; margin: 0 0 0.75rem; }
+  .fraco { color: #8a7f72; font-size: 0.82rem; }
+  td select { padding: 0.3rem; font-size: 0.82rem; }
+</style>

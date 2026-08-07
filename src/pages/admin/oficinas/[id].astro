@@ -1,0 +1,296 @@
+---
+import Admin from '../../../layouts/Admin.astro';
+import {
+  buscarOficinaAdmin, listarFacilitadorasAdmin,
+  FORMATOS, STATUS_TURMA, PAPEIS,
+} from '../../../lib/admin.js';
+import { formatarData } from '../../../lib/oficinas.js';
+import { urlDe } from '../../../lib/midia.js';
+import { pegarDB } from '../../../lib/env.js';
+
+export const prerender = false;
+
+const db = await pegarDB();
+const bruto = Astro.params.id;
+const nova = bruto === 'nova';
+const id = nova ? null : Number.parseInt(bruto, 10);
+
+if (!db) return new Response('Banco indisponível.', { status: 503 });
+if (!nova && !Number.isInteger(id)) return Astro.redirect('/admin/oficinas', 302);
+
+const oficina = nova ? null : await buscarOficinaAdmin(db, id);
+if (!nova && !oficina) return Astro.redirect('/admin/oficinas', 302);
+
+const equipe = await listarFacilitadorasAdmin(db);
+const vinculadas = new Map((oficina?.vinculos ?? []).map((v) => [v.facilitadora_id, v.papel]));
+
+const volta = Astro.url.pathname;
+const arte = urlDe(oficina?.arte_key);
+
+const ROTULO_STATUS = {
+  em_breve: 'Em breve',
+  inscricoes_abertas: 'Inscrições abertas',
+  ultimas_vagas: 'Últimas vagas',
+  encerrada: 'Encerrada',
+  realizada: 'Realizada',
+};
+---
+<Admin titulo={nova ? 'Nova oficina' : oficina.nome} atual="/admin/oficinas">
+  <p style="margin-top:-0.5rem"><a href="/admin/oficinas">← todas as oficinas</a></p>
+
+  {/* ------------------------------------------------------------ dados */}
+  <form class="cartao" method="POST" action="/api/admin/salvar">
+    <input type="hidden" name="acao" value="oficina.salvar" />
+    <input type="hidden" name="volta" value={volta} />
+    {!nova && <input type="hidden" name="id" value={oficina.id} />}
+
+    <div class="linha">
+      <label>Nome <span class="obrigatorio">*</span>
+        <input type="text" name="nome" required maxlength="160" value={oficina?.nome ?? ''} />
+      </label>
+      <label>Subtítulo
+        <input type="text" name="subtitulo" maxlength="200" value={oficina?.subtitulo ?? ''} />
+      </label>
+    </div>
+
+    <label>Endereço da página
+      <input type="text" name="slug" maxlength="80" value={oficina?.slug ?? ''}
+             placeholder="deixe em branco para gerar a partir do nome" />
+      <span class="ajuda">
+        Vira <code>/oficinas/…</code>. Mudar isso depois de divulgar quebra os
+        links já compartilhados — só altere antes de publicar.
+      </span>
+    </label>
+
+    <label>Resumo <span class="obrigatorio">*</span>
+      <textarea name="resumo" required maxlength="400" style="min-height:4rem">{oficina?.resumo ?? ''}</textarea>
+      <span class="ajuda">
+        Uma ou duas frases. É o que aparece na lista de oficinas e na prévia
+        quando alguém cola o link no WhatsApp.
+      </span>
+    </label>
+
+    <label>Descrição
+      <textarea name="descricao" maxlength="20000">{oficina?.descricao ?? ''}</textarea>
+    </label>
+
+    <label>Por que participar
+      <textarea name="por_que_participar" maxlength="20000">{oficina?.por_que_participar ?? ''}</textarea>
+    </label>
+
+    <label>Para quem é
+      <textarea name="publico_alvo" maxlength="2000" style="min-height:4rem">{oficina?.publico_alvo ?? ''}</textarea>
+    </label>
+
+    <label>Descrição da imagem
+      <input type="text" name="arte_alt" maxlength="300" value={oficina?.arte_alt ?? ''} />
+      <span class="ajuda">
+        O que a arte mostra, em uma frase. É o que quem usa leitor de tela ouve
+        no lugar da imagem.
+      </span>
+    </label>
+
+    <label class="caixa">
+      <input type="checkbox" name="publicada" value="1" checked={Boolean(oficina?.publicada)} />
+      Publicada — aparece no site
+    </label>
+
+    <div class="acoes">
+      <button type="submit">Salvar</button>
+      {!nova && (
+        <a class="botao discreto" href={`/oficinas/${oficina.slug}`} target="_blank" rel="noopener">Ver no site ↗</a>
+      )}
+    </div>
+  </form>
+
+  {!nova && (
+    <>
+      {/* ------------------------------------------------------- imagem */}
+      <h2>Arte da oficina</h2>
+      <div class="cartao">
+        {arte && <img class="previa" src={arte} alt={oficina.arte_alt ?? ''} />}
+
+        <form method="POST" action="/api/admin/salvar" enctype="multipart/form-data">
+          <input type="hidden" name="acao" value="midia.enviar" />
+          <input type="hidden" name="colecao" value="oficina" />
+          <input type="hidden" name="dono" value={oficina.slug} />
+          <input type="hidden" name="id" value={oficina.id} />
+          <input type="hidden" name="volta" value={volta} />
+          <label>{arte ? 'Trocar a imagem' : 'Enviar imagem'}
+            <input type="file" name="arquivo" accept="image/*" required />
+            <span class="ajuda">
+              A imagem é reduzida no seu navegador antes de subir, então pode
+              mandar a foto do celular direto.
+            </span>
+          </label>
+          <button type="submit">Enviar</button>
+        </form>
+
+        {arte && (
+          <form method="POST" action="/api/admin/salvar" style="margin-top:0.75rem">
+            <input type="hidden" name="acao" value="midia.remover" />
+            <input type="hidden" name="colecao" value="oficina" />
+            <input type="hidden" name="chave" value={oficina.arte_key} />
+            <input type="hidden" name="id" value={oficina.id} />
+            <input type="hidden" name="volta" value={volta} />
+            <button class="discreto" type="submit">Remover imagem</button>
+          </form>
+        )}
+      </div>
+
+      {/* -------------------------------------------------- quem conduz */}
+      <h2>Quem conduz</h2>
+      <form class="cartao" method="POST" action="/api/admin/salvar">
+        <input type="hidden" name="acao" value="oficina.vinculos" />
+        <input type="hidden" name="id" value={oficina.id} />
+        <input type="hidden" name="volta" value={volta} />
+
+        {equipe.length === 0 ? (
+          <p class="vazio">Cadastre alguém em <a href="/admin/equipe">Equipe</a> primeiro.</p>
+        ) : (
+          <>
+            {equipe.map((f) => (
+              <div class="conduz">
+                <label class="caixa">
+                  <input type="checkbox" name="facilitadora_id" value={f.id}
+                         checked={vinculadas.has(f.id)} />
+                  {f.nome} <span class="fraco">CRP {f.crp}</span>
+                </label>
+                <select name={`papel_${f.id}`}>
+                  {PAPEIS.map((p) => (
+                    <option value={p} selected={vinculadas.get(f.id) === p}>{p}</option>
+                  ))}
+                </select>
+              </div>
+            ))}
+            <button type="submit">Salvar quem conduz</button>
+          </>
+        )}
+      </form>
+
+      {/* ------------------------------------------------------- turmas */}
+      <h2>Turmas</h2>
+      <div class="cartao">
+        {oficina.turmas.length === 0 ? (
+          <p class="vazio">Nenhuma turma. Cadastre a primeira abaixo.</p>
+        ) : (
+          <table>
+            <thead>
+              <tr><th>Início</th><th>Formato</th><th>Vagas</th><th>Situação</th><th></th></tr>
+            </thead>
+            <tbody>
+              {oficina.turmas.map((t) => (
+                <tr>
+                  <td>{t.data_inicio ? formatarData(t.data_inicio) : '—'}</td>
+                  <td>{t.formato}{t.local && <><br /><span class="fraco">{t.local}</span></>}</td>
+                  <td>{t.vagas_total == null ? '—' : `${t.inscritos} de ${t.vagas_total}`}</td>
+                  <td><span class="selo">{ROTULO_STATUS[t.status] ?? t.status}</span></td>
+                  <td>
+                    <details>
+                      <summary class="botao discreto">editar</summary>
+                      <form class="editar-turma" method="POST" action="/api/admin/salvar">
+                        <input type="hidden" name="acao" value="turma.salvar" />
+                        <input type="hidden" name="id" value={t.id} />
+                        <input type="hidden" name="oficina_id" value={oficina.id} />
+                        <input type="hidden" name="volta" value={volta} />
+                        <div class="linha">
+                          <label>Início<input type="date" name="data_inicio" value={t.data_inicio ?? ''} /></label>
+                          <label>Formato
+                            <select name="formato">
+                              {FORMATOS.map((f) => <option value={f} selected={t.formato === f}>{f}</option>)}
+                            </select>
+                          </label>
+                          <label>Situação
+                            <select name="status">
+                              {STATUS_TURMA.map((s) => (
+                                <option value={s} selected={t.status === s}>{ROTULO_STATUS[s]}</option>
+                              ))}
+                            </select>
+                          </label>
+                        </div>
+                        <div class="linha">
+                          <label>Encontros<input type="number" name="encontros" min="0" value={t.encontros ?? ''} /></label>
+                          <label>Carga horária<input type="text" name="carga_horaria" value={t.carga_horaria ?? ''} /></label>
+                          <label>Vagas<input type="number" name="vagas_total" min="0" value={t.vagas_total ?? ''} /></label>
+                        </div>
+                        <label>Local<input type="text" name="local" value={t.local ?? ''} /></label>
+                        <label>Observações<textarea name="observacoes" style="min-height:3.5rem">{t.observacoes ?? ''}</textarea></label>
+                        <div class="acoes">
+                          <button type="submit">Salvar turma</button>
+                        </div>
+                      </form>
+
+                      <form method="POST" action="/api/admin/salvar" style="margin-top:0.5rem"
+                            onsubmit="return confirm('Apagar esta turma?')">
+                        <input type="hidden" name="acao" value="turma.apagar" />
+                        <input type="hidden" name="id" value={t.id} />
+                        <input type="hidden" name="volta" value={volta} />
+                        <button class="discreto" type="submit">Apagar turma</button>
+                      </form>
+                    </details>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      <h2>Nova turma</h2>
+      <form class="cartao" method="POST" action="/api/admin/salvar">
+        <input type="hidden" name="acao" value="turma.salvar" />
+        <input type="hidden" name="oficina_id" value={oficina.id} />
+        <input type="hidden" name="volta" value={volta} />
+        <div class="linha">
+          <label>Início<input type="date" name="data_inicio" /></label>
+          <label>Formato
+            <select name="formato">{FORMATOS.map((f) => <option value={f}>{f}</option>)}</select>
+          </label>
+          <label>Situação
+            <select name="status">
+              {STATUS_TURMA.map((s) => <option value={s}>{ROTULO_STATUS[s]}</option>)}
+            </select>
+          </label>
+        </div>
+        <div class="linha">
+          <label>Encontros<input type="number" name="encontros" min="0" /></label>
+          <label>Carga horária<input type="text" name="carga_horaria" placeholder="12" /></label>
+          <label>Vagas<input type="number" name="vagas_total" min="0" /></label>
+        </div>
+        <label>Local<input type="text" name="local" placeholder="preencher quando presencial" /></label>
+        <button type="submit">Criar turma</button>
+      </form>
+
+      {/* ------------------------------------------------------- apagar */}
+      <div class="cartao perigo-zona">
+        <form method="POST" action="/api/admin/salvar"
+              onsubmit="return confirm('Apagar esta oficina e todas as suas turmas?')">
+          <input type="hidden" name="acao" value="oficina.apagar" />
+          <input type="hidden" name="id" value={oficina.id} />
+          <input type="hidden" name="volta" value={volta} />
+          <button class="perigo" type="submit">Apagar a oficina</button>
+          <span class="ajuda">
+            Só é permitido enquanto não houver nenhuma inscrição. Depois disso, o
+            caminho é encerrar as turmas — apagar levaria os dados de quem se
+            inscreveu junto.
+          </span>
+        </form>
+      </div>
+    </>
+  )}
+</Admin>
+
+<style>
+  .caixa { display: flex; align-items: center; gap: 0.5rem; }
+  .caixa input { width: auto; margin: 0; }
+  .fraco { color: #8a7f72; font-size: 0.82rem; }
+  .previa { max-width: 260px; border-radius: 6px; display: block; margin-bottom: 0.9rem; }
+  .conduz { display: flex; gap: 0.9rem; align-items: center; margin-bottom: 0.5rem; }
+  .conduz .caixa { flex: 1; margin: 0; }
+  .conduz select { width: auto; }
+  details summary { list-style: none; cursor: pointer; }
+  details summary::-webkit-details-marker { display: none; }
+  .editar-turma { margin-top: 0.9rem; padding-top: 0.9rem; border-top: 1px solid #eae4da; }
+  .perigo-zona { border-color: #e8cfc7; }
+  code { background: #f2efe9; padding: 1px 4px; border-radius: 3px; }
+</style>

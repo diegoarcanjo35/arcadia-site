@@ -1,0 +1,187 @@
+---
+/**
+ * Moldura do painel.
+ *
+ * Visual deliberadamente diferente do site: quem está aqui está mexendo no que
+ * o público vê, e confundir as duas telas é como se acaba publicando rascunho.
+ * Mesma paleta da marca, densidade maior, sem as fontes de display.
+ */
+import '../styles/marca.css';
+
+const { titulo, atual } = Astro.props;
+const usuario = Astro.locals?.usuario;
+
+const RECADOS = {
+  salvo: ['bom', 'Alterações salvas.'],
+  apagado: ['bom', 'Registro removido.'],
+  imagem_salva: ['bom', 'Imagem enviada.'],
+  imagem_removida: ['bom', 'Imagem removida.'],
+  nome_obrigatorio: ['ruim', 'O nome é obrigatório.'],
+  resumo_obrigatorio: ['ruim', 'O resumo é obrigatório — ele aparece no índice e no WhatsApp.'],
+  slug_invalido: ['ruim', 'O endereço da página ficou vazio. Confira o nome.'],
+  slug_repetido: ['ruim', 'Já existe outro registro com esse endereço.'],
+  formato_invalido: ['ruim', 'Escolha o formato da turma.'],
+  oficina_obrigatoria: ['ruim', 'A turma precisa pertencer a uma oficina.'],
+  vagas_negativas: ['ruim', 'O número de vagas não pode ser negativo.'],
+  data_invalida: ['ruim', 'Data de início inválida. Use o seletor de data ou deixe em branco.'],
+  chave_desconhecida: ['ruim', 'Esse texto não existe no cadastro.'],
+  colecao_invalida: ['ruim', 'Tipo de imagem não reconhecido.'],
+  sem_arquivo: ['ruim', 'Nenhum arquivo foi enviado.'],
+  status_invalido: ['ruim', 'Situação inválida.'],
+  formulario_ilegivel: ['ruim', 'O formulário não pôde ser lido. Tente de novo.'],
+  tem_inscricoes: ['ruim', 'Não dá para apagar: já existem inscrições. Encerre a turma no lugar.'],
+  vinculada: ['ruim', 'Não dá para apagar: ela ainda conduz alguma oficina.'],
+  tipo_nao_aceito: ['ruim', 'Envie uma imagem JPG, PNG, WebP ou AVIF.'],
+  grande_demais: ['ruim', 'Imagem grande demais.'],
+  sem_kv: ['ruim', 'Armazenamento de imagens indisponível.'],
+  sem_banco: ['ruim', 'Banco de dados indisponível.'],
+  erro_interno: ['ruim', 'Algo falhou ao salvar. Nada foi perdido — tente de novo.'],
+  acao_desconhecida: ['ruim', 'Ação não reconhecida.'],
+};
+
+const recado = RECADOS[Astro.url.searchParams.get('m')] ?? null;
+
+const MENU = [
+  ['/admin', 'Resumo'],
+  ['/admin/inscricoes', 'Inscrições'],
+  ['/admin/oficinas', 'Oficinas'],
+  ['/admin/equipe', 'Equipe'],
+  ['/admin/paginas', 'Páginas'],
+];
+---
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{titulo} · Painel da Arcádia</title>
+    <link rel="icon" href="/simbolo.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <header class="topo">
+      <div class="dentro">
+        <a class="marca" href="/admin">Painel da Arcádia</a>
+        <nav>
+          {MENU.map(([href, rotulo]) => (
+            <a href={href} class:list={[{ ativo: atual === href }]}>{rotulo}</a>
+          ))}
+        </nav>
+        <div class="quem">
+          {usuario?.email && <span>{usuario.email}</span>}
+          <a href="/" target="_blank" rel="noopener">Ver o site ↗</a>
+        </div>
+      </div>
+    </header>
+
+    {usuario && !usuario.verificado && (
+      <div class="alerta">
+        <strong>Proteção parcial.</strong> O painel está confiando apenas no
+        cabeçalho do Cloudflare Access, sem conferir a assinatura do token.
+        Definir <code>ACCESS_TEAM</code> e <code>ACCESS_AUD</code> nas variáveis
+        do projeto antes do lançamento.
+      </div>
+    )}
+
+    <main>
+      <div class="dentro">
+        <h1>{titulo}</h1>
+        {recado && (
+          <p class:list={['recado', recado[0]]} role="status">{recado[1]}</p>
+        )}
+        <slot />
+      </div>
+    </main>
+
+    <style is:global>
+      body {
+        margin: 0;
+        background: #f7f5f1;
+        color: var(--tinta, #2b2b2b);
+        font-family: var(--fonte-corpo, system-ui, sans-serif);
+        font-size: 15px;
+      }
+      .dentro { max-width: 1100px; margin: 0 auto; padding: 0 1.25rem; }
+
+      .topo { background: #2b2521; color: #f4efe7; }
+      .topo .dentro {
+        display: flex; align-items: center; gap: 1.5rem;
+        min-height: 56px; flex-wrap: wrap;
+      }
+      .marca { color: #f4efe7; font-weight: 600; text-decoration: none; }
+      .topo nav { display: flex; gap: 1rem; flex: 1; flex-wrap: wrap; }
+      .topo nav a {
+        color: #cdc3b6; text-decoration: none; padding: 4px 0;
+        border-bottom: 2px solid transparent; font-size: 0.9rem;
+      }
+      .topo nav a:hover { color: #fff; }
+      .topo nav a.ativo { color: #fff; border-bottom-color: #b8552f; }
+      .quem { display: flex; gap: 1rem; align-items: center; font-size: 0.8rem; color: #a89b8c; }
+      .quem a { color: #a89b8c; }
+
+      .alerta {
+        background: #fdf3d6; border-bottom: 1px solid #e6d5a8;
+        padding: 0.6rem 1.25rem; font-size: 0.85rem; text-align: center;
+      }
+      .alerta code { background: #f3e6c2; padding: 1px 4px; border-radius: 3px; }
+
+      main { padding: 1.75rem 0 5rem; }
+      h1 { font-size: 1.5rem; margin: 0 0 1.25rem; }
+      h2 { font-size: 1.1rem; margin: 2rem 0 0.75rem; }
+
+      .recado {
+        padding: 0.6rem 0.9rem; border-radius: 6px; margin: 0 0 1.25rem;
+        border-left: 3px solid; font-size: 0.9rem;
+      }
+      .recado.bom  { background: #eaf3ec; border-color: #4a7c59; }
+      .recado.ruim { background: #fbeae6; border-color: #a3432f; }
+
+      .cartao {
+        background: #fff; border: 1px solid #e4ded4; border-radius: 8px;
+        padding: 1.25rem; margin-bottom: 1.25rem;
+      }
+
+      table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+      th, td { text-align: left; padding: 0.55rem 0.6rem; border-bottom: 1px solid #eae4da; }
+      th { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #8a7f72; }
+      tbody tr:hover { background: #faf8f5; }
+
+      label { display: block; margin-bottom: 0.85rem; font-size: 0.85rem; color: #6b6259; }
+      label > span.obrigatorio { color: #a3432f; }
+      input[type=text], input[type=email], input[type=tel], input[type=number],
+      input[type=date], input[type=search], textarea, select {
+        width: 100%; box-sizing: border-box; margin-top: 0.25rem;
+        padding: 0.5rem 0.6rem; border: 1px solid #d5cec3; border-radius: 5px;
+        font: inherit; background: #fff; color: var(--tinta, #2b2b2b);
+      }
+      textarea { min-height: 7rem; resize: vertical; line-height: 1.5; }
+      .ajuda { display: block; margin-top: 0.2rem; font-size: 0.75rem; color: #8a7f72; }
+
+      button, .botao {
+        font: inherit; cursor: pointer; border: 0; border-radius: 5px;
+        padding: 0.5rem 1rem; background: #b8552f; color: #fff; text-decoration: none;
+        display: inline-block;
+      }
+      button:hover, .botao:hover { background: #9d4526; }
+      button.discreto, .botao.discreto { background: #ece7df; color: #4a423a; }
+      button.discreto:hover, .botao.discreto:hover { background: #e0d9cf; }
+      button.perigo { background: #8c3823; }
+
+      .linha { display: flex; gap: 0.9rem; flex-wrap: wrap; align-items: flex-end; }
+      .linha > * { flex: 1; min-width: 8rem; }
+      .acoes { display: flex; gap: 0.5rem; align-items: center; margin-top: 0.5rem; }
+      form.embutido { display: inline; }
+
+      .selo {
+        display: inline-block; padding: 2px 8px; border-radius: 999px;
+        font-size: 0.72rem; background: #ece7df; color: #4a423a; white-space: nowrap;
+      }
+      .selo.aberta { background: #dcecdf; color: #2f5c3c; }
+      .selo.rascunho { background: #f3e4d8; color: #8a4a24; }
+      .selo.encerrada { background: #e8e4de; color: #6b6259; }
+
+      .vazio { color: #8a7f72; font-style: italic; padding: 1.5rem 0; }
+      a { color: #b8552f; }
+    </style>
+  </body>
+</html>
