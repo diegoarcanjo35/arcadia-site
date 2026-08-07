@@ -12,6 +12,59 @@ if (!oficina) return Astro.redirect('/oficinas', 302);
 const turma = oficina.turmaAberta;
 const aberta = Boolean(turma);
 
+// E-mail de resgate: aparece sempre que a gravação falhou, para que ninguém
+// que tenha se dado ao trabalho de preencher saia sem um caminho.
+const EMAIL_CLINICA = 'wanda@meyermattos.com.br';
+
+/**
+ * Resultado do POST em /api/inscricao, devolvido como `?r=`.
+ *
+ * O texto mora aqui, e não no endpoint, de propósito: a API decide o que
+ * aconteceu, a página decide como contar. Trocar uma palavra não exige mexer
+ * em nada que grave dado.
+ */
+const RESULTADOS = {
+  ok: {
+    tom: 'bom',
+    titulo: 'Inscrição recebida.',
+    texto: 'A Arcádia entra em contato pelo e-mail informado para confirmar os detalhes.',
+  },
+  espera: {
+    tom: 'bom',
+    titulo: 'Você entrou na lista de espera.',
+    texto: 'Esta turma já preencheu as vagas. Avisamos assim que abrir uma vaga ou uma nova turma.',
+  },
+  interesse: {
+    tom: 'bom',
+    titulo: 'Contato registrado.',
+    texto: 'Avisamos você assim que a próxima turma desta oficina for marcada.',
+  },
+  duplicada: {
+    tom: 'aviso',
+    titulo: 'Este e-mail já está registrado.',
+    texto: 'Não foi preciso enviar de novo — seu contato já está com a gente.',
+  },
+  consentimento: {
+    tom: 'aviso',
+    titulo: 'Falta o aceite da Política de Privacidade.',
+    texto: 'Sem esse aceite não podemos guardar seu contato. Basta marcar a caixa e enviar de novo.',
+  },
+  nome: { tom: 'aviso', titulo: 'Confira o nome.', texto: 'Precisamos do nome para saber com quem falamos.' },
+  email: { tom: 'aviso', titulo: 'Confira o e-mail.', texto: 'O endereço informado parece incompleto.' },
+  indisponivel: {
+    tom: 'ruim',
+    titulo: 'Não conseguimos registrar agora.',
+    texto: `Foi uma falha nossa, não sua. Escreva para ${EMAIL_CLINICA} que respondemos.`,
+  },
+  erro: {
+    tom: 'ruim',
+    titulo: 'Algo deu errado no envio.',
+    texto: `Tente novamente em instantes ou escreva para ${EMAIL_CLINICA}.`,
+  },
+};
+
+const resultado = RESULTADOS[Astro.url.searchParams.get('r')] ?? null;
+
 // Dados estruturados de evento — é o que faz o Google destacar oficinas
 // nos resultados. Não existia nada disso no site anterior.
 const jsonLd = {
@@ -81,7 +134,14 @@ const jsonLd = {
     </article>
 
     <aside>
-      <div class="caixa">
+      <div class="caixa" id="inscricao">
+        {resultado && (
+          <div class:list={['resultado', resultado.tom]} role="status" tabindex="-1">
+            <strong>{resultado.titulo}</strong>
+            <p>{resultado.texto}</p>
+          </div>
+        )}
+
         {turma ? (
           <>
             <h2>Inscrição</h2>
@@ -97,6 +157,16 @@ const jsonLd = {
 
             <form method="POST" action="/api/inscricao">
               <input type="hidden" name="turma_id" value={turma.id} />
+              <input type="hidden" name="slug" value={oficina.slug} />
+
+              {/* Honeypot: invisível para gente, irresistível para robô.
+                  Fora da ordem de tabulação e escondido dos leitores de tela,
+                  para não atrapalhar quem navega por teclado ou áudio. */}
+              <div class="armadilha" aria-hidden="true">
+                <label>Não preencha este campo
+                  <input type="text" name="confirme_nao_preencher" tabindex="-1" autocomplete="off" />
+                </label>
+              </div>
 
               <label>Nome<input type="text" name="nome" required autocomplete="name" /></label>
               <label>E-mail<input type="email" name="email" required autocomplete="email" /></label>
@@ -127,10 +197,24 @@ const jsonLd = {
               Não há turma aberta desta oficina no momento. Deixe seu contato e
               avisamos quando abrir a próxima.
             </p>
+            {/* Manda `oficina_id`, não `turma_id`.
+                Antes apontava para a turma mais recente — que aqui está sempre
+                encerrada — e, se a oficina não tivesse turma nenhuma, ia vazio
+                e o contato se perdia sem aviso. Quem preenche isto quer a
+                PRÓXIMA turma, que ainda não existe: o vínculo certo é com a
+                oficina. Ver migração 0003. */}
             <form method="POST" action="/api/inscricao">
-              <input type="hidden" name="turma_id" value={oficina.turmas?.[0]?.id} />
-              <label>Nome<input type="text" name="nome" required /></label>
-              <label>E-mail<input type="email" name="email" required /></label>
+              <input type="hidden" name="oficina_id" value={oficina.id} />
+              <input type="hidden" name="slug" value={oficina.slug} />
+
+              <div class="armadilha" aria-hidden="true">
+                <label>Não preencha este campo
+                  <input type="text" name="confirme_nao_preencher" tabindex="-1" autocomplete="off" />
+                </label>
+              </div>
+
+              <label>Nome<input type="text" name="nome" required autocomplete="name" /></label>
+              <label>E-mail<input type="email" name="email" required autocomplete="email" /></label>
               <label class="aceite">
                 <input type="checkbox" name="consentimento" value="1" required />
                 <span>Concordo com a <a href="/politica-de-privacidade">Política de Privacidade</a>.</span>
@@ -205,6 +289,29 @@ const jsonLd = {
   .caixa h2 { font-size: var(--t-lg); margin: 0 0 var(--e-2); }
 
   dl { display: grid; grid-template-columns: minmax(0,auto) minmax(0,1fr); gap: 0.4rem var(--e-1); margin: 0 0 var(--e-3); align-items: baseline; }
+  /* Fora da tela, mas ainda preenchível por robô — que é o ponto.
+     `display:none` seria detectado por boa parte deles. */
+  .armadilha {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .resultado {
+    border-radius: var(--raio);
+    padding: var(--e-2) var(--e-3);
+    margin-bottom: var(--e-3);
+    border-left: 3px solid var(--terracota);
+    background: var(--creme-suave);
+  }
+  .resultado strong { display: block; margin-bottom: 0.25rem; }
+  .resultado p { margin: 0; font-size: var(--t-sm); color: var(--corpo); }
+  .resultado.bom { border-left-color: #4a7c59; }
+  .resultado.aviso { border-left-color: var(--ocre); }
+  .resultado.ruim { border-left-color: #a3432f; }
+
   dt { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--apagado); }
   dd { margin: 0; font-size: var(--t-sm); color: var(--tinta); text-align: right; white-space: nowrap; }
 
