@@ -1,0 +1,12 @@
+# Site em construcao — indexacao bloqueada ate o lancamento.
+#
+# Motivo: enquanto o site roda em endereco de demonstracao, o canonical de
+# cada pagina aponta para arcadiapsicologia.com.br, que ainda serve o site
+# antigo. Deixar o Google indexar as duas coisas ao mesmo tempo suja o
+# resultado de busca bem na hora errada.
+#
+# ATENCAO: liberar este arquivo antes de publicar em producao, senao o site
+# novo nasce invisivel no Google.
+
+User-agent: *
+Disallow: /
