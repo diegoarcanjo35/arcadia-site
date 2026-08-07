@@ -49,7 +49,6 @@ await rm(path.join(worker, 'wrangler.json'), { force: true });
 
 // 3. _routes.json: tudo passa pelo worker, exceto o que é puramente estático.
 //    Sem isto, cada requisição a uma fonte ou imagem invocaria o worker à toa
-//    e consumiria cota do plano gratuito sem necessidade.
 const rotas = {
   version: 1,
   include: ['/*'],
@@ -69,3 +68,11 @@ await writeFile(path.join(raiz, '_routes.json'), JSON.stringify(rotas, null, 2))
 const itens = await readdir(raiz);
 console.log('[pages-build] dist/ reempacotado para o formato Pages');
 console.log('[pages-build] raiz:', itens.join(', '));
+
+// O adapter tambem grava .wrangler/deploy/config.json, um ponteiro para
+// dist/server/wrangler.json. Como acabamos de mover dist/server, esse ponteiro
+// fica orfao e o passo de deploy do Pages falha com:
+//   "the redirected configuration path it points to ... does not exist"
+// Remover o ponteiro e o que faz o Pages publicar os arquivos direto,
+// sem tentar interpretar o projeto como um Worker.
+await rm(path.resolve('.wrangler', 'deploy'), { recursive: true, force: true });
