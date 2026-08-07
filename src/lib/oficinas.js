@@ -101,48 +101,98 @@ export async function listarSlugs(db) {
 }
 
 /**
- * Registra inscrição ou entrada na lista de espera.
- * Se a turma estiver lotada, converte automaticamente em lista de espera —
- * ninguém é rejeitado sem deixar contato.
+ * Registra inscrição, lista de espera ou interesse.
+ *
+ * Três caminhos, nesta ordem de preferência:
+ *   turma aberta com vaga      -> 'inscricao'
+ *   turma lotada ou fechada    -> 'lista_espera'
+ *   oficina sem turma marcada  -> 'interesse'
+ *
+ * Ninguém é rejeitado sem deixar contato: o pior desfecho possível para quem
+ * preencheu o formulário é entrar numa lista, nunca ver o dado sumir.
+ *
+ * Recebe `turmaId` OU `oficinaId`. Quando os dois vêm, a turma manda.
  */
-export async function registrarInscricao(db, { turmaId, nome, email, telefone, consentimento, origem }) {
+export async function registrarInscricao(
+  db,
+  { turmaId, oficinaId, nome, email, telefone, consentimento, origem }
+) {
   if (!consentimento) {
     return { ok: false, erro: 'consentimento_ausente' };
   }
 
-  const turma = await db
-    .prepare(
-      `SELECT t.*, o.nome AS oficina_nome, o.slug AS oficina_slug,
-              (SELECT COUNT(*) FROM inscricoes i
-                WHERE i.turma_id = t.id AND i.tipo = 'inscricao'
-                  AND i.status <> 'cancelada') AS inscritos
-         FROM turmas t JOIN oficinas o ON o.id = t.oficina_id
-        WHERE t.id = ?`
-    )
-    .bind(turmaId)
-    .first();
+  const emailLimpo = email.trim().toLowerCase();
+  const nomeLimpo = nome.trim();
+  const telLimpo = telefone?.trim() || null;
 
-  if (!turma) return { ok: false, erro: 'turma_inexistente' };
-
-  const lotada = turma.vagas_total != null && turma.inscritos >= turma.vagas_total;
-  const aberta = STATUS_ABERTOS.includes(turma.status);
-  const tipo = !aberta || lotada ? 'lista_espera' : 'inscricao';
-
-  try {
-    await db
+  // ---------------------------------------------------------- turma concreta
+  if (turmaId) {
+    const turma = await db
       .prepare(
-        `INSERT INTO inscricoes (turma_id, nome, email, telefone, tipo, consentimento, origem)
-         VALUES (?, ?, ?, ?, ?, 1, ?)`
+        `SELECT t.*, o.nome AS oficina_nome, o.slug AS oficina_slug,
+                (SELECT COUNT(*) FROM inscricoes i
+                  WHERE i.turma_id = t.id AND i.tipo = 'inscricao'
+                    AND i.status <> 'cancelada') AS inscritos
+           FROM turmas t JOIN oficinas o ON o.id = t.oficina_id
+          WHERE t.id = ?`
       )
-      .bind(turmaId, nome.trim(), email.trim().toLowerCase(), telefone?.trim() || null, tipo, origem || 'site')
-      .run();
-  } catch (e) {
-    // índice único (turma_id, email)
-    if (String(e).includes('UNIQUE')) return { ok: false, erro: 'ja_inscrita', turma };
-    throw e;
+      .bind(turmaId)
+      .first();
+
+    if (!turma) return { ok: false, erro: 'turma_inexistente' };
+
+    const lotada = turma.vagas_total != null && turma.inscritos >= turma.vagas_total;
+    const aberta = STATUS_ABERTOS.includes(turma.status);
+    const tipo = !aberta || lotada ? 'lista_espera' : 'inscricao';
+
+    try {
+      await db
+        .prepare(
+          `INSERT INTO inscricoes (turma_id, oficina_id, nome, email, telefone, tipo, consentimento, origem)
+           VALUES (?, NULL, ?, ?, ?, ?, 1, ?)`
+        )
+        .bind(turmaId, nomeLimpo, emailLimpo, telLimpo, tipo, origem || 'site')
+        .run();
+    } catch (e) {
+      // índice único parcial (turma_id, email)
+      if (String(e).includes('UNIQUE')) {
+        return { ok: false, erro: 'ja_inscrita', turma, slug: turma.oficina_slug };
+      }
+      throw e;
+    }
+
+    return { ok: true, tipo, turma, slug: turma.oficina_slug };
   }
 
-  return { ok: true, tipo, turma };
+  // ------------------------------------------- oficina ainda sem turma
+  if (oficinaId) {
+    const oficina = await db
+      .prepare(`SELECT id, nome, slug FROM oficinas WHERE id = ? AND publicada = 1`)
+      .bind(oficinaId)
+      .first();
+
+    if (!oficina) return { ok: false, erro: 'oficina_inexistente' };
+
+    try {
+      await db
+        .prepare(
+          `INSERT INTO inscricoes (turma_id, oficina_id, nome, email, telefone, tipo, consentimento, origem)
+           VALUES (NULL, ?, ?, ?, ?, 'interesse', 1, ?)`
+        )
+        .bind(oficina.id, nomeLimpo, emailLimpo, telLimpo, origem || 'site')
+        .run();
+    } catch (e) {
+      // índice único parcial (oficina_id, email) quando turma_id é nulo
+      if (String(e).includes('UNIQUE')) {
+        return { ok: false, erro: 'ja_inscrita', oficina, slug: oficina.slug };
+      }
+      throw e;
+    }
+
+    return { ok: true, tipo: 'interesse', oficina, slug: oficina.slug };
+  }
+
+  return { ok: false, erro: 'destino_ausente' };
 }
 
 /** Equipe publicada, na ordem definida no painel. */

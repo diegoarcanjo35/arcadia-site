@@ -53,6 +53,20 @@ export async function listarFacilitadoras() {
   return EXEMPLO.equipe;
 }
 
+/**
+ * Grava uma inscrição.
+ *
+ * Diferente das funções de leitura, esta NÃO tem fallback de exemplo: gravar
+ * em lugar nenhum e responder "deu certo" seria mentir para quem preencheu o
+ * formulário. Sem banco, devolve erro para que a página ofereça o e-mail da
+ * clínica como alternativa.
+ */
+export async function registrarInscricao(dados) {
+  const db = await pegarDB();
+  if (!db) return { ok: false, erro: 'sem_banco' };
+  return q.registrarInscricao(db, dados);
+}
+
 /** Verdadeiro quando a página está mostrando dados de exemplo, não o banco. */
 export async function usandoExemplo() {
   return (await pegarDB()) === null;
