@@ -10,6 +10,14 @@ const abertas = todas.filter((o) => ['inscricoes_abertas', 'ultimas_vagas'].incl
 const emBreve = todas.filter((o) => o.status === 'em_breve');
 // Turmas encerradas continuam visíveis: o histórico segue gerando busca orgânica.
 const anteriores = todas.filter((o) => ['encerrada', 'realizada'].includes(o.status));
+
+// Oficina publicada que ainda não teve nenhuma turma marcada. Sem este grupo
+// ela sumia do índice: os filtros acima olham o status da TURMA, e quem não tem
+// turma fica com status nulo, caindo fora de todos eles. O defeito só apareceu
+// quando entrou o catálogo real, em que a maioria das oficinas ainda não tem
+// data. A página da oficina existe e traz o formulário de aviso da próxima
+// turma — o que faltava era um caminho até ela.
+const semTurma = todas.filter((o) => !o.status);
 ---
 <Base
   titulo="Oficinas"
@@ -38,6 +46,17 @@ const anteriores = todas.filter((o) => ['encerrada', 'realizada'].includes(o.sta
       <section>
         <h2>Próximas turmas</h2>
         <div class="grade">{emBreve.map((o) => <CardOficina oficina={o} />)}</div>
+      </section>
+    )}
+
+    {semTurma.length > 0 && (
+      <section>
+        <h2>Também oferecemos</h2>
+        <p class="nota">
+          Estas oficinas ainda não têm turma marcada. Deixe seu contato na
+          página de cada uma e avisamos quando a próxima abrir.
+        </p>
+        <div class="grade">{semTurma.map((o) => <CardOficina oficina={o} />)}</div>
       </section>
     )}
 
