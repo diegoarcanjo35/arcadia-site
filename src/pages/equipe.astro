@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import AguardandoConteudo from '../components/AguardandoConteudo.astro';
 import { listarFacilitadoras } from '../lib/dados.js';
+import { retratoDe } from '../lib/artes.js';
 
 export const prerender = false;
 
@@ -27,8 +28,8 @@ const equipe = await listarFacilitadoras();
         {equipe.map((p) => (
           <li class="pessoa">
             <div class="foto">
-              {p.foto_key
-                ? <img src={`/midia/${p.foto_key}?v=card`} alt={`Retrato de ${p.nome}`} loading="lazy" />
+              {retratoDe(p)
+                ? <img src={retratoDe(p)} alt={`Retrato de ${p.nome}`} loading="lazy" decoding="async" />
                 : <div class="sem-foto" aria-hidden="true"><img src="/simbolo.svg" alt="" /></div>}
             </div>
             <div class="dados">

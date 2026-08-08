@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import { buscarOficina } from '../../lib/dados.js';
 import { ROTULO_STATUS, formatarData } from '../../lib/oficinas.js';
+import { arteDaOficina } from '../../lib/artes.js';
 
 export const prerender = false;
 
@@ -11,6 +12,11 @@ if (!oficina) return Astro.redirect('/oficinas', 302);
 
 const turma = oficina.turmaAberta;
 const aberta = Boolean(turma);
+
+// A arte também aparece aqui, e não só no card do índice. No site anterior ela
+// abria a página da oficina, e é ela que dá a entender do que se trata antes de
+// qualquer parágrafo ser lido.
+const arte = arteDaOficina(oficina);
 
 // E-mail de resgate: aparece sempre que a gravação falhou, para que ninguém
 // que tenha se dado ao trabalho de preencher saia sem um caminho.
@@ -98,6 +104,15 @@ const jsonLd = {
 
   <div class="colunas">
     <article class="texto">
+      {arte && (
+        <figure class="arte">
+          {/* Sem legenda de propósito: a imagem é da própria oficina, e uma
+              legenda repetindo o título só acrescentaria ruído. A descrição
+              vive no alt, onde serve a quem usa leitor de tela. */}
+          <img src={arte.src} alt={arte.alt} width={arte.l} height={arte.a} fetchpriority="high" decoding="async" />
+        </figure>
+      )}
+
       <p class="resumo">{oficina.resumo}</p>
 
       <h2>Sobre a oficina</h2>
@@ -257,6 +272,23 @@ const jsonLd = {
     align-items: start;
   }
   .texto { max-width: var(--medida); }
+
+  /* A arte fica contida em 360px em vez de ocupar a coluna inteira: quase todas
+     são retratos 3:4, e em largura cheia empurrariam o texto para baixo da
+     dobra. `height: auto` deixa a proporção seguir o arquivo — os atributos
+     width/height do <img> existem só para reservar espaço, não para deformar. */
+  .arte {
+    margin: 0 0 var(--e-3);
+    max-width: 360px;
+  }
+  .arte img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: var(--raio);
+    background: var(--creme);
+  }
+
   .resumo { font-size: var(--t-lg); color: var(--tinta); }
   .texto h2 {
     font-size: var(--t-xl);

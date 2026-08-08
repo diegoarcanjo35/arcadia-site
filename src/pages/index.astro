@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import CardOficina from '../components/CardOficina.astro';
+import CapaVideo from '../components/CapaVideo.astro';
 import { listarOficinas } from '../lib/dados.js';
 
 export const prerender = false;
@@ -14,6 +15,7 @@ const destaque = abertas.slice(0, 3);
   descricao="Clínica de psicologia com atendimento clínico, oficinas terapêuticas e produção editorial."
 >
   <section class="capa">
+    <CapaVideo />
     <div class="dentro">
       <p class="sobre">Clínica de psicologia</p>
       <h1>Um espaço para escutar o que ainda não tem nome.</h1>
@@ -25,9 +27,6 @@ const destaque = abertas.slice(0, 3);
         <a class="botao" href="/oficinas">Ver oficinas</a>
         <a class="botao vazado" href="/contato">Falar com a Arcádia</a>
       </div>
-    </div>
-    <div class="arcos" aria-hidden="true">
-      <img src="/simbolo.svg" alt="" />
     </div>
   </section>
 
@@ -62,10 +61,15 @@ const destaque = abertas.slice(0, 3);
 </Base>
 
 <style>
+  /* O topo passa a ser escuro, sobre o video dos arcos — como no site
+     anterior. As cores do texto invertem junto; o resto da pagina segue claro. */
   .capa {
-    background: var(--creme);
+    background: var(--tinta);
     position: relative;
     overflow: hidden;
+    min-height: 78vh;
+    display: flex;
+    align-items: center;
   }
   .dentro {
     max-width: 1120px;
@@ -73,12 +77,13 @@ const destaque = abertas.slice(0, 3);
     padding: var(--e-6) var(--e-3);
     position: relative;
     z-index: 2;
+    width: 100%;
   }
   .sobre {
     text-transform: uppercase;
     letter-spacing: 0.16em;
     font-size: var(--t-xs);
-    color: var(--terracota);
+    color: var(--ocre);
     margin: 0 0 var(--e-2);
     font-weight: 600;
   }
@@ -86,24 +91,23 @@ const destaque = abertas.slice(0, 3);
     font-size: var(--t-3xl);
     margin: 0 0 var(--e-2);
     max-width: 18ch;
+    color: var(--creme);
   }
   .chamada {
     max-width: 52ch;
     font-size: var(--t-lg);
-    color: var(--corpo);
+    color: #e8ded0;
     margin: 0 0 var(--e-3);
   }
   .acoes { display: flex; gap: var(--e-2); flex-wrap: wrap; }
+  /* Sobre fundo escuro o botao vazado precisa da propria borda clara,
+     senao some. */
+  .capa .botao.vazado { border-color: var(--creme); color: var(--creme); }
+  .capa .botao.vazado:hover { background: var(--creme); color: var(--tinta); }
 
-  .arcos {
-    position: absolute;
-    right: -60px;
-    top: 50%;
-    transform: translateY(-50%);
-    opacity: 0.09;
-    z-index: 1;
+  @media (max-width: 900px) {
+    .capa { min-height: 60vh; }
   }
-  .arcos img { width: 420px; height: auto; }
 
   .secao {
     max-width: 1120px;
@@ -145,7 +149,6 @@ const destaque = abertas.slice(0, 3);
 
   @media (max-width: 720px) {
     h1 { font-size: var(--t-2xl); }
-    .arcos { display: none; }
     .dentro { padding: var(--e-5) var(--e-3); }
   }
 </style>

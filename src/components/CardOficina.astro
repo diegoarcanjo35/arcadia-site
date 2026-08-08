@@ -1,13 +1,15 @@
 ---
 import { ROTULO_STATUS, formatarData } from '../lib/oficinas.js';
+import { arteDaOficina } from '../lib/artes.js';
 const { oficina } = Astro.props;
 const aberta = ['inscricoes_abertas', 'ultimas_vagas'].includes(oficina.status);
+const arte = arteDaOficina(oficina);
 ---
 <article class:list={['card', { aberta }]}>
   <a href={`/oficinas/${oficina.slug}`}>
     <div class="arte">
-      {oficina.arte_key
-        ? <img src={`/midia/${oficina.arte_key}?v=card`} alt={oficina.arte_alt || ''} loading="lazy" />
+      {arte
+        ? <img src={arte.src} alt={arte.alt} loading="lazy" decoding="async" />
         : <div class="sem-arte" aria-hidden="true"><img src="/simbolo.svg" alt="" /></div>}
       {oficina.status && (
         <span class:list={['selo', oficina.status]}>{ROTULO_STATUS[oficina.status]}</span>

@@ -1,0 +1,123 @@
+---
+/**
+ * Topo da home com o vídeo dos arcos ao fundo.
+ *
+ * O site anterior abria com esse vídeo, e a clínica pediu a cena de volta.
+ * Ela volta — com quatro diferenças que o visitante não percebe:
+ *
+ *  1. O original era um vídeo de celular, VERTICAL (480x848) e com áudio, de
+ *     2,71 MB. Numa faixa larga como esta, mais da metade da imagem nunca
+ *     aparecia: o navegador baixava tudo e descartava. Aqui o arquivo já vem
+ *     recortado no que de fato se vê, sem áudio, em 263 KB.
+ *  2. Em tela menor que 900px o vídeo não é requisitado. Entra uma foto de
+ *     55 KB, com o recorte vertical — o mesmo que o vídeo tem na origem —
+ *     porque a faixa larga ficaria mal cortada num celular em pé.
+ *  3. `preload="none"` até o script decidir que vale carregar, para o vídeo
+ *     nunca competir com o texto pela banda.
+ *  4. Respeita `prefers-reduced-motion`: quem pediu menos animação fica com o
+ *     quadro parado. Movimento de fundo em tela cheia é gatilho conhecido de
+ *     desconforto vestibular, e isto aqui é site de clínica.
+ *
+ * A foto vem num <picture> com `media`, e não em dois <img> com `display:none`,
+ * porque esconder por CSS não impede o download — o navegador busca os dois e
+ * descarta um. Com <picture>, ele pede exatamente um.
+ *
+ * O <video> não tem `poster` pelo mesmo motivo: o atributo dispara download
+ * mesmo com o elemento oculto. Quem faz o papel de poster é a própria foto,
+ * atrás; o vídeo aparece por cima só depois que começa a tocar.
+ *
+ * Sem som e sem controles, de propósito: é cenário, não conteúdo. Por isso
+ * também fica marcado como decorativo — descrever "arcos de pedra" a cada
+ * visita não ajuda quem usa leitor de tela.
+ */
+const {
+  video = '/capa-arcos.mp4',
+  poster = '/capa-arcos.jpg',
+  posterVertical = '/capa-arcos-vertical.jpg',
+} = Astro.props;
+---
+<div class="fundo" aria-hidden="true">
+  <picture>
+    <source media="(min-width: 900px)" srcset={poster} />
+    <img class="foto" src={posterVertical} alt="" width="720" height="990" fetchpriority="high" />
+  </picture>
+
+  <video
+    class="video"
+    preload="none"
+    muted
+    loop
+    playsinline
+    disablepictureinpicture
+    tabindex="-1"
+    data-capa
+  >
+    <source src={video} type="video/mp4" />
+  </video>
+
+  <div class="veu"></div>
+</div>
+
+<script>
+  const v = document.querySelector('[data-capa]');
+  if (v) {
+    // O vídeo só entra quando: a tela é grande, a pessoa não pediu menos
+    // movimento, e a conexão não está declarada como econômica.
+    const telaGrande = window.matchMedia('(min-width: 900px)').matches;
+    const querMovimento = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const conexao = navigator.connection;
+    const redeFolgada = !conexao || (!conexao.saveData && !/2g/.test(conexao.effectiveType || ''));
+
+    if (telaGrande && querMovimento && redeFolgada) {
+      // Só revela o vídeo quando ele de fato começa a tocar. Antes disso quem
+      // está na tela é a foto — assim não existe piscada entre uma coisa e outra.
+      v.addEventListener('playing', () => v.classList.add('tocando'), { once: true });
+      v.preload = 'auto';
+      v.play().catch(() => {
+        /* Autoplay bloqueado: fica a foto, que já é a mesma cena. Nada quebra
+           e nada precisa ser dito ao visitante. */
+      });
+    }
+  }
+</script>
+
+<style>
+  .fundo {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    background: var(--tinta);
+  }
+  .foto,
+  .video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .video {
+    opacity: 0;
+    transition: opacity 600ms ease;
+  }
+  .video.tocando { opacity: 1; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .video { transition: none; }
+  }
+
+  /* Véu escuro: sem ele o texto perde contraste sobre as áreas claras da
+     pedra, e contraste aqui não é gosto — é legibilidade. */
+  .veu {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      100deg,
+      rgba(24, 16, 11, 0.88) 0%,
+      rgba(24, 16, 11, 0.74) 45%,
+      rgba(24, 16, 11, 0.5) 100%
+    );
+  }
+</style>
