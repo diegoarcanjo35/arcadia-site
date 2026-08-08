@@ -1,0 +1,74 @@
+---
+import Admin from '../../../layouts/Admin.astro';
+import { listarArtigosAdmin, formatarDataArtigo } from '../../../lib/artigos.js';
+import { pegarDB } from '../../../lib/env.js';
+
+export const prerender = false;
+
+const db = await pegarDB();
+let artigos = [];
+if (db) {
+  try {
+    artigos = await listarArtigosAdmin(db);
+  } catch {
+    // Migração 0005 ainda não aplicada. Lista vazia e o aviso abaixo explica.
+    artigos = null;
+  }
+}
+---
+<Admin titulo="Artigos" atual="/admin/artigos">
+  <p class="acoes" style="margin-bottom:1rem">
+    <a class="botao" href="/admin/artigos/novo">Novo artigo</a>
+  </p>
+
+  {artigos === null ? (
+    <div class="cartao">
+      <p class="vazio">
+        A tabela de artigos ainda não existe no banco. Falta aplicar a migração
+        <code>0005_artigos.sql</code>.
+      </p>
+    </div>
+  ) : (
+    <div class="cartao">
+      {artigos.length === 0 ? (
+        <p class="vazio">Nenhum artigo cadastrado ainda.</p>
+      ) : (
+        <table>
+          <thead>
+            <tr><th>Artigo</th><th>Situação</th><th>Publicado em</th><th></th></tr>
+          </thead>
+          <tbody>
+            {artigos.map((a) => (
+              <tr>
+                <td>
+                  <strong>{a.titulo}</strong>
+                  {a.autor && <><br /><span class="fraco">{a.autor}</span></>}
+                  <br /><span class="fraco">/artigos/{a.slug}</span>
+                </td>
+                <td>
+                  <span class:list={['selo', a.publicado ? 'aberta' : 'rascunho']}>
+                    {a.publicado ? 'publicado' : 'rascunho'}
+                  </span>
+                </td>
+                <td>{formatarDataArtigo(a.publicado_em) ?? <span class="fraco">—</span>}</td>
+                <td><a class="botao discreto" href={`/admin/artigos/${a.id}`}>editar</a></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  )}
+
+  <p class="nota">
+    Artigo em <strong>rascunho</strong> não aparece no site, e o endereço dele
+    devolve quem tentar abrir de volta para a lista. Dá para escrever hoje e
+    publicar semana que vem sem que ninguém veja o meio do caminho.
+  </p>
+</Admin>
+
+<style>
+  .fraco { color: #8a7f72; font-size: 0.82rem; }
+  .nota { font-size: 0.85rem; color: #6b6259; }
+  code { background: #f3f0e7; padding: 1px 5px; border-radius: 3px; }
+</style>

@@ -68,6 +68,15 @@ const ARTES = {
     a: 900,
     alt: 'Caixa vista de cima, organizada com papéis coloridos, tesouras, cola e círculo cromático.',
   },
+  'entre-elas': {
+    src: '/artes/entre-elas.webp',
+    l: 900,
+    a: 900,
+    // Esta é a única das seis que traz texto dentro da imagem — é um cartaz,
+    // não uma fotografia. O alt precisa dizer o que está escrito, senão quem
+    // usa leitor de tela perde a informação que está impressa ali.
+    alt: 'Cartaz da oficina Entre.Elas — Reeditando o feminino, com colagens sobre retratos de Frida Kahlo. Facilitadoras: Tessália Passos e Wanda Meyer.',
+  },
 };
 
 /**

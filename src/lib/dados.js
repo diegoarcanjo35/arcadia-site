@@ -9,6 +9,7 @@
  * O exemplo NUNCA é usado quando existe banco.
  */
 import * as q from './oficinas.js';
+import * as a from './artigos.js';
 import { EXEMPLO } from './exemplo.js';
 import { pegarDB } from './env.js';
 
@@ -84,4 +85,32 @@ export async function buscarConfiguracoes() {
 /** Verdadeiro quando a página está mostrando dados de exemplo, não o banco. */
 export async function usandoExemplo() {
   return (await pegarDB()) === null;
+}
+
+/**
+ * Artigos. Sem conjunto de exemplo: diferente das oficinas, um artigo
+ * inventado é texto que parece ter sido escrito pela clínica. Sem banco, a
+ * lista vem vazia e a página diz honestamente que ainda não há nada.
+ */
+export async function listarArtigos() {
+  const db = await pegarDB();
+  if (!db) return [];
+  try {
+    return await a.listarArtigos(db);
+  } catch {
+    // Tabela ainda não existe (migração 0005 não rodou). A página mostra o
+    // aviso de conteúdo em preparação em vez de estourar um 500 na cara de
+    // quem entrou para ler.
+    return [];
+  }
+}
+
+export async function buscarArtigo(slug) {
+  const db = await pegarDB();
+  if (!db) return null;
+  try {
+    return await a.buscarArtigo(db, slug);
+  } catch {
+    return null;
+  }
 }

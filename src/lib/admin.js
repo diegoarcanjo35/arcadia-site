@@ -437,3 +437,82 @@ export async function resumoPainel(db) {
     )
     .first();
 }
+
+/* ========================================================== artigos ==== */
+
+/**
+ * Grava artigo.
+ *
+ * Duas diferenças em relação a salvarOficina, e as duas são deliberadas:
+ *
+ * 1. A data de publicação é obrigatória quando o artigo vai ao ar. Artigo sem
+ *    data aparece no índice sem referência temporal e desce para o fim da
+ *    ordenação — o leitor não sabe se leu algo de ontem ou de dois anos atrás.
+ *    Rascunho pode ficar sem data; publicado, não.
+ * 2. Data inválida é recusada, nunca virada em NULL silenciosamente. Foi
+ *    exatamente esse o defeito que a turma teve: o campo aceitava qualquer
+ *    coisa, gravava nulo e a tela dizia "salvo". Aqui a pessoa é avisada.
+ */
+export async function salvarArtigo(db, campos) {
+  const titulo = txt(campos.titulo, 200);
+  if (!titulo) return { ok: false, erro: 'titulo_obrigatorio' };
+
+  const corpo = txt(campos.corpo, 60000);
+  if (!corpo) return { ok: false, erro: 'corpo_obrigatorio' };
+
+  const slug = gerarSlug(txt(campos.slug, 80) || titulo);
+  if (!slug) return { ok: false, erro: 'slug_invalido' };
+
+  const bruta = String(campos.publicado_em ?? '').trim();
+  const quando = bruta ? data(bruta) : null;
+  if (bruta && !quando) return { ok: false, erro: 'data_invalida' };
+
+  const publicado = bool(campos.publicado);
+  if (publicado && !quando) return { ok: false, erro: 'data_obrigatoria_para_publicar' };
+
+  const dados = {
+    slug,
+    titulo,
+    resumo: txt(campos.resumo, 400),
+    corpo,
+    autor: txt(campos.autor, 160),
+    publicado_em: quando,
+    publicado,
+  };
+
+  const id = num(campos.id);
+
+  try {
+    if (id) {
+      await db
+        .prepare(
+          `UPDATE artigos SET slug=?, titulo=?, resumo=?, corpo=?, autor=?,
+                  publicado_em=?, publicado=?, atualizado_em=datetime('now')
+            WHERE id=?`
+        )
+        .bind(dados.slug, dados.titulo, dados.resumo, dados.corpo, dados.autor,
+              dados.publicado_em, dados.publicado, id)
+        .run();
+      return { ok: true, id, slug };
+    }
+
+    const r = await db
+      .prepare(
+        `INSERT INTO artigos (slug, titulo, resumo, corpo, autor, publicado_em, publicado)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`
+      )
+      .bind(dados.slug, dados.titulo, dados.resumo, dados.corpo, dados.autor,
+            dados.publicado_em, dados.publicado)
+      .run();
+    return { ok: true, id: r.meta?.last_row_id, slug };
+  } catch (e) {
+    if (String(e).includes('UNIQUE')) return { ok: false, erro: 'slug_repetido' };
+    throw e;
+  }
+}
+
+export async function apagarArtigo(db, id) {
+  if (!id) return { ok: false, erro: 'sem_id' };
+  await db.prepare(`DELETE FROM artigos WHERE id = ?`).bind(id).run();
+  return { ok: true };
+}

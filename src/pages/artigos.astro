@@ -1,24 +1,49 @@
 ---
 import Base from '../layouts/Base.astro';
-import AguardandoConteudo from '../components/AguardandoConteudo.astro';
 import Prosa from '../components/Prosa.astro';
-import { buscarConteudo } from '../lib/dados.js';
+import { buscarConteudo, listarArtigos } from '../lib/dados.js';
+import { formatarDataArtigo } from '../lib/artigos.js';
 
-// Deixou de ser estática: o texto agora vem do banco e a clínica edita pelo
-// painel, sem precisar de mim para trocar uma frase.
 export const prerender = false;
 
+// Duas fontes na mesma página, de propósito: o texto de abertura é editável
+// pelo painel (tabela `conteudos`), e a lista vem da tabela `artigos`. Assim a
+// clínica muda a apresentação da seção sem tocar nos textos, e publica texto
+// novo sem reescrever a apresentação.
 const conteudo = await buscarConteudo('artigos');
 const titulo = conteudo?.titulo || 'Artigos';
+const artigos = await listarArtigos();
 ---
-<Base titulo={titulo} descricao="Textos escritos pela equipe da Arcádia Psicologia.">
+<Base
+  titulo={titulo}
+  descricao="Textos sobre psicologia, cinema e cultura escritos pela equipe da Arcádia Psicologia."
+>
   <div class="topo">
-    <div class="dentro"><h1>{titulo}</h1></div>
+    <div class="dentro">
+      <h1>{titulo}</h1>
+      {conteudo?.corpo && <div class="abertura"><Prosa texto={conteudo.corpo} /></div>}
+    </div>
   </div>
+
   <div class="corpo">
-    {conteudo?.corpo
-      ? <Prosa texto={conteudo.corpo} />
-      : <AguardandoConteudo itens={["migração dos 4 artigos já publicados, com os endereços preservados", "definição de quem escreve e com que frequência"]} />}
+    {artigos.length > 0 ? (
+      <ul class="lista">
+        {artigos.map((a) => (
+          <li>
+            <a href={`/artigos/${a.slug}`}>
+              {a.publicado_em && (
+                <time datetime={a.publicado_em}>{formatarDataArtigo(a.publicado_em)}</time>
+              )}
+              <h2>{a.titulo}</h2>
+              {a.resumo && <p class="resumo">{a.resumo}</p>}
+              {a.autor && <p class="autor">{a.autor}</p>}
+            </a>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p class="vazio">Nenhum artigo publicado no momento.</p>
+    )}
   </div>
 </Base>
 
@@ -26,6 +51,36 @@ const titulo = conteudo?.titulo || 'Artigos';
   .topo { background: var(--creme); border-bottom: 1px solid var(--linha); }
   .dentro { max-width: 1120px; margin: 0 auto; padding: var(--e-5) var(--e-3); }
   h1 { font-size: var(--t-3xl); margin: 0; }
+  .abertura { margin-top: var(--e-2); }
+
   .corpo { max-width: 1120px; margin: 0 auto; padding: var(--e-4) var(--e-3) 0; }
+
+  /* Lista em uma coluna, e não em grade de cards: artigo se escolhe pelo
+     título e pelas primeiras palavras, não por miniatura. Nenhum deles tem
+     imagem própria — no site antigo também não tinham. */
+  .lista { list-style: none; margin: 0; padding: 0; max-width: 72ch; }
+  .lista li { border-bottom: 1px solid var(--linha); }
+  .lista li:first-child { border-top: 1px solid var(--linha); }
+  .lista a {
+    display: block;
+    padding: var(--e-3) 0;
+    text-decoration: none;
+    color: inherit;
+  }
+  .lista a:hover h2 { color: var(--terracota); }
+
+  time {
+    display: block;
+    font-size: var(--t-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--apagado);
+    margin-bottom: 0.3rem;
+  }
+  .lista h2 { font-size: var(--t-xl); margin: 0 0 0.4rem; transition: color 0.15s; }
+  .resumo { margin: 0 0 0.4rem; color: var(--corpo); }
+  .autor { margin: 0; font-size: var(--t-sm); color: var(--terracota); }
+  .vazio { color: var(--apagado); }
+
   @media (max-width: 720px) { h1 { font-size: var(--t-2xl); } }
 </style>

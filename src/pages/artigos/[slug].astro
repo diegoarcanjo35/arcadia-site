@@ -1,0 +1,135 @@
+---
+import Base from '../../layouts/Base.astro';
+import Prosa from '../../components/Prosa.astro';
+import { buscarArtigo, listarArtigos } from '../../lib/dados.js';
+import { formatarDataArtigo, tempoDeLeitura } from '../../lib/artigos.js';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+const artigo = await buscarArtigo(slug);
+
+// Rascunho e slug inexistente caem no mesmo lugar: o índice. Devolver 404 seria
+// mais correto em teoria, mas quem chegou aqui por um link antigo do Google
+// prefere ver a lista de textos a ver uma página de erro. O redirecionamento é
+// 302 — se o artigo voltar a ser publicado amanhã, o endereço volta a valer, e
+// um 301 teria ficado gravado no navegador de quem passou hoje.
+if (!artigo) return Astro.redirect('/artigos', 302);
+
+const data = formatarDataArtigo(artigo.publicado_em);
+const minutos = tempoDeLeitura(artigo.corpo);
+
+const outros = (await listarArtigos()).filter((a) => a.slug !== slug).slice(0, 3);
+
+// Schema.org do artigo. O Google usa isto para mostrar autor e data no
+// resultado de busca — e data visível é o que separa "texto de clínica" de
+// "página institucional" aos olhos dele.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: artigo.titulo,
+  description: artigo.resumo || undefined,
+  datePublished: artigo.publicado_em || undefined,
+  author: artigo.autor ? { '@type': 'Person', name: artigo.autor } : undefined,
+  publisher: { '@type': 'Organization', name: 'Arcádia Psicologia' },
+  mainEntityOfPage: new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href,
+};
+---
+<Base titulo={artigo.titulo} descricao={artigo.resumo || undefined} tipo="article">
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <div class="topo">
+    <div class="dentro">
+      <nav class="trilha" aria-label="Você está em">
+        <a href="/artigos">Artigos</a> <span aria-hidden="true">›</span> <span>{artigo.titulo}</span>
+      </nav>
+      <h1>{artigo.titulo}</h1>
+      <p class="ficha">
+        {artigo.autor && <span>{artigo.autor}</span>}
+        {data && <span><time datetime={artigo.publicado_em}>{data}</time></span>}
+        <span>{minutos} min de leitura</span>
+      </p>
+    </div>
+  </div>
+
+  <article class="corpo">
+    <Prosa texto={artigo.corpo} />
+  </article>
+
+  {outros.length > 0 && (
+    <aside class="mais">
+      <h2>Outros textos</h2>
+      <ul>
+        {outros.map((a) => (
+          <li>
+            <a href={`/artigos/${a.slug}`}>{a.titulo}</a>
+            {a.publicado_em && <span class="quando">{formatarDataArtigo(a.publicado_em)}</span>}
+          </li>
+        ))}
+      </ul>
+    </aside>
+  )}
+</Base>
+
+<style>
+  .topo { background: var(--creme); border-bottom: 1px solid var(--linha); }
+  .dentro { max-width: 1120px; margin: 0 auto; padding: var(--e-5) var(--e-3); }
+
+  .trilha { font-size: var(--t-sm); color: var(--apagado); margin-bottom: var(--e-2); }
+  .trilha a { color: var(--terracota); text-decoration: none; }
+
+  h1 { font-size: var(--t-3xl); margin: 0 0 var(--e-2); max-width: 24ch; }
+
+  /* Autor, data e tempo de leitura numa linha só, separados por ponto médio
+     desenhado em CSS — assim o separador não é lido em voz alta por leitor de
+     tela nem copiado junto quando alguém seleciona o texto. */
+  .ficha {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    margin: 0;
+    font-size: var(--t-sm);
+    color: var(--apagado);
+  }
+  .ficha span + span::before {
+    content: '·';
+    margin-right: 0.9rem;
+    color: var(--linha);
+  }
+
+  /* Coluna de leitura mais estreita que a das outras páginas. Linha longa
+     cansa: 66 caracteres é onde o olho reencontra o começo da linha seguinte
+     sem se perder. */
+  .corpo {
+    max-width: 68ch;
+    margin: 0 auto;
+    padding: var(--e-5) var(--e-3) 0;
+    font-size: var(--t-lg);
+    line-height: 1.75;
+  }
+
+  .mais {
+    max-width: 68ch;
+    margin: var(--e-6) auto 0;
+    padding: 0 var(--e-3);
+  }
+  .mais h2 {
+    font-size: var(--t-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--apagado);
+    font-family: var(--fonte-texto);
+    border-top: 1px solid var(--linha);
+    padding-top: var(--e-3);
+    margin: 0 0 var(--e-2);
+  }
+  .mais ul { list-style: none; margin: 0; padding: 0; }
+  .mais li { margin-bottom: 0.7rem; }
+  .mais a { text-decoration: none; font-size: var(--t-lg); }
+  .quando { display: block; font-size: var(--t-xs); color: var(--apagado); }
+
+  @media (max-width: 720px) {
+    h1 { font-size: var(--t-2xl); }
+    .corpo { font-size: 1rem; }
+  }
+</style>

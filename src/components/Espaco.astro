@@ -1,0 +1,82 @@
+---
+/**
+ * O consultório, em fotografia.
+ *
+ * Estas seis imagens vêm de um ensaio profissional que estava na biblioteca do
+ * WordPress e nunca apareceu no site antigo — ficaram anexadas a páginas que
+ * não as exibiam. É o tipo de material que a clínica pagou para produzir e não
+ * chegou a usar.
+ *
+ * Por que entram numa página de psicologia: quem procura terapia costuma
+ * chegar apreensivo, e "como é o lugar" é uma das primeiras perguntas
+ * silenciosas. Ver a sala antes de marcar tira uma camada de incerteza da
+ * primeira ida.
+ *
+ * As proporções são mistas de propósito — o ensaio tem retratos e paisagens, e
+ * forçar todas ao mesmo recorte cortaria justamente o que cada foto enquadrou.
+ * A grade se ajusta a elas, não o contrário.
+ */
+const FOTOS = [
+  { src: '/espaco/0f2a4509.webp', l: 1400, a: 933, alt: 'Sala de atendimento com divã, poltrona de couro e tapete vermelho.' },
+  { src: '/espaco/0f2a4535.webp', l: 933, a: 1400, alt: 'Poltrona capitonê ao lado de uma mesa baixa, sob luminária acesa.' },
+  { src: '/espaco/0f2a4506.webp', l: 1400, a: 933, alt: 'Mesa de trabalho da psicóloga, com a sala de espera ao fundo.' },
+  { src: '/espaco/0f2a4529.webp', l: 933, a: 1400, alt: 'Canto com bancada de madeira, gravura emoldurada e um telefone antigo.' },
+  { src: '/espaco/0f2a4532.webp', l: 1400, a: 933, alt: 'Prateleiras com livros, objetos e pequenas obras de arte.' },
+  { src: '/espaco/0f2a4516.webp', l: 1400, a: 933, alt: 'Divã junto à janela de persianas, com a sala de grupo ao fundo.' },
+];
+---
+<section class="espaco">
+  <h2>O espaço</h2>
+  <ul>
+    {FOTOS.map((f, i) => (
+      <li>
+        <img
+          src={f.src}
+          alt={f.alt}
+          width={f.l}
+          height={f.a}
+          loading={i === 0 ? 'eager' : 'lazy'}
+          decoding="async"
+        />
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .espaco { margin: var(--e-6) 0 0; }
+  h2 {
+    font-size: var(--t-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--apagado);
+    font-family: var(--fonte-texto);
+    border-top: 1px solid var(--linha);
+    padding-top: var(--e-3);
+    margin: 0 0 var(--e-3);
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--e-2);
+  }
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: var(--raio);
+    background: var(--creme);
+    aspect-ratio: 4 / 3;
+  }
+
+  /* No celular a grade vira uma coluna só e a foto pode respirar na proporção
+     original — não há concorrência por espaço horizontal para justificar o
+     recorte. */
+  @media (max-width: 560px) {
+    img { aspect-ratio: auto; }
+  }
+</style>

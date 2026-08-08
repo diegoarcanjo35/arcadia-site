@@ -1,0 +1,117 @@
+---
+import Admin from '../../../layouts/Admin.astro';
+import { buscarArtigoAdmin, tempoDeLeitura } from '../../../lib/artigos.js';
+import { pegarDB } from '../../../lib/env.js';
+
+export const prerender = false;
+
+const db = await pegarDB();
+const bruto = Astro.params.id;
+const novo = bruto === 'novo';
+const id = novo ? null : Number.parseInt(bruto, 10);
+
+if (!db) return new Response('Banco indisponível.', { status: 503 });
+if (!novo && !Number.isInteger(id)) return Astro.redirect('/admin/artigos', 302);
+
+const artigo = novo ? null : await buscarArtigoAdmin(db, id);
+if (!novo && !artigo) return Astro.redirect('/admin/artigos', 302);
+
+const volta = Astro.url.pathname;
+const minutos = artigo?.corpo ? tempoDeLeitura(artigo.corpo) : null;
+---
+<Admin titulo={novo ? 'Novo artigo' : artigo.titulo} atual="/admin/artigos">
+  <p style="margin-top:-0.5rem"><a href="/admin/artigos">← todos os artigos</a></p>
+
+  <form class="cartao" method="POST" action="/api/admin/salvar">
+    <input type="hidden" name="acao" value="artigo.salvar" />
+    <input type="hidden" name="volta" value={volta} />
+    {!novo && <input type="hidden" name="id" value={artigo.id} />}
+
+    <label>Título <span class="obrigatorio">*</span>
+      <input type="text" name="titulo" required maxlength="200" value={artigo?.titulo ?? ''} />
+    </label>
+
+    <div class="linha">
+      <label>Quem assina
+        <input type="text" name="autor" maxlength="160"
+               value={artigo?.autor ?? 'Wanda Meyer Mattos'} />
+      </label>
+      <label>Data de publicação
+        <input type="date" name="publicado_em" value={artigo?.publicado_em?.slice(0, 10) ?? ''} />
+        <span class="ajuda">Obrigatória para publicar. É a data que o leitor vê.</span>
+      </label>
+    </div>
+
+    <label>Endereço da página
+      <input type="text" name="slug" maxlength="80" value={artigo?.slug ?? ''}
+             placeholder="deixe em branco para gerar a partir do título" />
+      <span class="ajuda">
+        Vira <code>/artigos/…</code>. Mudar depois de publicar quebra os links
+        que já circularam e o que o Google indexou. Na dúvida, não mexa.
+      </span>
+    </label>
+
+    <label>Resumo
+      <textarea name="resumo" rows="2" maxlength="400">{artigo?.resumo ?? ''}</textarea>
+      <span class="ajuda">
+        Uma ou duas frases. É o que aparece na lista de artigos e na prévia
+        quando alguém manda o link no WhatsApp.
+      </span>
+    </label>
+
+    <label>Texto <span class="obrigatorio">*</span>
+      <textarea name="corpo" rows="26" required maxlength="60000">{artigo?.corpo ?? ''}</textarea>
+      <span class="ajuda">
+        Separe os parágrafos com uma linha em branco. Negrito, itálico e links
+        não funcionam aqui — o texto vai para o site exatamente como está escrito.
+        {minutos && <> Hoje dá cerca de <strong>{minutos} min</strong> de leitura.</>}
+      </span>
+    </label>
+
+    <label class="caixa">
+      <input type="checkbox" name="publicado" value="1" checked={Boolean(artigo?.publicado)} />
+      Publicado — visível no site
+    </label>
+
+    <div class="rodape">
+      <button type="submit" class="botao">Salvar</button>
+      {!novo && artigo.publicado && (
+        <a class="botao discreto" href={`/artigos/${artigo.slug}`} target="_blank" rel="noopener">
+          ver no site ↗
+        </a>
+      )}
+    </div>
+  </form>
+
+  {!novo && (
+    <form class="cartao perigo" method="POST" action="/api/admin/salvar"
+          onsubmit="return confirm('Apagar este artigo? Não dá para desfazer.')">
+      <input type="hidden" name="acao" value="artigo.apagar" />
+      <input type="hidden" name="volta" value={volta} />
+      <input type="hidden" name="id" value={artigo.id} />
+      <h2>Apagar</h2>
+      <p>
+        Some do site e do banco, sem volta. Se a intenção é só tirar do ar por
+        um tempo, desmarque <strong>Publicado</strong> lá em cima — o texto
+        continua guardado.
+      </p>
+      <button type="submit" class="botao discreto">Apagar artigo</button>
+    </form>
+  )}
+</Admin>
+
+<style>
+  .linha { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 640px) { .linha { grid-template-columns: 1fr; } }
+
+  .caixa { display: flex; align-items: center; gap: 0.5rem; font-weight: 500; }
+  .caixa input { width: auto; }
+
+  .rodape { display: flex; gap: 0.6rem; align-items: center; margin-top: 1rem; }
+
+  .perigo { border-color: #d9c4bd; }
+  .perigo h2 { font-size: 1rem; margin: 0 0 0.4rem; color: #a3432f; }
+  .perigo p { font-size: 0.88rem; color: #6b6259; margin: 0 0 0.8rem; max-width: 62ch; }
+
+  code { background: #f3f0e7; padding: 1px 5px; border-radius: 3px; }
+</style>

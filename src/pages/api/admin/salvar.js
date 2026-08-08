@@ -102,6 +102,18 @@ export async function POST({ request }) {
         return voltar(volta, 'apagado');
       }
 
+      /* -------------------------------------------------------- artigos */
+      case 'artigo.salvar': {
+        const r = await A.salvarArtigo(db, campos);
+        if (!r.ok) return voltar(volta, r.erro);
+        return voltar(campos.id ? volta : `/admin/artigos/${r.id}`, 'salvo');
+      }
+
+      case 'artigo.apagar': {
+        const r = await A.apagarArtigo(db, Number(campos.id));
+        return voltar(r.ok ? '/admin/artigos' : volta, r.ok ? 'apagado' : r.erro);
+      }
+
       /* ------------------------------------------------ textos e config */
       case 'conteudo.salvar': {
         const r = await A.salvarConteudo(db, campos.chave, {
