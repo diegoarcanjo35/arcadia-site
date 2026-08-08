@@ -2,26 +2,54 @@
 import Base from '../layouts/Base.astro';
 import CardOficina from '../components/CardOficina.astro';
 import CapaVideo from '../components/CapaVideo.astro';
-import { listarOficinas } from '../lib/dados.js';
+import Revelar from '../components/Revelar.astro';
+import { listarOficinas, listarArtigos } from '../lib/dados.js';
 
 export const prerender = false;
 
 const oficinas = await listarOficinas();
 const abertas = oficinas.filter((o) => ['inscricoes_abertas', 'ultimas_vagas'].includes(o.status));
 const destaque = abertas.slice(0, 3);
+const artigos = (await listarArtigos()).slice(0, 4);
+
+/**
+ * Os textos abaixo são da clínica, transcritos do site anterior sem uma
+ * palavra alterada. Ficam no código, e não no banco, porque a home nunca foi
+ * editável pelo painel — as páginas institucionais são. Se um dia a clínica
+ * quiser mexer nisto sozinha, o caminho é o mesmo das outras: uma chave em
+ * `conteudos` e a tela de Páginas passa a listá-la.
+ */
+const SERVICOS = [
+  {
+    nome: 'ART&CLÍNICA',
+    texto:
+      'Arcádia Art&Clínica oferece atendimentos individuais, de casais, famílias e grupos, com foco na promoção da saúde mental e no fortalecimento dos vínculos interpessoais. Combinando técnicas tradicionais de psicoterapia com abordagens criativas.',
+  },
+  {
+    nome: 'ART&MÉTRICA',
+    texto:
+      'Arcádia Art&Métrica, serviço de avaliação psicológica da Arcádia, oferece um processo completo e criterioso, baseado em entrevistas, observações e testes psicológicos validados pelo Conselho Federal de Psicologia (CFP).',
+  },
+  {
+    nome: 'ART&TERAPIA',
+    texto:
+      'Arcádia ART&TERAPIA oferece um espaço dedicado à expressão emocional através da arte, permitindo que sentimentos e experiências que, muitas vezes, são difíceis de verbalizar, sejam trabalhados de forma segura e criativa.',
+  },
+];
 ---
 <Base
   titulo={null}
-  descricao="Clínica de psicologia com atendimento clínico, oficinas terapêuticas e produção editorial."
+  descricao="Clínica de psicologia em Brasília: atendimento clínico, avaliação psicológica e oficinas de arteterapia."
 >
+  {/* ------------------------------------------------------------- capa */}
   <section class="capa">
     <CapaVideo />
     <div class="dentro">
       <p class="sobre">Clínica de psicologia</p>
       <h1>Um espaço para escutar o que ainda não tem nome.</h1>
       <p class="chamada">
-        Atendimento clínico, oficinas terapêuticas em grupo e um percurso de
-        cuidado construído com tempo e presença.
+        Atendimento clínico, avaliação psicológica e oficinas de arteterapia,
+        em um percurso de cuidado construído com tempo e presença.
       </p>
       <div class="acoes">
         <a class="botao" href="/oficinas">Ver oficinas</a>
@@ -30,39 +58,172 @@ const destaque = abertas.slice(0, 3);
     </div>
   </section>
 
-  {destaque.length > 0 && (
-    <section class="secao">
-      <div class="cabeca">
-        <h2>Turmas abertas</h2>
-        <a href="/oficinas">Todas as oficinas →</a>
+  {/* -------------------------------------------------------- a arcádia */}
+  <section class="faixa creme">
+    <div class="miolo">
+      <Revelar>
+        <h2 class="titulo-secao">A Arcádia</h2>
+        <div class="colunas-texto">
+          <p>
+            O termo “Arcádia” tem suas raízes na mitologia e na geografia da
+            Grécia Antiga. Originalmente, Arcádia era uma região montanhosa no
+            centro do Peloponeso, conhecida por suas paisagens naturais
+            intocadas e pela simplicidade de seus habitantes. Ao longo do tempo,
+            Arcádia se tornou um símbolo poético e idealizado de um paraíso
+            pastoral, representando um lugar de harmonia, beleza natural e
+            tranquilidade.
+          </p>
+          <p>
+            Na literatura e na arte, Arcádia é frequentemente retratada como um
+            refúgio utópico, onde a vida é simples e em comunhão com a natureza.
+            Essa visão bucólica foi particularmente popularizada durante o
+            Renascimento e o período Neoclássico, quando poetas e artistas
+            idealizaram Arcádia como um escape dos problemas e complexidades da
+            vida urbana e moderna.
+          </p>
+        </div>
+        <p class="fecho">
+          Arcádia simboliza um ideal de paz, simplicidade e conexão com a
+          natureza, um lugar onde a vida é pura e descomplicada, longe das
+          preocupações e tensões do mundo moderno.
+        </p>
+        <p class="acao-secao"><a class="botao" href="/a-arcadia">Saiba +</a></p>
+      </Revelar>
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------ o que fazemos */}
+  <section class="faixa">
+    <div class="miolo">
+      <Revelar>
+        <h2 class="titulo-secao">O que fazemos</h2>
+        <p class="subtitulo-secao">Conheça nossos serviços e veja qual se encaixa em sua busca.</p>
+      </Revelar>
+
+      {/*
+        Grade que se ajusta em vez de três colunas fixas. No site anterior a
+        terceira coluna — ART&TERAPIA — ficava cortada na borda direita em telas
+        de 1920px. Os três nomes formam um conjunto; um deles cortado desfaz o
+        conjunto.
+      */}
+      <ul class="servicos">
+        {SERVICOS.map((s) => (
+          <li>
+            <Revelar>
+              <h3>{s.nome}</h3>
+              <p>{s.texto}</p>
+            </Revelar>
+          </li>
+        ))}
+      </ul>
+
+      <p class="acao-secao"><a class="botao" href="/servicos">Saiba +</a></p>
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------------- tese */}
+  <section class="faixa creme-suave">
+    <div class="miolo">
+      <Revelar>
+        <blockquote class="tese">
+          Um espaço onde a psicologia encontra a arte como um caminho para o
+          autoconhecimento
+        </blockquote>
+      </Revelar>
+    </div>
+  </section>
+
+  {/* ---------------------------------------------------------- oficinas */}
+  <section class="faixa terracota">
+    <div class="miolo">
+      <div class="dupla">
+        <Revelar>
+          <div class="texto-claro">
+            <h2 class="titulo-secao">Oficinas</h2>
+            <p>
+              As oficinas de arteterapia da Arcádia oferecem um espaço acolhedor
+              para a expressão e o autoconhecimento, utilizando a arte como meio
+              de explorar emoções e fortalecer vínculos. Com atividades como
+              colagem, leitura e escrita criativa, desenhos e modelagem com
+              argila, as oficinas criam um ambiente seguro para quem busca
+              reconexão pessoal ou deseja aprimorar relações interpessoais.
+            </p>
+            <p>
+              O trabalho em grupo, central nas oficinas, promove troca de
+              experiências, empatia e apoio mútuo, ajudando os participantes a
+              superar barreiras internas e se expressarem espontaneamente. O
+              grupo atua como uma rede de inspiração e suporte, ampliando o
+              potencial criativo e emocional de cada participante.
+            </p>
+            <p class="acao-secao"><a class="botao claro" href="/oficinas">Saiba +</a></p>
+          </div>
+        </Revelar>
+
+        <Revelar>
+          {/*
+            Esta é a colagem que o site anterior exibia a 579×558 a partir de um
+            arquivo de 211×300 — quase três vezes o tamanho real, e ainda
+            espremida num quadrado que não é a proporção dela. Aqui entra o
+            maior arquivo que existe na biblioteca, na proporção verdadeira.
+            Mesma imagem, mesma escolha; o que sai é a distorção.
+          */}
+          <figure class="colagem">
+            <img
+              src="/home/colagem-oficinas.webp"
+              alt="Colagem em papel com recortes de revista, letras e uma libélula sobre fundo amarelo e vermelho."
+              width="427"
+              height="607"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </Revelar>
       </div>
-      <div class="grade">
-        {destaque.map((o) => <CardOficina oficina={o} />)}
+    </div>
+  </section>
+
+  {/* Turmas abertas: isto o site anterior não tinha. Lá as seis oficinas
+      viviam dentro de uma página só, sem data nem inscrição. */}
+  {destaque.length > 0 && (
+    <section class="faixa">
+      <div class="miolo">
+        <div class="cabeca">
+          <h2 class="titulo-secao">Turmas abertas</h2>
+          <a href="/oficinas">Todas as oficinas →</a>
+        </div>
+        <div class="grade">
+          {destaque.map((o) => <CardOficina oficina={o} />)}
+        </div>
       </div>
     </section>
   )}
 
-  <section class="secao faixa-creme">
-    <div class="tres">
-      <div>
-        <h3>Atendimento clínico</h3>
-        <p>Psicoterapia individual, presencial e online, em processo continuado.</p>
+  {/* ---------------------------------------------------------- artigos */}
+  {artigos.length > 0 && (
+    <section class="faixa artigos">
+      {/* `eager` de propósito, apesar de estar abaixo da dobra: esta foto não
+          ilustra a seção, ela É o fundo dela. Carregada com preguiça, a faixa
+          aparece como um retângulo escuro para quem rola rápido — e são 19 KB. */}
+      <img class="fundo-artigos" src="/home/passaro.webp" alt="" width="1080" height="1080" loading="eager" fetchpriority="low" decoding="async" />
+      <div class="miolo">
+        <Revelar>
+          <div class="lista-artigos">
+            <h2 class="titulo-secao">Artigos</h2>
+            <ul>
+              {artigos.map((a) => (
+                <li><a href={`/artigos/${a.slug}`}>{a.titulo}</a></li>
+              ))}
+            </ul>
+            <p class="acao-secao"><a class="botao claro" href="/artigos">Todos os textos</a></p>
+          </div>
+        </Revelar>
       </div>
-      <div>
-        <h3>Oficinas em grupo</h3>
-        <p>Percursos temáticos com número reduzido de participantes e duração definida.</p>
-      </div>
-      <div>
-        <h3>Produção editorial</h3>
-        <p>Artigos e materiais escritos pela equipe, abertos a quem quiser ler.</p>
-      </div>
-    </div>
-  </section>
+    </section>
+  )}
 </Base>
 
 <style>
-  /* O topo passa a ser escuro, sobre o video dos arcos — como no site
-     anterior. As cores do texto invertem junto; o resto da pagina segue claro. */
+  /* ------------------------------------------------------------- capa */
   .capa {
     background: var(--tinta);
     position: relative;
@@ -71,7 +232,7 @@ const destaque = abertas.slice(0, 3);
     display: flex;
     align-items: center;
   }
-  .dentro {
+  .capa .dentro {
     max-width: 1120px;
     margin: 0 auto;
     padding: var(--e-6) var(--e-3);
@@ -87,33 +248,106 @@ const destaque = abertas.slice(0, 3);
     margin: 0 0 var(--e-2);
     font-weight: 600;
   }
-  h1 {
-    font-size: var(--t-3xl);
-    margin: 0 0 var(--e-2);
-    max-width: 18ch;
-    color: var(--creme);
-  }
-  .chamada {
-    max-width: 52ch;
-    font-size: var(--t-lg);
-    color: #e8ded0;
-    margin: 0 0 var(--e-3);
-  }
+  h1 { font-size: var(--t-3xl); margin: 0 0 var(--e-2); max-width: 18ch; color: var(--creme); }
+  .chamada { max-width: 52ch; font-size: var(--t-lg); color: #e8ded0; margin: 0 0 var(--e-3); }
   .acoes { display: flex; gap: var(--e-2); flex-wrap: wrap; }
-  /* Sobre fundo escuro o botao vazado precisa da propria borda clara,
-     senao some. */
   .capa .botao.vazado { border-color: var(--creme); color: var(--creme); }
   .capa .botao.vazado:hover { background: var(--creme); color: var(--tinta); }
 
-  @media (max-width: 900px) {
-    .capa { min-height: 60vh; }
+  /* --------------------------------------------------- faixas sangradas */
+  /* A alternância creme / branco / terracota atravessando a tela inteira é o
+     ritmo do site anterior. O miolo é que tem largura máxima, não a faixa. */
+  .faixa { padding: var(--e-6) var(--e-3); }
+  .miolo { max-width: 1120px; margin: 0 auto; }
+
+  .creme { background: var(--creme); }
+  .creme-suave { background: var(--creme-suave); border-block: 1px solid var(--linha); }
+  .terracota { background: var(--terracota); }
+
+  .titulo-secao {
+    font-size: var(--t-2xl);
+    margin: 0 0 var(--e-2);
+    color: var(--terracota);
+  }
+  .subtitulo-secao { margin: 0 0 var(--e-4); color: var(--corpo); }
+  .acao-secao { margin: var(--e-3) 0 0; }
+
+  .colunas-texto {
+    columns: 2;
+    column-gap: var(--e-4);
+    max-width: 96ch;
+  }
+  .colunas-texto p { margin: 0 0 1em; break-inside: avoid; }
+  .fecho { max-width: 76ch; margin: var(--e-2) 0 0; font-size: var(--t-lg); color: var(--tinta); }
+
+  /* ------------------------------------------------------- os três ART& */
+  .servicos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--e-3);
+  }
+  .servicos li {
+    background: var(--creme);
+    border-radius: var(--raio);
+    padding: var(--e-3);
+  }
+  .servicos h3 {
+    font-family: var(--fonte-texto);
+    font-size: var(--t-sm);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--terracota);
+    margin: 0 0 var(--e-2);
+  }
+  .servicos p { margin: 0; font-size: var(--t-sm); }
+
+  /* ------------------------------------------------------------- tese */
+  .tese {
+    font-family: var(--fonte-titulo);
+    font-style: italic;
+    font-size: clamp(1.4rem, 2.6vw, 2.1rem);
+    line-height: 1.35;
+    text-align: center;
+    color: var(--terracota);
+    max-width: 30ch;
+    margin: 0 auto;
+    quotes: '“' '”';
+  }
+  .tese::before { content: open-quote; }
+  .tese::after { content: close-quote; }
+
+  /* ---------------------------------------------------------- oficinas */
+  .dupla {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: var(--e-5);
+    align-items: center;
+  }
+  .texto-claro { color: #f6ede2; }
+  .texto-claro .titulo-secao { color: var(--creme); }
+  .texto-claro p { margin: 0 0 1em; }
+
+  .colagem { margin: 0; }
+  .colagem img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--raio);
   }
 
-  .secao {
-    max-width: 1120px;
-    margin: 0 auto;
-    padding: var(--e-5) var(--e-3);
+  /* Botão claro sobre a terracota: o terracota-sobre-terracota do site
+     anterior sumia no fundo. */
+  .botao.claro {
+    background: var(--creme);
+    border-color: var(--creme);
+    color: var(--terracota);
   }
+  .botao.claro:hover { background: #fff; border-color: #fff; color: var(--terracota-escuro); }
+
+  /* ----------------------------------------------------------- cartões */
   .cabeca {
     display: flex;
     align-items: baseline;
@@ -122,34 +356,62 @@ const destaque = abertas.slice(0, 3);
     margin-bottom: var(--e-3);
     flex-wrap: wrap;
   }
-  .cabeca h2 { font-size: var(--t-2xl); margin: 0; }
   .cabeca a { text-decoration: none; font-size: var(--t-sm); }
-
   .grade {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: var(--e-3);
   }
 
-  .faixa-creme {
-    background: var(--creme-suave);
-    max-width: none;
-    border-top: 1px solid var(--linha);
-    border-bottom: 1px solid var(--linha);
+  /* ---------------------------------------------------------- artigos */
+  .artigos { position: relative; overflow: hidden; background: var(--tinta); }
+  .fundo-artigos {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 38%;
+    z-index: 0;
   }
-  .tres {
-    max-width: 1120px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-    gap: var(--e-4);
+  /* Véu: sem ele o texto branco se perde nas partes claras do céu, e
+     contraste aqui não é gosto — é legibilidade. */
+  .artigos .miolo {
+    position: relative;
+    z-index: 2;
   }
-  .tres h3 { font-size: var(--t-lg); margin: 0 0 0.4rem; }
-  .tres p { margin: 0; font-size: var(--t-sm); }
+  .artigos::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(34, 26, 20, 0.88) 0%, rgba(34, 26, 20, 0.60) 52%, rgba(34, 26, 20, 0.18) 100%);
+    z-index: 1;
+  }
+  .lista-artigos { max-width: 46ch; }
+  .lista-artigos .titulo-secao { color: var(--creme); }
+  .lista-artigos ul { list-style: none; margin: 0; padding: 0; }
+  .lista-artigos li { border-bottom: 1px solid rgba(243, 240, 231, 0.22); }
+  .lista-artigos ul a {
+    display: block;
+    padding: 0.7rem 0;
+    color: var(--creme);
+    text-decoration: none;
+    font-family: var(--fonte-titulo);
+    font-size: var(--t-lg);
+  }
+  .lista-artigos ul a:hover { color: var(--ocre); }
 
+  /* ------------------------------------------------------------ telas */
+  @media (max-width: 900px) {
+    .capa { min-height: 60vh; }
+    .dupla { grid-template-columns: 1fr; gap: var(--e-4); }
+    .colagem { max-width: 380px; }
+    .colunas-texto { columns: 1; }
+  }
   @media (max-width: 720px) {
     h1 { font-size: var(--t-2xl); }
-    .dentro { padding: var(--e-5) var(--e-3); }
+    .faixa { padding: var(--e-5) var(--e-3); }
+    .capa .dentro { padding: var(--e-5) var(--e-3); }
   }
 </style>
 

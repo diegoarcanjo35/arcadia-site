@@ -24,10 +24,9 @@
  * que oficina pertenciam, e casar por nome teria trocado as artes entre as
  * duas oficinas de colagem.
  *
- * Falta uma: `entre-elas`. A imagem existe no site antigo
- * (wp-content/uploads/2024/10/entre_elas.png) mas não veio no lote baixado —
- * a URL tentada tinha um sufixo a mais e devolveu 404. Enquanto não vier, essa
- * oficina cai no símbolo, como era antes. Nada quebra.
+ * As seis oficinas têm arte. A da `entre-elas` chegou por último: a URL que eu
+ * tinha tentado levava a um 404, e a boa estava em outro ano/mês da biblioteca
+ * do WordPress.
  */
 
 /**
@@ -73,8 +72,16 @@ const ARTES = {
     l: 900,
     a: 900,
     // Esta é a única das seis que traz texto dentro da imagem — é um cartaz,
-    // não uma fotografia. O alt precisa dizer o que está escrito, senão quem
-    // usa leitor de tela perde a informação que está impressa ali.
+    // não uma fotografia. O alt repete o que está escrito, senão quem usa
+    // leitor de tela fica sem a informação que está impressa ali. Inclusive os
+    // nomes da tarja de facilitadoras: o cartaz é material da própria oficina,
+    // e quem cofacilitou uma edição consta dela.
+    //
+    // Se um dia a clínica pedir para tirar esse crédito, o caminho não é mexer
+    // no alt — nome impresso em imagem não sai por texto. Sai por recorte,
+    // logo abaixo da linha "abordagem de arteterapia". O arquivo já cortado
+    // está guardado na pasta do projeto como `entre-elas-SEM-TARJA.webp`; é
+    // trocar o arquivo e ajustar `a` para 715.
     alt: 'Cartaz da oficina Entre.Elas — Reeditando o feminino, com colagens sobre retratos de Frida Kahlo. Facilitadoras: Tessália Passos e Wanda Meyer.',
   },
 };

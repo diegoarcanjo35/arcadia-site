@@ -1,0 +1,83 @@
+---
+/**
+ * Revelação por rolagem — a mesma do site anterior, invertida por dentro.
+ *
+ * No site antigo os blocos nasciam invisíveis e um script os trazia à tona.
+ * Quando o script demorava ou falhava, o bloco ficava **vazio**: aconteceu
+ * duas vezes enquanto eu fotografava a home. E é assim que parte dos
+ * rastreadores lê a página — texto que só aparece depois é texto que pode não
+ * ser contado.
+ *
+ * Aqui a ordem é outra. O conteúdo nasce visível no HTML. É o próprio script,
+ * já rodando, que o esconde para então revelar. Sem JavaScript, com JavaScript
+ * lento ou com JavaScript quebrado, o texto está lá.
+ *
+ * Funcionando, ninguém percebe diferença. A diferença é quando dá errado.
+ */
+---
+<div class="revelar"><slot /></div>
+
+<style>
+  /* Nenhum estado inicial aqui de propósito. O bloco começa visível; a classe
+     que o esconde só existe se o script rodar. */
+  .revelar { --deslocamento: 18px; }
+
+  :global(html.js-revelar) .revelar {
+    opacity: 0;
+    transform: translateY(var(--deslocamento));
+    transition: opacity 700ms ease, transform 700ms ease;
+  }
+  :global(html.js-revelar) .revelar.visivel {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Quem pediu menos movimento não recebe nenhum. */
+  @media (prefers-reduced-motion: reduce) {
+    :global(html.js-revelar) .revelar {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  // A marca entra no <html> antes da primeira pintura — é ela que autoriza o
+  // CSS acima a esconder qualquer coisa. Se este script não rodar, nada é
+  // escondido.
+  if (!document.documentElement.classList.contains('js-revelar')) {
+    const querMovimento = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (querMovimento && 'IntersectionObserver' in window) {
+      document.documentElement.classList.add('js-revelar');
+
+      const olho = new IntersectionObserver(
+        (entradas) => {
+          for (const e of entradas) {
+            if (!e.isIntersecting) continue;
+            e.target.classList.add('visivel');
+            olho.unobserve(e.target);
+          }
+        },
+        // Revela um pouco antes de entrar na tela: o movimento acompanha a
+        // rolagem em vez de correr atrás dela.
+        { rootMargin: '0px 0px -12% 0px', threshold: 0.05 }
+      );
+
+      const ligar = () => document.querySelectorAll('.revelar').forEach((el) => olho.observe(el));
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', ligar, { once: true });
+      } else {
+        ligar();
+      }
+
+      // Rede de segurança: se em 3 segundos algum bloco continuar escondido —
+      // observer que não disparou, aba aberta em segundo plano, o que for —
+      // mostra todo mundo. Preferimos perder a animação a perder o texto.
+      setTimeout(() => {
+        document.querySelectorAll('.revelar:not(.visivel)').forEach((el) => el.classList.add('visivel'));
+      }, 3000);
+    }
+  }
+</script>
