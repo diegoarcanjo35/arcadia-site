@@ -2,28 +2,39 @@
 /**
  * Exibe texto escrito pela clínica no painel.
  *
- * Quebra em parágrafos por linha em branco e nada mais. Não interpreta HTML de
- * propósito: o texto vem de um campo de formulário, e permitir marcação ali
- * significaria que uma tag colada de um documento do Word poderia quebrar o
- * layout — ou pior. Astro escapa o conteúdo automaticamente.
+ * Quebra em parágrafos por linha em branco. Não interpreta HTML de propósito:
+ * o texto vem de um campo de formulário, e permitir marcação ali significaria
+ * que uma tag colada de um documento do Word poderia quebrar o layout — ou
+ * pior. Astro escapa o conteúdo automaticamente.
  *
- * Se um dia a clínica precisar de negrito e links, o caminho é interpretar
- * markdown aqui dentro, num lugar só, e não abrir o portão para HTML cru.
+ * A única marcação aceita é `## ` no começo de um parágrafo, que vira
+ * subtítulo. Ela existe porque os textos institucionais da clínica têm seções
+ * — "Arcádia na Psicologia", "Arcádia e o Ambiente Terapêutico" — e sem
+ * subtítulo elas viram um paredão de parágrafos iguais. Duas cerquilhas e um
+ * espaço é coisa que se ensina em uma frase, e não abre porta para HTML.
  */
 const { texto } = Astro.props;
 
-const paragrafos = String(texto ?? '')
+const blocos = String(texto ?? '')
   .replace(/\r\n/g, '\n')
   .split(/\n\s*\n/)
-  .map((p) => p.trim())
-  .filter(Boolean);
+  .map((b) => b.trim())
+  .filter(Boolean)
+  .map((b) => (b.startsWith('## ') ? { tipo: 'titulo', texto: b.slice(3).trim() } : { tipo: 'paragrafo', texto: b }));
 ---
 <div class="prosa">
-  {paragrafos.map((p) => <p>{p}</p>)}
+  {blocos.map((b) => (b.tipo === 'titulo' ? <h2>{b.texto}</h2> : <p>{b.texto}</p>))}
 </div>
 
 <style>
   .prosa { max-width: var(--medida, 68ch); }
   .prosa p { margin: 0 0 1em; }
   .prosa p:last-child { margin-bottom: 0; }
+
+  .prosa h2 {
+    font-size: var(--t-xl);
+    margin: var(--e-4) 0 var(--e-2);
+    color: var(--terracota);
+  }
+  .prosa h2:first-child { margin-top: 0; }
 </style>
