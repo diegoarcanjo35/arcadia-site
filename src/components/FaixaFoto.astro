@@ -1,0 +1,36 @@
+---
+/**
+ * Faixa de fotografia entre seções, fixa enquanto o texto rola.
+ *
+ * Mesmo efeito da capa de página, em altura menor. É o que dá o ritmo às
+ * páginas internas do site anterior: bloco de texto, faixa de foto, bloco de
+ * texto. A foto não ilustra o parágrafo ao lado — ela serve de respiro entre
+ * um assunto e outro.
+ *
+ * Decorativa por definição: `alt` vazio e `aria-hidden`. Descrever "sala de
+ * atendimento" a cada respiro não ajuda quem usa leitor de tela, atrapalha.
+ */
+const { foto, altura = '42vh' } = Astro.props;
+---
+<div class="faixa-foto" style={`--altura: ${altura}; background-image: url(${foto})`} aria-hidden="true"></div>
+
+<style>
+  .faixa-foto {
+    min-height: var(--altura);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: var(--tinta);
+  }
+
+  @media (max-width: 900px) {
+    .faixa-foto {
+      background-attachment: scroll;
+      min-height: 30vh;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .faixa-foto { background-attachment: scroll; }
+  }
+</style>

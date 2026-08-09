@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import AguardandoConteudo from '../components/AguardandoConteudo.astro';
 import Prosa from '../components/Prosa.astro';
 import Espaco from '../components/Espaco.astro';
+import CapaPagina from '../components/CapaPagina.astro';
 import { buscarConteudo } from '../lib/dados.js';
 
 // Deixou de ser estática: o texto agora vem do banco e a clínica edita pelo
@@ -13,9 +14,11 @@ const conteudo = await buscarConteudo('a-arcadia');
 const titulo = conteudo?.titulo || 'A Arcádia';
 ---
 <Base titulo={titulo} descricao="A história, a proposta e o conceito de marca da Arcádia Psicologia.">
-  <div class="topo">
-    <div class="dentro"><h1>{titulo}</h1></div>
-  </div>
+  <CapaPagina
+    foto="/espaco/0f2a4516.webp"
+    titulo={titulo}
+    altura="alta"
+  />
   <div class="corpo">
     {conteudo?.corpo
       ? <Prosa texto={conteudo.corpo} />
@@ -29,9 +32,5 @@ const titulo = conteudo?.titulo || 'A Arcádia';
 </Base>
 
 <style>
-  .topo { background: var(--creme); border-bottom: 1px solid var(--linha); }
-  .dentro { max-width: 1120px; margin: 0 auto; padding: var(--e-5) var(--e-3); }
-  h1 { font-size: var(--t-3xl); margin: 0; }
   .corpo { max-width: 1120px; margin: 0 auto; padding: var(--e-4) var(--e-3) 0; }
-  @media (max-width: 720px) { h1 { font-size: var(--t-2xl); } }
 </style>

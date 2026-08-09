@@ -1,12 +1,20 @@
 ---
 const rota = Astro.url.pathname;
+/**
+ * Os cinco itens do site anterior, com os mesmos nomes e na mesma ordem —
+ * inclusive "Home", que estava em inglês lá e continua aqui. Menu é memória
+ * muscular: quem já visitou procura a palavra onde ela estava.
+ *
+ * Equipe e Artigos existem e ficam no rodapé. Não estão aqui porque não
+ * estavam lá: o site anterior não tinha página de equipe, e os artigos eram
+ * alcançados pelo bloco da home. Sete itens no topo também empurrariam a
+ * navegação para duas linhas no celular.
+ */
 const itens = [
-  { href: '/', rotulo: 'Início' },
+  { href: '/', rotulo: 'Home' },
   { href: '/a-arcadia', rotulo: 'A Arcádia' },
   { href: '/servicos', rotulo: 'Serviços' },
   { href: '/oficinas', rotulo: 'Oficinas' },
-  { href: '/equipe', rotulo: 'Equipe' },
-  { href: '/artigos', rotulo: 'Artigos' },
   { href: '/contato', rotulo: 'Contato' },
 ];
 const ativo = (href) => (href === '/' ? rota === '/' : rota.startsWith(href));

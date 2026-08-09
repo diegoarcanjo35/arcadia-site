@@ -1,31 +1,125 @@
 ---
 import Base from '../layouts/Base.astro';
-import AguardandoConteudo from '../components/AguardandoConteudo.astro';
 import Prosa from '../components/Prosa.astro';
+import CapaPagina from '../components/CapaPagina.astro';
+import FaixaFoto from '../components/FaixaFoto.astro';
+import Revelar from '../components/Revelar.astro';
 import { buscarConteudo } from '../lib/dados.js';
 
-// Deixou de ser estática: o texto agora vem do banco e a clínica edita pelo
-// painel, sem precisar de mim para trocar uma frase.
 export const prerender = false;
 
 const conteudo = await buscarConteudo('servicos');
 const titulo = conteudo?.titulo || 'Serviços';
+
+/**
+ * As três linhas de serviço da clínica, com os textos do site anterior sem uma
+ * palavra alterada. O prefixo ART& é dela: a fusão entre arte e psicologia
+ * aparece no nome, não na decoração.
+ *
+ * A página anterior intercalava três fotografias fixas entre os blocos — o
+ * mesmo ritmo está aqui, com as mesmas fotos.
+ */
+const SERVICOS = [
+  {
+    nome: 'ART&CLÍNICA',
+    resumo: 'Psicoterapia individual, de casais, famílias e grupos.',
+    texto:
+      'Arcádia Art&Clínica oferece atendimentos individuais, de casais, famílias e grupos, com foco na promoção da saúde mental e no fortalecimento dos vínculos interpessoais. Combinando técnicas tradicionais de psicoterapia com abordagens criativas.',
+  },
+  {
+    nome: 'ART&MÉTRICA',
+    resumo: 'Avaliação psicológica com instrumentos validados pelo CFP.',
+    texto:
+      'Arcádia Art&Métrica, serviço de avaliação psicológica da Arcádia, oferece um processo completo e criterioso, baseado em entrevistas, observações e testes psicológicos validados pelo Conselho Federal de Psicologia (CFP).',
+  },
+  {
+    nome: 'ART&TERAPIA',
+    resumo: 'Arteterapia: a expressão do que é difícil de dizer em palavras.',
+    texto:
+      'Arcádia ART&TERAPIA oferece um espaço dedicado à expressão emocional através da arte, permitindo que sentimentos e experiências que, muitas vezes, são difíceis de verbalizar, sejam trabalhados de forma segura e criativa.',
+  },
+];
 ---
-<Base titulo={titulo} descricao="Atendimento clínico, oficinas em grupo e demais serviços da Arcádia Psicologia.">
-  <div class="topo">
-    <div class="dentro"><h1>{titulo}</h1></div>
-  </div>
-  <div class="corpo">
-    {conteudo?.corpo
-      ? <Prosa texto={conteudo.corpo} />
-      : <AguardandoConteudo itens={["descrição do atendimento clínico individual", "modalidades: presencial e online", "como funciona o primeiro contato"]} />}
-  </div>
+<Base
+  titulo={titulo}
+  descricao="Atendimento clínico, avaliação psicológica e arteterapia na Arcádia Psicologia, em Brasília."
+>
+  <CapaPagina
+    foto="/espaco/0f2a4509.webp"
+    titulo={titulo}
+    descricao="Conheça nossos serviços e veja qual se encaixa em sua busca."
+    altura="alta"
+  />
+
+  <section class="bloco">
+    <div class="miolo">
+      <Revelar>
+        <h2>{SERVICOS[0].nome}</h2>
+        <p class="resumo">{SERVICOS[0].resumo}</p>
+        <p>{SERVICOS[0].texto}</p>
+      </Revelar>
+    </div>
+  </section>
+
+  <FaixaFoto foto="/espaco/sala-de-grupo.webp" />
+
+  <section class="bloco creme">
+    <div class="miolo">
+      <Revelar>
+        <h2>{SERVICOS[1].nome}</h2>
+        <p class="resumo">{SERVICOS[1].resumo}</p>
+        <p>{SERVICOS[1].texto}</p>
+      </Revelar>
+    </div>
+  </section>
+
+  <FaixaFoto foto="/espaco/atendimento.webp" />
+
+  <section class="bloco">
+    <div class="miolo">
+      <Revelar>
+        <h2>{SERVICOS[2].nome}</h2>
+        <p class="resumo">{SERVICOS[2].resumo}</p>
+        <p>{SERVICOS[2].texto}</p>
+        <p class="acao"><a class="botao" href="/oficinas">Ver as oficinas</a></p>
+      </Revelar>
+    </div>
+  </section>
+
+  {/* Texto extra que a clínica escreva pelo painel entra aqui, depois dos três
+      serviços — sem substituir nenhum deles. */}
+  {conteudo?.corpo && (
+    <section class="bloco creme">
+      <div class="miolo"><Prosa texto={conteudo.corpo} /></div>
+    </section>
+  )}
 </Base>
 
 <style>
-  .topo { background: var(--creme); border-bottom: 1px solid var(--linha); }
-  .dentro { max-width: 1120px; margin: 0 auto; padding: var(--e-5) var(--e-3); }
-  h1 { font-size: var(--t-3xl); margin: 0; }
-  .corpo { max-width: 1120px; margin: 0 auto; padding: var(--e-4) var(--e-3) 0; }
-  @media (max-width: 720px) { h1 { font-size: var(--t-2xl); } }
+  .bloco { padding: var(--e-6) var(--e-3); }
+  .bloco.creme { background: var(--creme); }
+  .miolo { max-width: 1120px; margin: 0 auto; }
+
+  h2 {
+    font-family: var(--fonte-texto);
+    font-size: var(--t-lg);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--terracota);
+    margin: 0 0 var(--e-1);
+  }
+  .resumo {
+    font-family: var(--fonte-titulo);
+    font-size: var(--t-xl);
+    color: var(--tinta);
+    margin: 0 0 var(--e-3);
+    max-width: 30ch;
+  }
+  .bloco p { max-width: var(--medida); margin: 0 0 1em; }
+  .acao { margin-top: var(--e-3); }
+
+  @media (max-width: 720px) {
+    .bloco { padding: var(--e-5) var(--e-3); }
+    .resumo { font-size: var(--t-lg); }
+  }
 </style>

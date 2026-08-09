@@ -1,0 +1,96 @@
+---
+/**
+ * Topo de página com fotografia ao fundo, fixa enquanto o texto rola.
+ *
+ * É o efeito que o site anterior usava nas páginas internas: um bloco de capa
+ * com `background-attachment: fixed`. A foto fica parada, o conteúdo desliza
+ * por cima, e a imagem vai se revelando conforme a pessoa desce.
+ *
+ * Duas diferenças, ambas por necessidade e não por gosto:
+ *
+ *  1. `background-attachment: fixed` é ignorado pelo Safari no iPhone há anos,
+ *     e no Chrome do Android provoca tremida ao rolar. Em tela pequena o efeito
+ *     é desligado e a foto vira fundo comum — que é, na prática, o que o
+ *     celular já fazia com a versão anterior. Ninguém perde nada; alguns param
+ *     de ver a imagem tremer.
+ *  2. `prefers-reduced-motion` desliga o efeito também. Movimento de fundo é
+ *     gatilho de desconforto vestibular, e isto é site de clínica.
+ *
+ * As fotos são do ensaio profissional do consultório que estava na biblioteca
+ * do WordPress — as mesmas que ela escolheu para cada página.
+ */
+const { foto, titulo, descricao, altura = 'media' } = Astro.props;
+---
+<div class:list={['capa', altura]} data-capa-pagina>
+  <div class="foto" style={`background-image: url(${foto})`} aria-hidden="true"></div>
+  <div class="veu" aria-hidden="true"></div>
+  <div class="dentro">
+    <h1>{titulo}</h1>
+    {descricao && <p class="descricao">{descricao}</p>}
+  </div>
+</div>
+
+<style>
+  .capa {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    background: var(--tinta);
+  }
+  .capa.media { min-height: 46vh; }
+  .capa.alta { min-height: 62vh; }
+
+  .foto {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  /* Véu escuro: sem ele o título branco desaparece nas partes claras da foto.
+     Mais forte embaixo, que é onde o texto fica. */
+  .veu {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(34, 26, 20, 0.30) 0%,
+      rgba(34, 26, 20, 0.55) 55%,
+      rgba(34, 26, 20, 0.82) 100%
+    );
+  }
+
+  .dentro {
+    position: relative;
+    z-index: 1;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: var(--e-6) var(--e-3) var(--e-4);
+    width: 100%;
+  }
+  h1 {
+    font-size: var(--t-3xl);
+    margin: 0;
+    color: var(--creme);
+    max-width: 20ch;
+  }
+  .descricao {
+    margin: var(--e-2) 0 0;
+    color: #e8ded0;
+    font-size: var(--t-lg);
+    max-width: 54ch;
+  }
+
+  /* Sem paralaxe onde ela não funciona ou atrapalha. */
+  @media (max-width: 900px) {
+    .foto { background-attachment: scroll; }
+    .capa.media, .capa.alta { min-height: 38vh; }
+    h1 { font-size: var(--t-2xl); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .foto { background-attachment: scroll; }
+  }
+</style>
