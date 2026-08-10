@@ -14,6 +14,32 @@ import { pegarEnv } from './lib/env.js';
 const PROTEGIDO = /^\/(admin|api\/admin)(\/|$)/;
 
 /**
+ * Onde o painel mora enquanto o site está em demonstração.
+ *
+ * O Cloudflare Access só protege endereço que pertença a uma zona ativa da
+ * conta. Hoje o site também responde por um domínio de demonstração cujo DNS
+ * está fora da Cloudflare — lá o Access não intercepta nada, e quem chegasse em
+ * `/admin` por aquele endereço batia numa parede de "Acesso restrito" sem
+ * entender por quê.
+ *
+ * Em vez da parede, mandamos a pessoa para a porta que existe. É desvio
+ * temporário (302, sem cache): quando o domínio definitivo entrar na
+ * Cloudflare e a aplicação do Access apontar para ele, basta trocar esta
+ * constante pelo domínio novo — ou apagar a linha, e o desvio some.
+ *
+ * Só vale para `/admin`. `/api/admin` fica de fora de propósito: é para lá que
+ * os formulários enviam, e desviar um POST entre domínios diferentes perde o
+ * corpo do formulário e a sessão.
+ */
+const HOST_DO_PAINEL = 'arcadia-psicologia.pages.dev';
+
+function desvioDoPainel(url) {
+  if (!/^\/admin(\/|$)/.test(url.pathname)) return null;
+  if (!HOST_DO_PAINEL || url.hostname === HOST_DO_PAINEL) return null;
+  return `https://${HOST_DO_PAINEL}${url.pathname}${url.search}`;
+}
+
+/**
  * Endereços do site antigo, redirecionados em definitivo.
  *
  * Por que isto importa: o WordPress vai sair do ar, mas os endereços dele
@@ -67,13 +93,22 @@ function destinoAntigo(caminho) {
 
 export async function onRequest(context, next) {
   const { request } = context;
-  const caminho = new URL(request.url).pathname;
+  const url = new URL(request.url);
+  const caminho = url.pathname;
 
   const destino = destinoAntigo(caminho);
   if (destino) {
     return new Response(null, {
       status: 301,
       headers: { Location: destino, 'Cache-Control': 'public, max-age=3600' },
+    });
+  }
+
+  const paraOPainel = desvioDoPainel(url);
+  if (paraOPainel) {
+    return new Response(null, {
+      status: 302,
+      headers: { Location: paraOPainel, 'Cache-Control': 'no-store' },
     });
   }
 

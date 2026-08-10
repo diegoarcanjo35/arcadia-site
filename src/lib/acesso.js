@@ -27,6 +27,33 @@
 const CABECALHO_EMAIL = 'cf-access-authenticated-user-email';
 const CABECALHO_TOKEN = 'cf-access-jwt-assertion';
 
+/**
+ * O mesmo token, no cookie que o Access deixa no navegador ao autenticar.
+ *
+ * Existe porque os cabeçalhos acima só aparecem nos endereços que a aplicação
+ * do Access declara cobrir. Se a aplicação cobre `/admin` mas não `/api/admin`,
+ * a pessoa entra no painel normalmente e toda gravação falha — o formulário
+ * envia para `/api/admin/salvar`, que o Access não intercepta, logo sem
+ * cabeçalho. O cookie, esse vai junto: é do mesmo domínio.
+ *
+ * O cookie NUNCA é aceito sem verificação de assinatura. Cabeçalho só existe se
+ * a requisição atravessou o Access; cookie é texto que o navegador manda, e
+ * texto que o navegador manda vale o que a criptografia disser que vale.
+ */
+const COOKIE_TOKEN = 'CF_Authorization';
+
+/** Lê um cookie da requisição. Sem dependência: são três linhas. */
+function lerCookie(request, nome) {
+  const cru = request.headers.get('cookie');
+  if (!cru) return null;
+  for (const parte of cru.split(';')) {
+    const igual = parte.indexOf('=');
+    if (igual === -1) continue;
+    if (parte.slice(0, igual).trim() === nome) return parte.slice(igual + 1).trim();
+  }
+  return null;
+}
+
 /** Cache das chaves públicas — buscar a cada requisição seria desperdício. */
 let _chaves = null;
 let _chavesEm = 0;
@@ -118,16 +145,19 @@ async function verificarToken(token, team, aud, agora) {
 export async function conferirAcesso(request, env) {
   const email = request.headers.get(CABECALHO_EMAIL);
   const token = request.headers.get(CABECALHO_TOKEN);
+  const cookie = lerCookie(request, COOKIE_TOKEN);
 
-  if (!email && !token) return { ok: false, erro: 'sem_access' };
+  if (!email && !token && !cookie) return { ok: false, erro: 'sem_access' };
 
   const team = env?.ACCESS_TEAM;
   const aud = env?.ACCESS_AUD;
 
   if (team && aud) {
-    if (!token) return { ok: false, erro: 'sem_token' };
+    // Cabeçalho primeiro; o cookie é o mesmo token por outro caminho.
+    const prova = token ?? cookie;
+    if (!prova) return { ok: false, erro: 'sem_token' };
     try {
-      const r = await verificarToken(token, team, aud, Date.now());
+      const r = await verificarToken(prova, team, aud, Date.now());
       if (!r.ok) return r;
       return { ok: true, email: r.email ?? email, verificado: true };
     } catch (e) {
@@ -136,6 +166,12 @@ export async function conferirAcesso(request, env) {
       return { ok: false, erro: 'verificacao_indisponivel' };
     }
   }
+
+  // Sem ACCESS_TEAM e ACCESS_AUD não há como conferir assinatura nenhuma. Aqui
+  // o cookie sozinho não serve: aceitá-lo seria deixar entrar qualquer um que
+  // digitasse o nome certo de cookie. O cabeçalho continua valendo porque só
+  // aparece se a requisição passou pelo Access.
+  if (!email && !token) return { ok: false, erro: 'sem_access' };
 
   return { ok: true, email, verificado: false };
 }
