@@ -22,7 +22,10 @@ const ativo = (href) => (href === '/' ? rota === '/' : rota.startsWith(href));
 <header>
   <div class="faixa">
     <a class="marca" href="/" aria-label="Arcádia Psicologia, página inicial">
-      <img src="/logo.svg" alt="" width="150" height="135" />
+      {/* PNG e não SVG: a marca da clínica tem sombra projetada, e é ela que
+          tira o desenho do "chapado". O vetor plano continua no projeto para
+          onde o fundo é escuro. */}
+      <img src="/logo-sombra.png" alt="" width="300" height="274" />
     </a>
 
     <nav aria-label="Principal">

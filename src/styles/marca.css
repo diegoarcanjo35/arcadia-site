@@ -58,7 +58,12 @@
   --corpo: #3a2e25;
   --apagado: #7a6e63;
   --linha: #e3dbcb;
-  --papel: #ffffff;
+  /* Nunca branco puro.
+     O site anterior não tem uma única superfície #ffffff: o fundo dele é
+     rgb(243,240,231) — o creme —, e é isso que a clínica reconhece como "um
+     laranja queimado bem leve". Branco puro ao lado do terracota fica clínico
+     no sentido ruim. Este é o claro mais claro do projeto, e ainda é quente. */
+  --papel: #fbf9f4;
 
   /* tipografia — Cardo nos títulos, Inter nos textos */
   --fonte-titulo: 'Cardo', Georgia, serif;
@@ -94,7 +99,10 @@ body {
   font-size: var(--t-base);
   line-height: 1.65;
   color: var(--corpo);
-  background: var(--papel);
+  /* A base é o creme, medido no site anterior. As faixas mais claras entram
+     por cima; é essa alternância que se lê como um tom indo para o claro e
+     voltando, em vez de um fundo branco chapado. */
+  background: var(--creme);
   -webkit-font-smoothing: antialiased;
 }
 

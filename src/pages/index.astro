@@ -257,7 +257,9 @@ const SERVICOS = [
   /* --------------------------------------------------- faixas sangradas */
   /* A alternância creme / branco / terracota atravessando a tela inteira é o
      ritmo do site anterior. O miolo é que tem largura máxima, não a faixa. */
-  .faixa { padding: var(--e-6) var(--e-3); }
+  /* A faixa sem modificador é o ponto claro da onda entre dois blocos creme.
+     Nunca branco puro. */
+  .faixa { padding: var(--e-6) var(--e-3); background: var(--papel); }
   .miolo { max-width: 1120px; margin: 0 auto; }
 
   .creme { background: var(--creme); }
