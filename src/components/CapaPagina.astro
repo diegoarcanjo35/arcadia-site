@@ -51,29 +51,28 @@ const { foto, fotoVertical, titulo, descricao, altura = 'media' } = Astro.props;
   /* Capa de tela cheia.
      Existe porque a capa de 62vh deixava aparecer, embaixo dela, uma tira da
      foto seguinte — e uma tira de foto não se lê como foto, se lê como imagem
-     cortada. No site anterior a capa ocupa 908px de uma janela de 911: a
-     primeira tela é só o arco, e a foto seguinte só aparece quando a pessoa
-     desce. É esse comportamento que esta altura devolve.
-     Sem `calc` descontando o cabeçalho de propósito: a altura dele muda com a
-     largura da tela (o menu quebra em duas linhas no celular), e número mágico
-     em CSS quebra calado no dia em que o menu ganhar um item. Assim a capa
-     termina um cabeçalho abaixo da dobra — a foto seguinte continua fora da
-     primeira tela, que é o que importa.
+     cortada. No site anterior a primeira tela é só o arco, e a foto seguinte só
+     aparece quando a pessoa desce.
+
+     Ocupa exatamente o que sobra da janela abaixo do cabeçalho — nem mais, nem
+     menos. Assim a capa começa e termina dentro da primeira tela: o título fica
+     no meio do que a pessoa vê, e a foto seguinte só entra quando ela desce.
+     A altura do cabeçalho vem dele mesmo, pela variável que ele publica, em vez
+     de um número repetido aqui.
      svh em vez de vh porque a barra do navegador no celular aparece e some, e
-     vh muda de valor junto. */
+     vh muda de valor junto — a capa "pulava" durante a rolagem. */
   .capa.cheia {
-    min-height: 100vh;
-    min-height: 100svh;
+    min-height: calc(100vh - var(--altura-cabecalho, 0px));
+    min-height: calc(100svh - var(--altura-cabecalho, 0px));
+    align-items: center;
   }
 
-  /* O preço de a capa terminar abaixo da dobra: o título, que fica no rodapé
-     dela, terminava abaixo também — ou seja, escondido. Sobe com um recuo
-     medido em altura de tela, não em pixel, para continuar valendo em qualquer
-     janela: o recuo precisa ser maior que o cabeçalho, e acima de 900px ele
-     ocupa uma linha só (~95px). 18svh dá 148px numa janela de 821 e cresce
-     junto com telas maiores, então a folga nunca some. */
+  /* O recuo de dentro é maior em cima que embaixo — serve para a capa comum,
+     onde o texto se apoia no rodapé. Centralizado, essa diferença empurraria o
+     texto alguns pixels para baixo do meio. Aqui os dois lados ficam iguais. */
   .capa.cheia .dentro {
-    padding-bottom: 18svh;
+    padding-top: var(--e-4);
+    padding-bottom: var(--e-4);
   }
 
   .foto {
@@ -131,12 +130,9 @@ const { foto, fotoVertical, titulo, descricao, altura = 'media' } = Astro.props;
        pé da mesma cena, é ela que entra aqui; quando não existe, fica a mesma. */
     .foto { background-image: var(--foto-vertical, var(--foto)); }
 
-    /* No celular o cabeçalho ocupa quase 200px, e uma capa de tela cheia
-       empurraria o título para depois da dobra — capa sem título é só uma foto
-       grande. Aqui o título sobe para o meio da imagem, onde aparece de
-       primeira, e o véu ganha corpo no centro para ele continuar legível sobre
-       a pedra clara. */
-    .capa.cheia { align-items: center; }
+    /* O título fica no meio da imagem em qualquer tela; aqui o véu é que ganha
+       corpo no centro, para ele continuar legível sobre a pedra clara — que no
+       recorte vertical ocupa justamente o meio do quadro. */
     .capa.cheia .veu {
       background: linear-gradient(
         180deg,
@@ -146,7 +142,6 @@ const { foto, fotoVertical, titulo, descricao, altura = 'media' } = Astro.props;
         rgba(34, 26, 20, 0.80) 100%
       );
     }
-    .capa.cheia .dentro { padding-bottom: var(--e-6); }
   }
   @media (prefers-reduced-motion: reduce) {
     .foto { background-attachment: scroll; }

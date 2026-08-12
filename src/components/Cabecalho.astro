@@ -84,3 +84,25 @@ const ativo = (href) => (href === '/' ? rota === '/' : rota.startsWith(href));
     nav ul { justify-content: center; gap: var(--e-2); }
   }
 </style>
+
+<style is:global>
+  /**
+   * A altura do cabeçalho, publicada para quem precisa dela.
+   *
+   * Quem precisa é a capa de tela cheia: ela tem que ocupar exatamente o que
+   * sobra da janela abaixo daqui, senão ou o título cai fora da tela ou uma
+   * tira da foto seguinte aparece embaixo. Sem esse número, o cálculo vira
+   * chute.
+   *
+   * Fica aqui, e não na folha de estilo geral, de propósito: é o cabeçalho que
+   * define a própria altura, e quem mexer no menu ou no tamanho da marca vê
+   * este bloco na mesma tela. Os valores saíram de medição, não de estimativa —
+   * o menu passa a ocupar duas linhas em 480px e três em 390px.
+   *
+   * Se um dia isto sair de sincronia, o efeito é cosmético e visível: a capa
+   * fica alguns pixels mais alta ou mais baixa. Nada quebra calado.
+   */
+  :root { --altura-cabecalho: 95px; }
+  @media (max-width: 560px) { :root { --altura-cabecalho: 147px; } }
+  @media (max-width: 440px) { :root { --altura-cabecalho: 191px; } }
+</style>
