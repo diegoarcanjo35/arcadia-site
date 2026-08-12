@@ -120,4 +120,22 @@ const {
       rgba(24, 16, 11, 0.5) 100%
     );
   }
+
+  /* No celular o véu muda de direção, e essa é a diferença que importa.
+     Na horizontal, o lado escuro do gradiente cobre a largura inteira de uma
+     tela estreita e a foto some — foi exatamente o que a clínica viu. Na
+     vertical, o topo fica quase limpo (10%) e o escuro se concentra embaixo,
+     onde o texto de fato está. A imagem aparece, o texto continua legível, e
+     ninguém precisou escolher entre as duas coisas. */
+  @media (max-width: 900px) {
+    .veu {
+      background: linear-gradient(
+        180deg,
+        rgba(24, 16, 11, 0.1) 0%,
+        rgba(24, 16, 11, 0.24) 34%,
+        rgba(24, 16, 11, 0.78) 62%,
+        rgba(24, 16, 11, 0.93) 100%
+      );
+    }
+  }
 </style>

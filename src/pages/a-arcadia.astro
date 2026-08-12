@@ -4,6 +4,7 @@ import AguardandoConteudo from '../components/AguardandoConteudo.astro';
 import Prosa from '../components/Prosa.astro';
 import Espaco from '../components/Espaco.astro';
 import CapaPagina from '../components/CapaPagina.astro';
+import FaixaFoto from '../components/FaixaFoto.astro';
 import { buscarConteudo } from '../lib/dados.js';
 
 // Deixou de ser estática: o texto agora vem do banco e a clínica edita pelo
@@ -14,8 +15,11 @@ const conteudo = await buscarConteudo('a-arcadia');
 const titulo = conteudo?.titulo || 'A Arcádia';
 ---
 <Base titulo={titulo} descricao="A história, a proposta e o conceito de marca da Arcádia Psicologia.">
+  {/* Capa dos arcos, como em todas as páginas internas do site anterior. A foto
+      do consultório que estava aqui era, lá, a faixa fixa do meio da página —
+      está de volta ao lugar dela, logo abaixo do texto. */}
   <CapaPagina
-    foto="/espaco/0f2a4516.webp"
+    foto="/capa-arcos.jpg"
     titulo={titulo}
     altura="alta"
   />
@@ -23,7 +27,11 @@ const titulo = conteudo?.titulo || 'A Arcádia';
     {conteudo?.corpo
       ? <Prosa texto={conteudo.corpo} />
       : <AguardandoConteudo itens={["o texto de apresentação da clínica", "a origem do nome e o conceito da marca", "a abordagem de trabalho"]} />}
+  </div>
 
+  <FaixaFoto foto="/espaco/0f2a4516.webp" altura="66vh" />
+
+  <div class="corpo">
     {/* As fotos entram mesmo sem o texto: elas não dependem de ninguém
         escrever nada, e uma página com foto do consultório e sem parágrafo
         ainda diz mais do que uma página em branco. */}

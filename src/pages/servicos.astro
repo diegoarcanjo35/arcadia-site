@@ -18,6 +18,21 @@ const titulo = conteudo?.titulo || 'Serviços';
  *
  * A página anterior intercalava três fotografias fixas entre os blocos — o
  * mesmo ritmo está aqui, com as mesmas fotos.
+ *
+ * Os quadros são obras que existem na clínica, e cada uma pertence a um
+ * serviço. Quem decidiu o par foi a Wanda, e o significado abaixo é a
+ * explicação dela, palavra por palavra:
+ *
+ *   Clínica     — "os dois círculos sugerem uma relação, para simbolizar a
+ *                  relação terapêutica onde paciente e terapeuta comparecem"
+ *   Métrica     — "o círculo é o símbolo da perfeição, sem começo nem fim.
+ *                  Aqui quem está sendo visto é o paciente na avaliação"
+ *   Terapia     — "todos são representação do self, que também está na
+ *                  logomarca dentro dos arcos"
+ *
+ * Os arquivos vieram da biblioteca do site antigo, em tamanho original, e não
+ * das fotos de tela que ela mandou pelo WhatsApp — aquelas têm moiré do monitor
+ * e não aguentam ampliação.
  */
 const SERVICOS = [
   {
@@ -25,63 +40,138 @@ const SERVICOS = [
     resumo: 'Psicoterapia individual, de casais, famílias e grupos.',
     texto:
       'Arcádia Art&Clínica oferece atendimentos individuais, de casais, famílias e grupos, com foco na promoção da saúde mental e no fortalecimento dos vínculos interpessoais. Combinando técnicas tradicionais de psicoterapia com abordagens criativas.',
+    quadro: '/quadros/clinica.webp',
+    l: 900,
+    a: 1216,
+    alt: 'Quadro da clínica: dois círculos em espiral, lado a lado, sobre fundo escuro.',
+    legenda: 'Os dois círculos sugerem uma relação — paciente e terapeuta, os dois comparecem.',
   },
   {
     nome: 'ART&MÉTRICA',
     resumo: 'Avaliação psicológica com instrumentos validados pelo CFP.',
     texto:
       'Arcádia Art&Métrica, serviço de avaliação psicológica da Arcádia, oferece um processo completo e criterioso, baseado em entrevistas, observações e testes psicológicos validados pelo Conselho Federal de Psicologia (CFP).',
+    quadro: '/quadros/avaliacao.webp',
+    l: 900,
+    a: 1431,
+    alt: 'Quadro da clínica: um círculo formado por espirais em preto, creme e terracota.',
+    legenda: 'O círculo é o símbolo da perfeição, sem começo nem fim. Aqui quem está sendo visto é o paciente.',
   },
   {
     nome: 'ART&TERAPIA',
     resumo: 'Arteterapia: a expressão do que é difícil de dizer em palavras.',
     texto:
       'Arcádia ART&TERAPIA oferece um espaço dedicado à expressão emocional através da arte, permitindo que sentimentos e experiências que, muitas vezes, são difíceis de verbalizar, sejam trabalhados de forma segura e criativa.',
+    quadro: '/quadros/arteterapia.webp',
+    l: 900,
+    a: 1216,
+    alt: 'Quadro da clínica: figuras sob uma sequência de arcos, com discos suspensos no ar.',
+    legenda: 'Uma representação do self, o mesmo que está na logomarca, dentro dos arcos.',
   },
 ];
+
 ---
 <Base
   titulo={titulo}
   descricao="Atendimento clínico, avaliação psicológica e arteterapia na Arcádia Psicologia, em Brasília."
 >
+  {/* A capa das páginas internas é a dos arcos, como no site anterior — a mesma
+      cena do vídeo da home, parada. A foto do consultório que estava aqui não
+      era capa lá: era a primeira das três faixas, logo abaixo. Voltou para o
+      lugar dela. */}
   <CapaPagina
-    foto="/espaco/0f2a4509.webp"
+    foto="/capa-arcos.jpg"
     titulo={titulo}
     descricao="Conheça nossos serviços e veja qual se encaixa em sua busca."
     altura="alta"
   />
 
+  {/* Cada serviço é anunciado por uma faixa de foto do espaço, e a faixa vem
+      ANTES do texto, não entre um bloco e outro. É essa ordem que produz o
+      efeito que a clínica reconhece: a foto fica presa na tela e o texto sobe
+      por cima dela. Invertido, a foto vira separador e o efeito se perde.
+      As três fotos e a ordem são as do site anterior — conferi uma a uma pelo
+      endereço do arquivo. */}
+  <FaixaFoto foto="/espaco/0f2a4509.webp" altura="66vh" />
+
   <section class="bloco">
-    <div class="miolo">
+    <div class="miolo dupla">
       <Revelar>
-        <h2>{SERVICOS[0].nome}</h2>
-        <p class="resumo">{SERVICOS[0].resumo}</p>
-        <p>{SERVICOS[0].texto}</p>
+        <div class="texto">
+          <h2>{SERVICOS[0].nome}</h2>
+          <p class="resumo">{SERVICOS[0].resumo}</p>
+          <p>{SERVICOS[0].texto}</p>
+        </div>
+      </Revelar>
+      <Revelar>
+        <figure class="quadro">
+          <img
+            src={SERVICOS[0].quadro}
+            alt={SERVICOS[0].alt}
+            width={SERVICOS[0].l}
+            height={SERVICOS[0].a}
+            loading="lazy"
+            decoding="async"
+          />
+          <figcaption>{SERVICOS[0].legenda}</figcaption>
+        </figure>
       </Revelar>
     </div>
   </section>
 
-  <FaixaFoto foto="/espaco/sala-de-grupo.webp" />
+  <FaixaFoto foto="/espaco/sala-de-grupo.webp" altura="66vh" />
 
   <section class="bloco creme">
-    <div class="miolo">
+    <div class="miolo dupla">
       <Revelar>
-        <h2>{SERVICOS[1].nome}</h2>
-        <p class="resumo">{SERVICOS[1].resumo}</p>
-        <p>{SERVICOS[1].texto}</p>
+        <div class="texto">
+          <h2>{SERVICOS[1].nome}</h2>
+          <p class="resumo">{SERVICOS[1].resumo}</p>
+          <p>{SERVICOS[1].texto}</p>
+        </div>
+      </Revelar>
+      <Revelar>
+        <figure class="quadro">
+          <img
+            src={SERVICOS[1].quadro}
+            alt={SERVICOS[1].alt}
+            width={SERVICOS[1].l}
+            height={SERVICOS[1].a}
+            loading="lazy"
+            decoding="async"
+          />
+          <figcaption>{SERVICOS[1].legenda}</figcaption>
+        </figure>
       </Revelar>
     </div>
   </section>
 
-  <FaixaFoto foto="/espaco/atendimento.webp" />
+  {/* Esta é a estante onde o próprio quadro da arteterapia está encostado —
+      por isso ela abre justamente o bloco ART&TERAPIA, como no site anterior. */}
+  <FaixaFoto foto="/espaco/atendimento.webp" altura="66vh" />
 
   <section class="bloco">
-    <div class="miolo">
+    <div class="miolo dupla">
       <Revelar>
-        <h2>{SERVICOS[2].nome}</h2>
-        <p class="resumo">{SERVICOS[2].resumo}</p>
-        <p>{SERVICOS[2].texto}</p>
-        <p class="acao"><a class="botao" href="/oficinas">Ver as oficinas</a></p>
+        <div class="texto">
+          <h2>{SERVICOS[2].nome}</h2>
+          <p class="resumo">{SERVICOS[2].resumo}</p>
+          <p>{SERVICOS[2].texto}</p>
+          <p class="acao"><a class="botao" href="/oficinas">Ver as oficinas</a></p>
+        </div>
+      </Revelar>
+      <Revelar>
+        <figure class="quadro">
+          <img
+            src={SERVICOS[2].quadro}
+            alt={SERVICOS[2].alt}
+            width={SERVICOS[2].l}
+            height={SERVICOS[2].a}
+            loading="lazy"
+            decoding="async"
+          />
+          <figcaption>{SERVICOS[2].legenda}</figcaption>
+        </figure>
       </Revelar>
     </div>
   </section>
@@ -100,6 +190,48 @@ const SERVICOS = [
   .bloco.creme { background: var(--creme); }
   .miolo { max-width: 1120px; margin: 0 auto; }
 
+  /* Texto à esquerda, quadro à direita — o arranjo do site anterior.
+     Centralizado na vertical porque os textos são curtos (quatro linhas) e os
+     quadros são altos: alinhando pelo topo, sobrava um vão embaixo do texto do
+     tamanho de meia tela, e vão desse tamanho parece falta de conteúdo, não
+     respiro. Com as três obras na mesma altura, centralizar dá um bloco
+     equilibrado sem encolher a obra. */
+  .dupla {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: var(--e-5);
+    align-items: center;
+  }
+
+  /* Altura igual para os três, largura livre.
+     As obras têm proporções diferentes — foram fotografadas, não recortadas
+     para caber. Fixar a largura deixaria uma delas bem mais alta que as outras
+     e abriria um vão embaixo do texto, que é curto. Fixando a altura, as três
+     ficam do mesmo tamanho aparente, como quadros pendurados na mesma parede. */
+  .quadro {
+    margin: 0 auto;
+    width: fit-content;
+    max-width: 100%;
+  }
+  .quadro img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    max-height: 460px;
+    height: auto;
+    border-radius: 2px;
+    /* Sombra curta e baixa: são quadros pendurados numa parede, não cartões
+       flutuando. Sombra demais transforma obra em componente de interface. */
+    box-shadow: 0 6px 22px rgb(34 26 20 / 0.13);
+  }
+  .quadro figcaption {
+    margin-top: var(--e-2);
+    font-size: var(--t-sm);
+    line-height: 1.5;
+    color: var(--apagado);
+    max-width: 34ch;
+  }
+
   h2 {
     font-family: var(--fonte-texto);
     font-size: var(--t-lg);
@@ -117,6 +249,17 @@ const SERVICOS = [
   }
   .bloco p { max-width: var(--medida); margin: 0 0 1em; }
   .acao { margin-top: var(--e-3); }
+
+  /* Abaixo de 900px o quadro em coluna estreita fica alto e magro demais e
+     empurra o texto para longe. Vira uma coluna só, com o quadro depois do
+     texto e com largura limitada — obra pequena e nítida é melhor que obra
+     grande e esticada. */
+  @media (max-width: 900px) {
+    .dupla { grid-template-columns: 1fr; gap: var(--e-4); }
+    .quadro { margin: 0; }
+    .quadro img { max-height: 380px; }
+    .quadro figcaption { max-width: none; }
+  }
 
   @media (max-width: 720px) {
     .bloco { padding: var(--e-5) var(--e-3); }
