@@ -19,10 +19,17 @@
  * As fotos são do ensaio profissional do consultório que estava na biblioteca
  * do WordPress — as mesmas que ela escolheu para cada página.
  */
-const { foto, titulo, descricao, altura = 'media' } = Astro.props;
+const { foto, fotoVertical, titulo, descricao, altura = 'media' } = Astro.props;
 ---
 <div class:list={['capa', altura]} data-capa-pagina>
-  <div class="foto" style={`background-image: url(${foto})`} aria-hidden="true"></div>
+  {/* As duas fotos entram como variáveis, não como `background-image` direto:
+      estilo em linha vence qualquer regra da folha, e a troca por tamanho de
+      tela precisa acontecer numa media query. */}
+  <div
+    class="foto"
+    style={`--foto: url(${foto}); ${fotoVertical ? `--foto-vertical: url(${fotoVertical});` : ''}`}
+    aria-hidden="true"
+  ></div>
   <div class="veu" aria-hidden="true"></div>
   <div class="dentro">
     <h1>{titulo}</h1>
@@ -41,9 +48,28 @@ const { foto, titulo, descricao, altura = 'media' } = Astro.props;
   .capa.media { min-height: 46vh; }
   .capa.alta { min-height: 62vh; }
 
+  /* Capa de tela cheia.
+     Existe porque a capa de 62vh deixava aparecer, embaixo dela, uma tira da
+     foto seguinte — e uma tira de foto não se lê como foto, se lê como imagem
+     cortada. No site anterior a capa ocupa 908px de uma janela de 911: a
+     primeira tela é só o arco, e a foto seguinte só aparece quando a pessoa
+     desce. É esse comportamento que esta altura devolve.
+     Sem `calc` descontando o cabeçalho de propósito: a altura dele muda com a
+     largura da tela (o menu quebra em duas linhas no celular), e número mágico
+     em CSS quebra calado no dia em que o menu ganhar um item. Assim a capa
+     termina um cabeçalho abaixo da dobra — a foto seguinte continua fora da
+     primeira tela, que é o que importa.
+     svh em vez de vh porque a barra do navegador no celular aparece e some, e
+     vh muda de valor junto. */
+  .capa.cheia {
+    min-height: 100vh;
+    min-height: 100svh;
+  }
+
   .foto {
     position: absolute;
     inset: 0;
+    background-image: var(--foto);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -89,6 +115,28 @@ const { foto, titulo, descricao, altura = 'media' } = Astro.props;
     .foto { background-attachment: scroll; }
     .capa.media, .capa.alta { min-height: 38vh; }
     h1 { font-size: var(--t-2xl); }
+
+    /* Em tela estreita, uma foto larga cortada por `cover` vira um pedaço do
+       meio ampliado — o arco some e sobra parede. Quando existe uma versão em
+       pé da mesma cena, é ela que entra aqui; quando não existe, fica a mesma. */
+    .foto { background-image: var(--foto-vertical, var(--foto)); }
+
+    /* No celular o cabeçalho ocupa quase 200px, e uma capa de tela cheia
+       empurraria o título para depois da dobra — capa sem título é só uma foto
+       grande. Aqui o título sobe para o meio da imagem, onde aparece de
+       primeira, e o véu ganha corpo no centro para ele continuar legível sobre
+       a pedra clara. */
+    .capa.cheia { align-items: center; }
+    .capa.cheia .veu {
+      background: linear-gradient(
+        180deg,
+        rgba(34, 26, 20, 0.30) 0%,
+        rgba(34, 26, 20, 0.62) 45%,
+        rgba(34, 26, 20, 0.62) 62%,
+        rgba(34, 26, 20, 0.80) 100%
+      );
+    }
+    .capa.cheia .dentro { padding-bottom: var(--e-6); }
   }
   @media (prefers-reduced-motion: reduce) {
     .foto { background-attachment: scroll; }
