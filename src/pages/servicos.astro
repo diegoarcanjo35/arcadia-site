@@ -20,8 +20,10 @@ const titulo = conteudo?.titulo || 'Serviços';
  * mesmo ritmo está aqui, com as mesmas fotos.
  *
  * Os quadros são obras que existem na clínica, e cada uma pertence a um
- * serviço. Quem decidiu o par foi a Wanda, e o significado abaixo é a
- * explicação dela, palavra por palavra:
+ * serviço. Quem decidiu o par foi a Wanda. O significado de cada uma está
+ * guardado aqui e no `alt` da imagem, mas NÃO aparece na tela: a clínica pediu
+ * para tirar as legendas. Quadro com explicação embaixo deixa de ser quadro e
+ * vira ilustração de texto.
  *
  *   Clínica     — "os dois círculos sugerem uma relação, para simbolizar a
  *                  relação terapêutica onde paciente e terapeuta comparecem"
@@ -44,7 +46,6 @@ const SERVICOS = [
     l: 900,
     a: 1216,
     alt: 'Quadro da clínica: dois círculos em espiral, lado a lado, sobre fundo escuro.',
-    legenda: 'Os dois círculos sugerem uma relação — paciente e terapeuta, os dois comparecem.',
   },
   {
     nome: 'ART&MÉTRICA',
@@ -55,7 +56,6 @@ const SERVICOS = [
     l: 900,
     a: 1431,
     alt: 'Quadro da clínica: um círculo formado por espirais em preto, creme e terracota.',
-    legenda: 'O círculo é o símbolo da perfeição, sem começo nem fim. Aqui quem está sendo visto é o paciente.',
   },
   {
     nome: 'ART&TERAPIA',
@@ -66,7 +66,6 @@ const SERVICOS = [
     l: 900,
     a: 1216,
     alt: 'Quadro da clínica: figuras sob uma sequência de arcos, com discos suspensos no ar.',
-    legenda: 'Uma representação do self, o mesmo que está na logomarca, dentro dos arcos.',
   },
 ];
 
@@ -114,7 +113,6 @@ const SERVICOS = [
             loading="lazy"
             decoding="async"
           />
-          <figcaption>{SERVICOS[0].legenda}</figcaption>
         </figure>
       </Revelar>
     </div>
@@ -141,7 +139,6 @@ const SERVICOS = [
             loading="lazy"
             decoding="async"
           />
-          <figcaption>{SERVICOS[1].legenda}</figcaption>
         </figure>
       </Revelar>
     </div>
@@ -171,7 +168,6 @@ const SERVICOS = [
             loading="lazy"
             decoding="async"
           />
-          <figcaption>{SERVICOS[2].legenda}</figcaption>
         </figure>
       </Revelar>
     </div>
@@ -225,13 +221,6 @@ const SERVICOS = [
        flutuando. Sombra demais transforma obra em componente de interface. */
     box-shadow: 0 6px 22px rgb(34 26 20 / 0.13);
   }
-  .quadro figcaption {
-    margin-top: var(--e-2);
-    font-size: var(--t-sm);
-    line-height: 1.5;
-    color: var(--apagado);
-    max-width: 34ch;
-  }
 
   h2 {
     font-family: var(--fonte-texto);
@@ -259,7 +248,6 @@ const SERVICOS = [
     .dupla { grid-template-columns: 1fr; gap: var(--e-4); }
     .quadro { margin: 0; }
     .quadro img { max-height: 380px; }
-    .quadro figcaption { max-width: none; }
   }
 
   @media (max-width: 720px) {
