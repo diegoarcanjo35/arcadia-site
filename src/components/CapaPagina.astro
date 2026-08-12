@@ -66,6 +66,16 @@ const { foto, fotoVertical, titulo, descricao, altura = 'media' } = Astro.props;
     min-height: 100svh;
   }
 
+  /* O preço de a capa terminar abaixo da dobra: o título, que fica no rodapé
+     dela, terminava abaixo também — ou seja, escondido. Sobe com um recuo
+     medido em altura de tela, não em pixel, para continuar valendo em qualquer
+     janela: o recuo precisa ser maior que o cabeçalho, e acima de 900px ele
+     ocupa uma linha só (~95px). 18svh dá 148px numa janela de 821 e cresce
+     junto com telas maiores, então a folga nunca some. */
+  .capa.cheia .dentro {
+    padding-bottom: 18svh;
+  }
+
   .foto {
     position: absolute;
     inset: 0;
