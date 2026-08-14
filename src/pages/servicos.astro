@@ -12,6 +12,42 @@ const conteudo = await buscarConteudo('servicos');
 const titulo = conteudo?.titulo || 'Serviços';
 
 /**
+ * Divide o texto do painel nos três serviços.
+ *
+ * Por que isto existe: no site anterior cada serviço aparece UMA vez, com o
+ * texto longo embaixo do seu próprio título. Aqui o texto longo vinha inteiro
+ * num bloco só, no fim da página, **depois** de três blocos curtos que diziam
+ * quase a mesma coisa. Resultado: a página falava tudo duas vezes, e a segunda
+ * vez vinha sem título nenhum separando um serviço do outro.
+ *
+ * O texto guardado no painel já vem dividido — as linhas `ART&CLÍNICA`,
+ * `ART&MÉTRICA` e `ART&TERAPIA` separam as três partes, exatamente como no site
+ * anterior. É por elas que cortamos.
+ *
+ * Falha fechada: se não encontrar as três marcas (alguém renomeou um serviço,
+ * por exemplo), devolve null e a página volta ao arranjo antigo, com os textos
+ * curtos e o texto do painel inteiro no fim. Nunca some conteúdo.
+ */
+function dividirPorServico(corpo) {
+  const linhas = String(corpo ?? '')
+    .replace(/\r\n/g, '\n')
+    .split('\n');
+
+  const marcas = [];
+  linhas.forEach((linha, i) => {
+    if (/^ART\s*&\s*(CLÍNICA|MÉTRICA|TERAPIA)\s*$/i.test(linha.trim())) marcas.push(i);
+  });
+  if (marcas.length !== 3) return null;
+
+  return marcas.map((inicio, k) => {
+    const fim = k + 1 < marcas.length ? marcas[k + 1] : linhas.length;
+    return linhas.slice(inicio + 1, fim).join('\n').trim();
+  });
+}
+
+const partes = dividirPorServico(conteudo?.corpo);
+
+/**
  * As três linhas de serviço da clínica, com os textos do site anterior sem uma
  * palavra alterada. O prefixo ART& é dela: a fusão entre arte e psicologia
  * aparece no nome, não na decoração.
@@ -82,7 +118,6 @@ const SERVICOS = [
     foto="/capa-arcos.jpg"
     fotoVertical="/capa-arcos-vertical.jpg"
     titulo={titulo}
-    descricao="Conheça nossos serviços e veja qual se encaixa em sua busca."
     altura="cheia"
   />
 
@@ -99,8 +134,9 @@ const SERVICOS = [
       <Revelar>
         <div class="texto">
           <h2>{SERVICOS[0].nome}</h2>
-          <p class="resumo">{SERVICOS[0].resumo}</p>
-          <p>{SERVICOS[0].texto}</p>
+          {partes
+            ? <Prosa texto={partes[0]} />
+            : <><p class="resumo">{SERVICOS[0].resumo}</p><p>{SERVICOS[0].texto}</p></>}
         </div>
       </Revelar>
       <Revelar>
@@ -125,8 +161,9 @@ const SERVICOS = [
       <Revelar>
         <div class="texto">
           <h2>{SERVICOS[1].nome}</h2>
-          <p class="resumo">{SERVICOS[1].resumo}</p>
-          <p>{SERVICOS[1].texto}</p>
+          {partes
+            ? <Prosa texto={partes[1]} />
+            : <><p class="resumo">{SERVICOS[1].resumo}</p><p>{SERVICOS[1].texto}</p></>}
         </div>
       </Revelar>
       <Revelar>
@@ -153,8 +190,9 @@ const SERVICOS = [
       <Revelar>
         <div class="texto">
           <h2>{SERVICOS[2].nome}</h2>
-          <p class="resumo">{SERVICOS[2].resumo}</p>
-          <p>{SERVICOS[2].texto}</p>
+          {partes
+            ? <Prosa texto={partes[2]} />
+            : <><p class="resumo">{SERVICOS[2].resumo}</p><p>{SERVICOS[2].texto}</p></>}
           <p class="acao"><a class="botao" href="/oficinas">Ver as oficinas</a></p>
         </div>
       </Revelar>
@@ -173,9 +211,10 @@ const SERVICOS = [
     </div>
   </section>
 
-  {/* Texto extra que a clínica escreva pelo painel entra aqui, depois dos três
-      serviços — sem substituir nenhum deles. */}
-  {conteudo?.corpo && (
+  {/* Só entra se a divisão acima não tiver funcionado — aí é melhor mostrar o
+      texto inteiro aqui do que perder conteúdo. Com a divisão em pé, cada
+      serviço já mostrou o seu, e repetir seria dizer tudo duas vezes. */}
+  {!partes && conteudo?.corpo && (
     <section class="bloco creme">
       <div class="miolo"><Prosa texto={conteudo.corpo} /></div>
     </section>
