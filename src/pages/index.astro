@@ -142,6 +142,17 @@ const SERVICOS = [
   {/* ---------------------------------------------------------- oficinas */}
   <section class="faixa terracota">
     <div class="miolo">
+      {/* Cabeçalho da faixa, como no site anterior: a terracota não abre em
+          "Oficinas", abre em "Atividades e conteúdos" — é ela que anuncia que
+          dali para baixo vêm as oficinas E os artigos. Sem esta linha, o bloco
+          de artigos aparece depois sem nada tê-lo apresentado. */}
+      <Revelar>
+        <div class="texto-claro cabecalho-faixa">
+          <h2 class="titulo-secao">Atividades e conteúdos</h2>
+          <p class="subtitulo-secao">Aqui você acessa oficinas e artigos.</p>
+        </div>
+      </Revelar>
+
       <div class="dupla">
         <Revelar>
           <div class="texto-claro">
@@ -347,6 +358,12 @@ const SERVICOS = [
     gap: var(--e-5);
     align-items: center;
   }
+  /* Cabeçalho da faixa terracota. O "Oficinas" logo abaixo é o assunto; este é
+     o anúncio do conjunto, então vem menor e mais espaçado do que ele — se os
+     dois tiverem o mesmo peso, a pessoa lê dois títulos e não uma hierarquia. */
+  .cabecalho-faixa { margin-bottom: var(--e-5); }
+  .cabecalho-faixa .subtitulo-secao { color: #f0e2d4; margin-bottom: 0; }
+
   .texto-claro { color: #f6ede2; }
   .texto-claro .titulo-secao { color: var(--creme); }
   .texto-claro p { margin: 0 0 1em; }
