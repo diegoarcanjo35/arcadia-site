@@ -65,11 +65,25 @@ const SERVICOS = [
   </section>
 
   {/* -------------------------------------------------------- a arcádia */}
+  {/* No site anterior, esta seção tinha a cauda do próprio vídeo de capa à
+      esquerda, com uma legenda em itálico embaixo dele. Aqui é uma foto fixa
+      (mesma cena dos arcos) com o texto sobreposto — mesmo tratamento da
+      capa, a pedido da clínica, em vez de legenda solta abaixo da imagem. */}
   <section class="faixa creme">
-    <div class="miolo">
+    <div class="miolo dupla-arcadia">
       <Revelar>
-        <h2 class="titulo-secao">A Arcádia</h2>
-        <div class="colunas-texto">
+        <figure class="foto-arcadia">
+          <img src="/capa-arcos.jpg" alt="" width="960" height="528" loading="lazy" decoding="async" />
+          <div class="veu-arcadia" aria-hidden="true"></div>
+          <figcaption>
+            Arcádia representa um refúgio de paz, simplicidade e harmonia com a
+            natureza, distante das inquietações do mundo moderno.
+          </figcaption>
+        </figure>
+      </Revelar>
+      <Revelar>
+        <div class="texto-arcadia">
+          <h2 class="titulo-secao">A Arcádia</h2>
           <p>
             O termo “Arcádia” tem suas raízes na mitologia e na geografia da
             Grécia Antiga. Originalmente, Arcádia era uma região montanhosa no
@@ -87,13 +101,13 @@ const SERVICOS = [
             idealizaram Arcádia como um escape dos problemas e complexidades da
             vida urbana e moderna.
           </p>
+          <p class="fecho">
+            Arcádia simboliza um ideal de paz, simplicidade e conexão com a
+            natureza, um lugar onde a vida é pura e descomplicada, longe das
+            preocupações e tensões do mundo moderno.
+          </p>
+          <p class="acao-secao"><a class="botao" href="/a-arcadia">Saiba +</a></p>
         </div>
-        <p class="fecho">
-          Arcádia simboliza um ideal de paz, simplicidade e conexão com a
-          natureza, um lugar onde a vida é pura e descomplicada, longe das
-          preocupações e tensões do mundo moderno.
-        </p>
-        <p class="acao-secao"><a class="botao" href="/a-arcadia">Saiba +</a></p>
       </Revelar>
     </div>
   </section>
@@ -218,13 +232,16 @@ const SERVICOS = [
   )}
 
   {/* ---------------------------------------------------------- artigos */}
+  {/* Layout do site anterior: a foto do post ao lado da lista, fundo claro —
+      não atrás do texto como fundo de tela cheia. */}
   {artigos.length > 0 && (
-    <section class="faixa artigos">
-      {/* `eager` de propósito, apesar de estar abaixo da dobra: esta foto não
-          ilustra a seção, ela É o fundo dela. Carregada com preguiça, a faixa
-          aparece como um retângulo escuro para quem rola rápido — e são 19 KB. */}
-      <img class="fundo-artigos" src="/home/passaro.webp" alt="" width="1080" height="1080" loading="eager" fetchpriority="low" decoding="async" />
-      <div class="miolo">
+    <section class="faixa creme">
+      <div class="miolo dupla-artigos">
+        <Revelar>
+          <figure class="foto-artigos">
+            <img src="/home/passaro.webp" alt="" width="1080" height="1080" loading="lazy" decoding="async" />
+          </figure>
+        </Revelar>
         <Revelar>
           <div class="lista-artigos">
             <h2 class="titulo-secao">Artigos</h2>
@@ -233,7 +250,7 @@ const SERVICOS = [
                 <li><a href={`/artigos/${a.slug}`}>{a.titulo}</a></li>
               ))}
             </ul>
-            <p class="acao-secao"><a class="botao claro" href="/artigos">Todos os textos</a></p>
+            <p class="acao-secao"><a class="botao" href="/artigos">Todos os textos</a></p>
           </div>
         </Revelar>
       </div>
@@ -306,13 +323,42 @@ const SERVICOS = [
   .subtitulo-secao { margin: 0 0 var(--e-4); color: var(--corpo); }
   .acao-secao { margin: var(--e-3) 0 0; }
 
-  .colunas-texto {
-    columns: 2;
-    column-gap: var(--e-4);
-    max-width: 96ch;
+  .texto-arcadia p { margin: 0 0 1em; max-width: 62ch; }
+  .fecho { max-width: 62ch; margin: var(--e-2) 0 0; font-size: var(--t-lg); color: var(--tinta); }
+
+  /* ---------------------------------------------------------- a arcádia */
+  .dupla-arcadia {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: var(--e-5);
+    align-items: center;
   }
-  .colunas-texto p { margin: 0 0 1em; break-inside: avoid; }
-  .fecho { max-width: 76ch; margin: var(--e-2) 0 0; font-size: var(--t-lg); color: var(--tinta); }
+  .foto-arcadia {
+    position: relative;
+    margin: 0;
+    border-radius: var(--raio);
+    overflow: hidden;
+    aspect-ratio: 960 / 528;
+  }
+  .foto-arcadia img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .veu-arcadia {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(24, 16, 11, 0.05) 35%, rgba(24, 16, 11, 0.82) 100%);
+  }
+  .foto-arcadia figcaption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: var(--e-3);
+    color: var(--creme);
+    font-family: var(--fonte-titulo);
+    font-style: italic;
+    text-align: center;
+    font-size: var(--t-lg);
+    line-height: 1.4;
+  }
 
   /* ------------------------------------------------------- os três ART& */
   .servicos {
@@ -404,42 +450,40 @@ const SERVICOS = [
   }
 
   /* ---------------------------------------------------------- artigos */
-  .artigos { position: relative; overflow: hidden; background: var(--tinta); }
-  .fundo-artigos {
-    position: absolute;
-    inset: 0;
+  /* Layout do site anterior: foto ao lado da lista, sobre fundo creme —
+     não atrás do texto como pano de fundo de tela cheia. */
+  .dupla-artigos {
+    display: grid;
+    grid-template-columns: 1fr 0.8fr;
+    gap: var(--e-5);
+    align-items: center;
+  }
+  .foto-artigos { margin: 0; }
+  .foto-artigos img {
+    display: block;
     width: 100%;
-    height: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
     object-fit: cover;
-    object-position: center 38%;
-    z-index: 0;
-  }
-  /* Véu: sem ele o texto branco se perde nas partes claras do céu, e
-     contraste aqui não é gosto — é legibilidade. */
-  .artigos .miolo {
-    position: relative;
-    z-index: 2;
-  }
-  .artigos::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, rgba(34, 26, 20, 0.88) 0%, rgba(34, 26, 20, 0.60) 52%, rgba(34, 26, 20, 0.18) 100%);
-    z-index: 1;
+    border-radius: var(--raio);
   }
   .lista-artigos { max-width: 46ch; }
-  .lista-artigos .titulo-secao { color: var(--creme); }
   .lista-artigos ul { list-style: none; margin: 0; padding: 0; }
-  .lista-artigos li { border-bottom: 1px solid rgba(243, 240, 231, 0.22); }
+  .lista-artigos li { border-bottom: 1px solid var(--linha); }
   .lista-artigos ul a {
     display: block;
     padding: 0.7rem 0;
-    color: var(--creme);
+    color: var(--tinta);
     text-decoration: none;
     font-family: var(--fonte-titulo);
     font-size: var(--t-lg);
   }
-  .lista-artigos ul a:hover { color: var(--ocre); }
+  .lista-artigos ul a:hover { color: var(--terracota); }
+
+  @media (max-width: 900px) {
+    .dupla-artigos { grid-template-columns: 1fr; }
+    .foto-artigos { max-width: 380px; margin: 0 auto; }
+  }
 
   /* ------------------------------------------------------------ telas */
   @media (max-width: 900px) {
@@ -462,7 +506,7 @@ const SERVICOS = [
     }
     .dupla { grid-template-columns: 1fr; gap: var(--e-4); }
     .colagem { max-width: 380px; }
-    .colunas-texto { columns: 1; }
+    .dupla-arcadia { grid-template-columns: 1fr; }
   }
   @media (max-width: 720px) {
     .faixa { padding: var(--e-5) var(--e-3); }
