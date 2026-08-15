@@ -28,6 +28,9 @@ const titulo = conteudo?.titulo || 'A Arcádia';
     {conteudo?.corpo
       ? <Prosa texto={conteudo.corpo} />
       : <AguardandoConteudo itens={["o texto de apresentação da clínica", "a origem do nome e o conceito da marca", "a abordagem de trabalho"]} />}
+    {/* Link do site anterior: a página de nome ("Quem Somos") levava à página
+        de marca ("Nossa Marca"). Mantido aqui pelo mesmo motivo do lá. */}
+    <p class="acao-secao"><a class="botao" href="/nossa-marca">Conheça nossa marca</a></p>
   </div>
 
   <FaixaFoto foto="/espaco/0f2a4516.webp" altura="66vh" />
@@ -42,4 +45,5 @@ const titulo = conteudo?.titulo || 'A Arcádia';
 
 <style>
   .corpo { max-width: 1120px; margin: 0 auto; padding: var(--e-4) var(--e-3) 0; }
+  .acao-secao { margin: var(--e-3) 0 0; }
 </style>

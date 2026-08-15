@@ -61,7 +61,6 @@ function desvioDoPainel(url) {
  */
 const MUDOU_DE_ENDERECO = new Map([
   ['/quem-somos', '/a-arcadia'],
-  ['/nossa-marca', '/a-arcadia'],
   ['/servicos', '/servicos'],
   ['/areas-de-atuacao', '/servicos'],
   ['/areas-de-atuacao-2', '/servicos'],

@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import AguardandoConteudo from '../components/AguardandoConteudo.astro';
+import Prosa from '../components/Prosa.astro';
+import CapaPagina from '../components/CapaPagina.astro';
+import { buscarConteudo } from '../lib/dados.js';
+
+// Única página do site anterior sem equivalente aqui até esta migração
+// (0007) — ver espelho/LEIA-ME.md, que a marcava como "não reproduzido".
+export const prerender = false;
+
+const conteudo = await buscarConteudo('nossa-marca');
+const titulo = conteudo?.titulo || 'Nossa Marca';
+---
+<Base titulo={titulo} descricao="O significado dos arcos, do círculo e da cor laranja na marca da Arcádia Psicologia.">
+  <CapaPagina
+    foto="/capa-arcos.jpg"
+    fotoVertical="/capa-arcos-vertical.jpg"
+    titulo={titulo}
+    altura="cheia"
+  />
+  <div class="corpo">
+    {conteudo?.corpo
+      ? <Prosa texto={conteudo.corpo} />
+      : <AguardandoConteudo itens={["o significado dos arcos, do círculo e da cor da marca"]} />}
+  </div>
+</Base>
+
+<style>
+  .corpo { max-width: 1120px; margin: 0 auto; padding: var(--e-4) var(--e-3) var(--e-6); }
+</style>
