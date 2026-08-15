@@ -41,37 +41,36 @@ const SERVICOS = [
   descricao="Clínica de psicologia em Brasília: atendimento clínico, avaliação psicológica e oficinas de arteterapia."
 >
   {/* ------------------------------------------------------------- capa */}
-  {/* Igual ao site anterior: só o vídeo, sem nenhum texto por cima. Lá o
-      vídeo dos arcos não é uma seção própria — é a mesma peça que fica ao
-      lado do bloco "A Arcádia" logo abaixo; como ela é maior que a coluna,
-      quebra sozinha e vira uma capa cheia visualmente. O título grande e os
-      botões que existiam aqui antes não vêm do site anterior — foram
-      adicionados numa fase posterior e não fazem parte da réplica. */}
+  {/* Igual ao site anterior: o cabeçalho abre com uma FOTO parada da mesma
+      cena dos arcos (post1-4.png lá, capa-arcos.jpg aqui) — não o vídeo. O
+      vídeo só entra depois, embaixo, junto com a seção "A Arcádia". Sem
+      texto por cima: o título grande e os botões que existiam aqui antes
+      não vêm do site anterior — foram adicionados numa fase posterior e não
+      fazem parte da réplica. */}
   <section class="capa">
-    <video
-      class="video-capa"
-      poster="/capa-arcos.jpg"
-      autoplay
-      muted
-      loop
-      playsinline
-      disablepictureinpicture
-      aria-hidden="true"
-    >
-      <source src="/capa-arcos.mp4" type="video/mp4" />
-    </video>
+    <img class="foto-capa" src="/capa-arcos-vertical.jpg" alt="" width="720" height="990" fetchpriority="high" />
+    <img class="foto-capa desktop" src="/capa-arcos.jpg" alt="" width="960" height="528" fetchpriority="high" />
   </section>
 
   {/* -------------------------------------------------------- a arcádia */}
-  {/* No site anterior, esta seção tinha a cauda do próprio vídeo de capa à
-      esquerda, com uma legenda em itálico embaixo dele. Aqui é uma foto fixa
-      (mesma cena dos arcos) com o texto sobreposto — mesmo tratamento da
-      capa, a pedido da clínica, em vez de legenda solta abaixo da imagem. */}
+  {/* Aqui sim entra o vídeo — é onde ele fica no site anterior, ao lado do
+      bloco "A Arcádia", com a legenda em itálico sobreposta (a pedido da
+      clínica, em vez de legenda solta abaixo, que era o tratamento antigo). */}
   <section class="faixa creme">
     <div class="miolo dupla-arcadia">
       <Revelar>
         <figure class="foto-arcadia">
-          <img src="/capa-arcos.jpg" alt="" width="960" height="528" loading="lazy" decoding="async" />
+          <video
+            class="video-arcadia"
+            poster="/capa-arcos.jpg"
+            autoplay
+            muted
+            loop
+            playsinline
+            disablepictureinpicture
+          >
+            <source src="/capa-arcos.mp4" type="video/mp4" />
+          </video>
           <div class="veu-arcadia" aria-hidden="true"></div>
           <figcaption>
             Arcádia representa um refúgio de paz, simplicidade e harmonia com a
@@ -258,22 +257,27 @@ const SERVICOS = [
 
 <style>
   /* ------------------------------------------------------------- capa */
-  /* Só o vídeo, sem texto por cima — ver comentário no HTML. */
+  /* Só a foto, sem texto por cima — ver comentário no HTML. */
   .capa {
     background: var(--tinta);
     overflow: hidden;
     min-height: 90vh;
     display: flex;
   }
-  .video-capa {
+  .foto-capa {
     width: 100%;
     height: 100%;
     min-height: 90vh;
     object-fit: cover;
     display: block;
   }
+  .foto-capa.desktop { display: none; }
+  @media (min-width: 900px) {
+    .foto-capa { display: none; }
+    .foto-capa.desktop { display: block; }
+  }
   @media (max-width: 900px) {
-    .capa, .video-capa { min-height: 60vh; }
+    .capa, .foto-capa { min-height: 60vh; }
   }
 
   /* --------------------------------------------------- faixas sangradas */
@@ -313,7 +317,8 @@ const SERVICOS = [
     overflow: hidden;
     aspect-ratio: 960 / 528;
   }
-  .foto-arcadia img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .foto-arcadia img,
+  .foto-arcadia video { width: 100%; height: 100%; object-fit: cover; display: block; }
   .veu-arcadia {
     position: absolute;
     inset: 0;
