@@ -41,47 +41,25 @@ const SERVICOS = [
   descricao="Clínica de psicologia em Brasília: atendimento clínico, avaliação psicológica e oficinas de arteterapia."
 >
   {/* ------------------------------------------------------------- capa */}
-  {/* Vídeo autoplay direto, sem script decidindo quando mostrar — igual ao
-      site anterior. A versão anterior desta capa tinha lógica própria (só
-      trocava da foto pro vídeo depois que ele começasse a tocar, checando
-      rede e prefers-reduced-motion) que ficava imprevisível: em alguns
-      carregamentos a pessoa via a foto congelada por bastante tempo, sem
-      controle nosso sobre quando o vídeo de fato aparecia. Aqui é só
-      `autoplay`, do jeito simples que o HTML já resolve sozinho — `poster`
-      é a mesma foto, mostrada enquanto o vídeo carrega. */}
+  {/* Igual ao site anterior: só o vídeo, sem nenhum texto por cima. Lá o
+      vídeo dos arcos não é uma seção própria — é a mesma peça que fica ao
+      lado do bloco "A Arcádia" logo abaixo; como ela é maior que a coluna,
+      quebra sozinha e vira uma capa cheia visualmente. O título grande e os
+      botões que existiam aqui antes não vêm do site anterior — foram
+      adicionados numa fase posterior e não fazem parte da réplica. */}
   <section class="capa">
-    <div class="fundo-capa" aria-hidden="true">
-      <video
-        class="video-capa"
-        poster="/capa-arcos.jpg"
-        autoplay
-        muted
-        loop
-        playsinline
-        disablepictureinpicture
-      >
-        <source src="/capa-arcos.mp4" type="video/mp4" />
-      </video>
-      <div class="veu"></div>
-    </div>
-    <div class="dentro">
-      {/* Frase escrita pela Wanda, palavra por palavra, com a linha de apoio
-          que ela mandou em seguida. Não é resumo nem adaptação: é o texto dela.
-          Se um dia mudar, muda aqui e mais nada. */}
-      <p class="sobre">Clínica de psicologia</p>
-      <h1>
-        Um lugar que une ciência, arte e humanismo, atuando no autoconhecimento
-        e no enfrentamento de desafios emocionais.
-      </h1>
-      <p class="chamada">
-        Psicoterapia, avaliação psicológica e oficinas de arteterapia,
-        em Brasília.
-      </p>
-      <div class="acoes">
-        <a class="botao" href="/oficinas">Ver oficinas</a>
-        <a class="botao vazado" href="/contato">Falar com a Arcádia</a>
-      </div>
-    </div>
+    <video
+      class="video-capa"
+      poster="/capa-arcos.jpg"
+      autoplay
+      muted
+      loop
+      playsinline
+      disablepictureinpicture
+      aria-hidden="true"
+    >
+      <source src="/capa-arcos.mp4" type="video/mp4" />
+    </video>
   </section>
 
   {/* -------------------------------------------------------- a arcádia */}
@@ -280,78 +258,23 @@ const SERVICOS = [
 
 <style>
   /* ------------------------------------------------------------- capa */
+  /* Só o vídeo, sem texto por cima — ver comentário no HTML. */
   .capa {
     background: var(--tinta);
-    position: relative;
     overflow: hidden;
-    min-height: 78vh;
+    min-height: 90vh;
     display: flex;
-    align-items: center;
   }
-  .capa .dentro {
-    max-width: 1120px;
-    margin: 0 auto;
-    padding: var(--e-6) var(--e-3);
-    position: relative;
-    z-index: 2;
-    width: 100%;
-  }
-  .fundo-capa { position: absolute; inset: 0; z-index: 0; background: var(--tinta); }
   .video-capa {
-    position: absolute;
-    inset: 0;
     width: 100%;
     height: 100%;
+    min-height: 90vh;
     object-fit: cover;
     display: block;
   }
-  .veu {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      180deg,
-      rgba(24, 16, 11, 0.1) 0%,
-      rgba(24, 16, 11, 0.24) 34%,
-      rgba(24, 16, 11, 0.78) 62%,
-      rgba(24, 16, 11, 0.93) 100%
-    );
+  @media (max-width: 900px) {
+    .capa, .video-capa { min-height: 60vh; }
   }
-  @media (min-width: 900px) {
-    .veu {
-      background: linear-gradient(
-        100deg,
-        rgba(24, 16, 11, 0.88) 0%,
-        rgba(24, 16, 11, 0.74) 45%,
-        rgba(24, 16, 11, 0.5) 100%
-      );
-    }
-  }
-  .sobre {
-    text-transform: uppercase;
-    letter-spacing: 0.16em;
-    font-size: var(--t-xs);
-    color: var(--ocre);
-    margin: 0 0 var(--e-2);
-    font-weight: 600;
-  }
-  /* A frase da capa tem 115 caracteres — é uma definição, não um slogan de três
-     palavras. No tamanho de display cheio ela viraria cinco linhas e empurraria
-     os botões para fora da tela. Por isso o corpo é elástico: cresce com a
-     largura disponível e nunca passa do --t-3xl, que continua sendo o teto do
-     projeto. A medida abre para 30ch pelo mesmo motivo — 18ch aqui quebraria a
-     frase em tiras. */
-  h1 {
-    font-size: clamp(1.75rem, 1.15rem + 1.9vw, var(--t-3xl));
-    line-height: 1.14;
-    margin: 0 0 var(--e-2);
-    max-width: 30ch;
-    color: var(--creme);
-    text-wrap: balance;
-  }
-  .chamada { max-width: 52ch; font-size: var(--t-lg); color: #e8ded0; margin: 0 0 var(--e-3); }
-  .acoes { display: flex; gap: var(--e-2); flex-wrap: wrap; }
-  .capa .botao.vazado { border-color: var(--creme); color: var(--creme); }
-  .capa .botao.vazado:hover { background: var(--creme); color: var(--tinta); }
 
   /* --------------------------------------------------- faixas sangradas */
   /* A alternância creme / branco / terracota atravessando a tela inteira é o
