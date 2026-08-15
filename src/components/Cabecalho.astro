@@ -61,13 +61,12 @@ const ativo = (href) => (href === '/' ? rota === '/' : rota.startsWith(href));
   header.sobre-imagem nav a { color: var(--ocre); }
   header.sobre-imagem nav a:hover,
   header.sobre-imagem nav a[aria-current='page'] { color: var(--creme); border-bottom-color: var(--creme); }
-  /* Sobre a foto, logo e menu precisam de mais presença que no cabeçalho comum
-     (fundo sólido dá contraste sozinho; sobre imagem, não) — tamanhos mais
-     próximos aos do site anterior, que tinha a marca em 213px de largura. */
-  header.sobre-imagem .marca img { height: 110px; }
-  header.sobre-imagem nav a { font-size: var(--t-lg); }
+  /* Tamanhos medidos direto no site anterior via getBoundingClientRect/
+     getComputedStyle, não estimados: marca a 213×194px, menu a 16.8px. */
+  header.sobre-imagem .marca img { height: 194px; }
+  header.sobre-imagem nav a { font-size: 16.8px; }
   @media (max-width: 560px) {
-    header.sobre-imagem .marca img { height: 80px; }
+    header.sobre-imagem .marca img { height: 130px; }
     header.sobre-imagem nav a { font-size: var(--t-sm); }
   }
   .faixa {

@@ -261,17 +261,20 @@ const SERVICOS = [
 
 <style>
   /* ------------------------------------------------------------- capa */
-  /* Só a foto, sem texto por cima — ver comentário no HTML. */
+  /* Só a foto, sem texto por cima — ver comentário no HTML.
+     Altura medida no site anterior (908px num viewport de 911px = ~100vh),
+     não estimada. */
   .capa {
     background: var(--tinta);
+    position: relative;
     overflow: hidden;
-    min-height: 90vh;
-    display: flex;
+    height: 100vh;
   }
   .foto-capa {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
-    min-height: 90vh;
     object-fit: cover;
     display: block;
   }
@@ -281,7 +284,7 @@ const SERVICOS = [
     .foto-capa.desktop { display: block; }
   }
   @media (max-width: 900px) {
-    .capa, .foto-capa { min-height: 60vh; }
+    .capa { height: 60vh; }
   }
 
   /* --------------------------------------------------- faixas sangradas */
