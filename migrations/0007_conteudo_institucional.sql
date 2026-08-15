@@ -5,8 +5,11 @@
 --    da Wanda, que agora mora em /equipe (o site anterior não tinha essa
 --    página; misturar as duas coisas aqui seria repetir a mesma informação
 --    em dois lugares).
---  · 'nossa-marca' nunca teve linha — a página é nova neste arquivo (ver
---    src/pages/nossa-marca.astro).
+--  · 'nossa-marca' é página nova (ver src/pages/nossa-marca.astro), mas NÃO
+--    entra em 'conteudos': o texto tem negrito em frases específicas, que o
+--    componente Prosa não reproduz (só parágrafo e "## título", de propósito
+--    — ver comentário no componente). Ficou fixo no código, mesmo tratamento
+--    da Home.
 --  · Wanda e Janaína entram por slug com ON CONFLICT, não por id: em produção
 --    a carga de exemplo (0002) nunca rodou, então estas linhas podem não
 --    existir ainda; em desenvolvimento local elas já existem, com CRP e bio
@@ -32,16 +35,6 @@ Arcádia simboliza uma vida simples e autêntica, em contraste com a complexidad
 
 O conceito de Arcádia também inspira a criação de ambientes terapêuticos que promovem calma e segurança. Arcádia se propõe a ser um espaço acolhedor, uma Arcádia contemporânea, onde as pessoas possam se sentir à vontade para explorar seus pensamentos e emoções. Nesse ambiente, a tranquilidade é cultivada para que o processo de autoconhecimento ocorra em um contexto de acolhimento e respeito, tornando-se um refúgio para o crescimento psicológico e emocional.'
 WHERE chave = 'a-arcadia';
-
-INSERT INTO conteudos (chave, titulo, corpo) VALUES
-  ('nossa-marca', 'Nossa Marca', '## Por que essa imagem?
-
-Os arcos: a passagem por arcos é uma metáfora de transição, transformação e crescimento, evocando simbolismos de harmonia e estabilidade. Psicologicamente, cada arco funciona como um portal simbólico para um novo nível de consciência, representando o avanço do indivíduo do consciente para o inconsciente, em uma jornada contínua de autoconhecimento e integração psíquica. Filosoficamente, é a busca por verdade e sabedoria, com cada etapa representando um avanço dialético em direção a uma síntese mais elevada. Atravessar uma sequência de arcos simboliza, assim, tanto a integração interna quanto a expansão do entendimento, unindo o crescimento psicológico à busca filosófica por uma compreensão mais ampla do universo.
-
-O Círculo: na psicologia e na filosofia, o círculo é um símbolo de totalidade, perfeição e unidade. Na psicologia junguiana, ele representa o self, a totalidade da psique, que integra tanto o consciente quanto o inconsciente. O self é visto como o núcleo da personalidade, o ponto de equilíbrio e centralidade do indivíduo. Nesse contexto, o círculo se torna um símbolo fundamental no processo de individuação, que é a jornada de autoconhecimento e crescimento pessoal.
-
-Cor Laranja: o laranja é frequentemente associado à criatividade, vitalidade e transformação. Na psicologia das cores, ele é visto como uma cor energizante que pode estimular entusiasmo e um senso de propósito.')
-ON CONFLICT(chave) DO NOTHING;
 
 INSERT INTO facilitadoras (nome, crp, slug, bio, ordem) VALUES
   ('Wanda Meyer', '01/28668', 'wanda-meyer',

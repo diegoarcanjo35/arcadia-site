@@ -1,31 +1,91 @@
 ---
 import Base from '../layouts/Base.astro';
-import AguardandoConteudo from '../components/AguardandoConteudo.astro';
-import Prosa from '../components/Prosa.astro';
 import CapaPagina from '../components/CapaPagina.astro';
-import { buscarConteudo } from '../lib/dados.js';
 
-// Única página do site anterior sem equivalente aqui até esta migração
-// (0007) — ver espelho/LEIA-ME.md, que a marcava como "não reproduzido".
-export const prerender = false;
-
-const conteudo = await buscarConteudo('nossa-marca');
-const titulo = conteudo?.titulo || 'Nossa Marca';
+// Única página do site anterior sem equivalente aqui até 15/08/2026 (ver
+// espelho/LEIA-ME.md, que a marcava como "não reproduzido").
+//
+// Texto fixo, e não editável pelo painel — mesma lógica da Home
+// (ver comentário em index.astro): é a explicação do significado da marca,
+// escrita uma vez, transcrita do site anterior sem uma palavra alterada
+// (inclusive os trechos em negrito). Não é conteúdo que a clínica reescreve.
+//
+// O símbolo à esquerda é /simbolo.svg — versão vetorizada da mesma imagem
+// que o site anterior usava aqui (aradia_comsombra.png), já existente no
+// projeto para o favicon e para o retrato-ausente da Equipe.
 ---
-<Base titulo={titulo} descricao="O significado dos arcos, do círculo e da cor laranja na marca da Arcádia Psicologia.">
+<Base titulo="Nossa Marca" descricao="O significado dos arcos, do círculo e da cor laranja na marca da Arcádia Psicologia.">
   <CapaPagina
     foto="/capa-arcos.jpg"
     fotoVertical="/capa-arcos-vertical.jpg"
-    titulo={titulo}
+    titulo="Nossa Marca"
     altura="cheia"
   />
+
   <div class="corpo">
-    {conteudo?.corpo
-      ? <Prosa texto={conteudo.corpo} />
-      : <AguardandoConteudo itens={["o significado dos arcos, do círculo e da cor da marca"]} />}
+    <div class="dupla">
+      <figure class="simbolo">
+        <img src="/simbolo.svg" alt="O símbolo da Arcádia: uma sequência de arcos sobre um círculo." width="389" height="480" loading="lazy" decoding="async" />
+      </figure>
+
+      <div class="texto">
+        <h1 class="titulo-secao">Por que essa imagem?</h1>
+        <p>
+          <strong>Os arcos:</strong> a passagem por arcos é uma <strong>metáfora de
+          transição, transformação e crescimento</strong>, evocando simbolismos de
+          harmonia e estabilidade. <strong>Psicologicamente</strong>, <strong>cada
+          arco funciona como um portal simbólico para um novo nível de
+          consciência</strong>, representando o avanço do indivíduo do consciente
+          para o inconsciente, em uma jornada contínua de autoconhecimento e
+          integração psíquica. <strong>Filosoficamente, busca por verdade e
+          sabedoria</strong>, com cada etapa representando um avanço dialético em
+          direção a uma síntese mais elevada. Atravessar uma sequência de arcos
+          simboliza, assim, tanto a integração interna quanto a expansão do
+          entendimento, unindo o crescimento psicológico à busca filosófica por
+          uma compreensão mais ampla do universo.
+        </p>
+      </div>
+    </div>
+
+    <p>
+      <strong>O Círculo:</strong> na psicologia e na filosofia, o círculo é um
+      <strong>símbolo de totalidade, perfeição e unidade</strong>. Na psicologia
+      junguiana, ele representa o self — <strong>a totalidade da psique</strong> —
+      que integra tanto o consciente quanto o inconsciente. O self é visto como o
+      núcleo da personalidade, o ponto de equilíbrio e centralidade do indivíduo.
+      Nesse contexto, o círculo se torna um símbolo fundamental no processo de
+      individuação, que é a jornada de autoconhecimento e crescimento pessoal.
+    </p>
+
+    <p>
+      <strong>Cor Laranja:</strong> o laranja é frequentemente associado à
+      <strong>criatividade, vitalidade e transformação</strong>. Na psicologia das
+      cores, ele é visto como uma cor energizante que pode estimular entusiasmo e
+      um senso de propósito.
+    </p>
   </div>
 </Base>
 
 <style>
   .corpo { max-width: 1120px; margin: 0 auto; padding: var(--e-4) var(--e-3) var(--e-6); }
+  .corpo > p { max-width: var(--medida); margin: 0 0 1em; }
+
+  .dupla {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.6fr);
+    gap: var(--e-5);
+    align-items: center;
+    margin-bottom: var(--e-4);
+  }
+  .simbolo { margin: 0; }
+  .simbolo img { display: block; width: 100%; height: auto; max-width: 260px; margin: 0 auto; }
+
+  .titulo-secao { font-size: var(--t-2xl); margin: 0 0 var(--e-2); color: var(--terracota); }
+  .texto p { max-width: var(--medida); margin: 0; }
+
+  @media (max-width: 720px) {
+    .dupla { grid-template-columns: 1fr; gap: var(--e-3); text-align: center; }
+    .simbolo img { max-width: 180px; }
+    .texto { text-align: left; }
+  }
 </style>

@@ -114,8 +114,13 @@ h1, h2, h3 {
   letter-spacing: -0.01em;
 }
 
-a { color: var(--terracota); }
-a:hover { color: var(--terracota-escuro); }
+/* O site anterior usava dois laranjas: o escuro (--terracota) em títulos e
+   botões, e um mais claro e dourado só em links de texto corrido
+   (a:where(:not(.wp-element-button)){color:#c98233}). --ocre já existia no
+   projeto para isso — só não estava aplicado aqui, e por engano os links
+   saíam na cor de título (corrigido em 15/08/2026). */
+a { color: var(--ocre); }
+a:hover { color: var(--terracota); }
 
 /* Foco visível — requisito de acessibilidade e hoje ausente no site */
 :focus-visible {
