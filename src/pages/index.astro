@@ -1,7 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
 import CardOficina from '../components/CardOficina.astro';
-import CapaVideo from '../components/CapaVideo.astro';
 import Revelar from '../components/Revelar.astro';
 import { listarOficinas, listarArtigos } from '../lib/dados.js';
 
@@ -42,8 +41,29 @@ const SERVICOS = [
   descricao="Clínica de psicologia em Brasília: atendimento clínico, avaliação psicológica e oficinas de arteterapia."
 >
   {/* ------------------------------------------------------------- capa */}
+  {/* Vídeo autoplay direto, sem script decidindo quando mostrar — igual ao
+      site anterior. A versão anterior desta capa tinha lógica própria (só
+      trocava da foto pro vídeo depois que ele começasse a tocar, checando
+      rede e prefers-reduced-motion) que ficava imprevisível: em alguns
+      carregamentos a pessoa via a foto congelada por bastante tempo, sem
+      controle nosso sobre quando o vídeo de fato aparecia. Aqui é só
+      `autoplay`, do jeito simples que o HTML já resolve sozinho — `poster`
+      é a mesma foto, mostrada enquanto o vídeo carrega. */}
   <section class="capa">
-    <CapaVideo />
+    <div class="fundo-capa" aria-hidden="true">
+      <video
+        class="video-capa"
+        poster="/capa-arcos.jpg"
+        autoplay
+        muted
+        loop
+        playsinline
+        disablepictureinpicture
+      >
+        <source src="/capa-arcos.mp4" type="video/mp4" />
+      </video>
+      <div class="veu"></div>
+    </div>
     <div class="dentro">
       {/* Frase escrita pela Wanda, palavra por palavra, com a linha de apoio
           que ela mandou em seguida. Não é resumo nem adaptação: é o texto dela.
@@ -275,6 +295,36 @@ const SERVICOS = [
     position: relative;
     z-index: 2;
     width: 100%;
+  }
+  .fundo-capa { position: absolute; inset: 0; z-index: 0; background: var(--tinta); }
+  .video-capa {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .veu {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(24, 16, 11, 0.1) 0%,
+      rgba(24, 16, 11, 0.24) 34%,
+      rgba(24, 16, 11, 0.78) 62%,
+      rgba(24, 16, 11, 0.93) 100%
+    );
+  }
+  @media (min-width: 900px) {
+    .veu {
+      background: linear-gradient(
+        100deg,
+        rgba(24, 16, 11, 0.88) 0%,
+        rgba(24, 16, 11, 0.74) 45%,
+        rgba(24, 16, 11, 0.5) 100%
+      );
+    }
   }
   .sobre {
     text-transform: uppercase;
