@@ -8,6 +8,7 @@ const {
   descricao,
   imagem = '/og-padrao.png',
   tipo = 'website',
+  cabecalhoSobreImagem = false,
 } = Astro.props;
 
 const url = new URL(Astro.url.pathname, Astro.site);
@@ -45,7 +46,7 @@ const tituloCompleto = titulo ? `${titulo} · Arcádia Psicologia` : 'Arcádia P
   </head>
   <body>
     <a class="pular" href="#conteudo">Pular para o conteúdo</a>
-    <Cabecalho />
+    <Cabecalho sobreImagem={cabecalhoSobreImagem} />
     <main id="conteudo">
       <slot />
     </main>

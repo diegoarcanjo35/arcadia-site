@@ -1,4 +1,5 @@
 ---
+const { sobreImagem = false } = Astro.props;
 const rota = Astro.url.pathname;
 /**
  * Os cinco itens do site anterior, com os mesmos nomes e na mesma ordem —
@@ -19,7 +20,7 @@ const itens = [
 ];
 const ativo = (href) => (href === '/' ? rota === '/' : rota.startsWith(href));
 ---
-<header>
+<header class:list={{ 'sobre-imagem': sobreImagem }}>
   <div class="faixa">
     <a class="marca" href="/" aria-label="Arcádia Psicologia, página inicial">
       {/* PNG e não SVG: a marca da clínica tem sombra projetada, e é ela que
@@ -45,6 +46,21 @@ const ativo = (href) => (href === '/' ? rota === '/' : rota.startsWith(href));
     border-bottom: 1px solid var(--linha);
     background: var(--papel);
   }
+  /* Igual ao cabeçalho do site anterior na Home: sem faixa própria, flutua
+     transparente sobre a foto/vídeo de capa. A cor da marca (o PNG com
+     sombra) já é a mesma do site anterior nesse contexto — só o menu muda
+     de cor, para a mesma que o antigo usava sobre a imagem (--ocre). */
+  header.sobre-imagem {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    z-index: 5;
+    border-bottom: 0;
+    background: transparent;
+  }
+  header.sobre-imagem nav a { color: var(--ocre); }
+  header.sobre-imagem nav a:hover,
+  header.sobre-imagem nav a[aria-current='page'] { color: var(--creme); border-bottom-color: var(--creme); }
   .faixa {
     max-width: 1120px;
     margin: 0 auto;
