@@ -110,11 +110,14 @@ const ativo = (href) => (href === '/' ? rota === '/' : rota.startsWith(href));
   header.sobre-imagem nav a:hover,
   header.sobre-imagem nav a[aria-current='page'] { color: var(--creme); border-bottom-color: var(--creme); }
   /* Tamanhos medidos direto no site anterior via getBoundingClientRect/
-     getComputedStyle, não estimados: marca a 213×194px, menu a 16.8px. */
+     getComputedStyle, não estimados: marca a 213×194px, menu a 16.8px. A
+     marca NÃO encolhe no mobile no site anterior — mesma altura de 194px em
+     375px de largura quanto em desktop. O encolhimento para 130px que
+     existia aqui era estimado, não medido, e deixava a logo bem menor que
+     a do site anterior. */
   header.sobre-imagem .marca img { height: 194px; }
   header.sobre-imagem nav a { font-size: 16.8px; }
   @media (max-width: 560px) {
-    header.sobre-imagem .marca img { height: 130px; }
     header.sobre-imagem nav a { font-size: var(--t-sm); }
   }
   .faixa {

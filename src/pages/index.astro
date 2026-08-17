@@ -285,8 +285,24 @@ const SERVICOS = [
     .foto-capa { display: none; }
     .foto-capa.desktop { display: block; }
   }
+  /* No mobile, o site anterior NÃO usa altura de tela cheia aqui — lá a capa
+     é o próprio cabeçalho (logo por cima da foto), com altura definida pelo
+     conteúdo (logo + preenchimento), não pela altura da janela. Medido ao
+     vivo: 340.9375px numa tela de 375px de largura — proporção 1,1:1, quase
+     quadrada. `aspect-ratio` reproduz essa proporção sem depender da altura
+     do aparelho (que `vh` faria variar de um jeito que o site anterior não
+     varia). O 60vh anterior era estimado, não medido — daí a capa maior que
+     a do site anterior que a Diego reportou. */
   @media (max-width: 900px) {
-    .capa { height: 60vh; }
+    .capa { height: auto; aspect-ratio: 1.1; }
+    /* No site anterior o vídeo vem praticamente colado na foto da capa no
+       mobile (7,5px de vão, medido ao vivo — o espaçamento padrão de bloco
+       do WordPress, não um respiro deliberado). O preenchimento superior
+       padrão de `.faixa` (var(--e-6), pensado para separar seções no meio da
+       página) exagerava esse vão bem além do site anterior. Só a faixa que
+       vem logo depois da capa perde esse preenchimento superior — as demais
+       seções da página continuam com o ritmo normal. */
+    .capa + .faixa { padding-top: var(--e-1); }
   }
 
   /* --------------------------------------------------- faixas sangradas */
