@@ -29,7 +29,27 @@ const ativo = (href) => (href === '/' ? rota === '/' : rota.startsWith(href));
       <img src="/logo-sombra.png" alt="" width="300" height="274" />
     </a>
 
-    <nav aria-label="Principal">
+    {/* Só existe visualmente no mobile (ver CSS) — no desktop o menu inteiro
+        já cabe na faixa. Mesmo padrão do site anterior: ícone de duas barras
+        vira "X" quando aberto, medido ao vivo (24×24px, canto superior
+        direito, mesma cor do menu). */}
+    <button
+      type="button"
+      class="alterna-menu"
+      aria-expanded="false"
+      aria-controls="menu-principal"
+      aria-label="Abrir menu"
+    >
+      <svg class="icone-abrir" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M4 7.5h16v1.5H4z"></path>
+        <path d="M4 15h16v1.5H4z"></path>
+      </svg>
+      <svg class="icone-fechar" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M5.6 4.5 4.5 5.6l6.4 6.4-6.4 6.4 1.1 1.1 6.4-6.4 6.4 6.4 1.1-1.1-6.4-6.4 6.4-6.4-1.1-1.1-6.4 6.4z"></path>
+      </svg>
+    </button>
+
+    <nav id="menu-principal" aria-label="Principal">
       <ul>
         {itens.map((i) => (
           <li>
@@ -41,8 +61,36 @@ const ativo = (href) => (href === '/' ? rota === '/' : rota.startsWith(href));
   </div>
 </header>
 
+<script>
+  /**
+   * Um cabeçalho por página — não precisa delegação nem cuidado com múltiplas
+   * instâncias. O toggle é só troca de classe e atributo; sem framework,
+   * porque é a única interatividade do cabeçalho inteiro.
+   */
+  const botao = document.querySelector<HTMLButtonElement>('.alterna-menu');
+  const nav = document.getElementById('menu-principal');
+
+  botao?.addEventListener('click', () => {
+    const aberto = botao.getAttribute('aria-expanded') === 'true';
+    botao.setAttribute('aria-expanded', String(!aberto));
+    botao.setAttribute('aria-label', aberto ? 'Abrir menu' : 'Fechar menu');
+    nav?.classList.toggle('aberto', !aberto);
+  });
+
+  // Trocar de página com o menu aberto (ou redimensionar para desktop) não
+  // pode deixar o painel preso aberto por trás do conteúdo novo.
+  nav?.querySelectorAll('a').forEach((a) =>
+    a.addEventListener('click', () => {
+      botao?.setAttribute('aria-expanded', 'false');
+      botao?.setAttribute('aria-label', 'Abrir menu');
+      nav.classList.remove('aberto');
+    })
+  );
+</script>
+
 <style>
   header {
+    position: relative;
     border-bottom: 1px solid var(--linha);
     background: var(--papel);
   }
@@ -103,9 +151,68 @@ const ativo = (href) => (href === '/' ? rota === '/' : rota.startsWith(href));
     border-bottom-color: var(--ocre);
   }
 
+  /* Botão hambúrguer: só existe no mobile — no desktop o menu inteiro cabe
+     na faixa, então fica fora do fluxo (display:none) em vez de escondido só
+     visualmente, que deixaria um alvo de toque fantasma no caminho do tab. */
+  .alterna-menu {
+    display: none;
+    background: none;
+    border: 0;
+    padding: 0;
+    margin-left: auto;
+    cursor: pointer;
+    color: var(--corpo);
+  }
+  .alterna-menu svg { display: block; fill: currentColor; }
+  .alterna-menu .icone-fechar { display: none; }
+  .alterna-menu[aria-expanded='true'] .icone-abrir { display: none; }
+  .alterna-menu[aria-expanded='true'] .icone-fechar { display: block; }
+  header.sobre-imagem .alterna-menu { color: var(--ocre); }
+
   @media (max-width: 720px) {
-    .faixa { justify-content: center; text-align: center; }
-    nav ul { justify-content: center; gap: var(--e-2); }
+    .faixa { flex-wrap: nowrap; }
+    .alterna-menu { display: block; }
+
+    /* Painel flutuante, não texto correndo — medido ao vivo no site
+       anterior: caixa branca logo abaixo do cabeçalho, com margem nas
+       laterais (não cola nas bordas da tela), links empilhados à esquerda,
+       acima de tudo (z-index alto) e fora do fluxo até ser aberto.
+       `position:absolute` a partir do próprio `header` (relative — ver acima)
+       em vez de um valor fixo de altura: assim o painel encosta exatamente
+       embaixo do cabeçalho não importa a altura real dele, sem número mágico
+       para manter sincronizado — o `--altura-cabecalho` fixo já causou esse
+       problema antes, quando o menu ainda quebrava linha no mobile. */
+    nav { display: contents; }
+    nav ul {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: var(--e-3);
+      right: var(--e-3);
+      z-index: 100;
+      flex-direction: column;
+      gap: 0;
+      background: var(--papel);
+      border-radius: var(--raio);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      padding: var(--e-2) var(--e-3);
+    }
+    nav.aberto ul { display: flex; }
+    nav li { border-bottom: 1px solid var(--linha); }
+    nav li:last-child { border-bottom: 0; }
+    nav a {
+      display: block;
+      padding: var(--e-2) 0;
+      color: var(--corpo);
+    }
+    nav a[aria-current='page'] { border-bottom-color: var(--ocre); }
+    /* O creme do cabeçalho "sobre-imagem" é pensado pra contraste sobre foto
+       escura (ver regras fora deste media query) — aqui o painel é claro e
+       opaco, então tanto o link normal quanto o ativo precisam de volta à
+       cor legível padrão, sem herdar o tratamento do desktop. */
+    header.sobre-imagem nav a,
+    header.sobre-imagem nav a:hover,
+    header.sobre-imagem nav a[aria-current='page'] { color: var(--terracota); }
   }
 </style>
 
