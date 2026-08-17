@@ -276,11 +276,11 @@ const titulo = conteudo?.titulo || 'Serviços';
   .dupla-servico.invertida .texto-servico { order: 2; }
   .dupla-servico.invertida .quadro-cheio { order: 1; }
 
+  /* Medido no original: só padding horizontal (76px), sem centralizar
+     verticalmente — o texto começa colado no topo da faixa, junto com a
+     imagem, não flutuando no meio de um vão vazio. */
   .texto-servico {
-    padding: var(--e-6) 76px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    padding: 0 76px;
   }
   /* Título medido no original: caixa clara (mesma cor das outras caixas do
      site), 29.6px Cardo, peso normal, centralizado — não a etiqueta
@@ -292,7 +292,7 @@ const titulo = conteudo?.titulo || 'Serviços';
     font-size: 29.6px;
     font-weight: 400;
     text-align: center;
-    margin: 0 0 var(--e-3);
+    margin: 24.6px 0;
     padding: var(--e-2) 0;
   }
   .texto-servico p {
@@ -303,8 +303,20 @@ const titulo = conteudo?.titulo || 'Serviços';
   .texto-servico p:last-child { margin-bottom: 0; }
   .acao { margin-top: var(--e-2) !important; }
 
-  .quadro-cheio { margin: 0; }
+  {/* height:100% num item de grid não resolve de forma confiável quando é a
+      própria imagem que teria que definir essa altura — ela cai pro tamanho
+      natural dela (900×1216 etc.) em vez de cobrir a coluna de texto, que é
+      quem deveria mandar na altura da faixa. Mesmo problema (e mesma
+      solução) da capa da Home: absolute + inset:0 tira a imagem do cálculo
+      de tamanho e deixa o texto no comando. */}
+  .quadro-cheio {
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+  }
   .quadro-cheio img {
+    position: absolute;
+    inset: 0;
     display: block;
     width: 100%;
     height: 100%;
