@@ -17,7 +17,14 @@ const artigos = await listarArtigos();
 <Base
   titulo={titulo}
   descricao="Textos sobre psicologia, cinema e cultura escritos pela equipe da Arcádia Psicologia."
+  cabecalhoSobreImagem
 >
+  {/* Mesma capa da Home: só a foto dos arcos, sem véu nem título por cima. */}
+  <section class="capa">
+    <img class="foto-capa" src="/capa-arcos-vertical.jpg" alt="" width="720" height="990" fetchpriority="high" />
+    <img class="foto-capa desktop" src="/capa-arcos.jpg" alt="" width="960" height="528" fetchpriority="high" />
+  </section>
+
   <div class="topo">
     <div class="dentro">
       <h1>{titulo}</h1>
@@ -48,6 +55,31 @@ const artigos = await listarArtigos();
 </Base>
 
 <style>
+  /* Mesma capa da Home (ver index.astro): só a foto, sem véu, sem texto por
+     cima. Altura de tela cheia, foto vertical no celular. */
+  .capa {
+    background: var(--tinta);
+    position: relative;
+    overflow: hidden;
+    height: 100vh;
+  }
+  .foto-capa {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .foto-capa.desktop { display: none; }
+  @media (min-width: 900px) {
+    .foto-capa { display: none; }
+    .foto-capa.desktop { display: block; }
+  }
+  @media (max-width: 900px) {
+    .capa { height: 60vh; }
+  }
+
   .topo { background: var(--creme); border-bottom: 1px solid var(--linha); }
   .dentro { max-width: 1120px; margin: 0 auto; padding: var(--e-5) var(--e-3); }
   h1 { font-size: var(--t-3xl); margin: 0; }
