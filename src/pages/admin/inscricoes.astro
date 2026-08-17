@@ -1,7 +1,7 @@
 ---
 import Admin from '../../layouts/Admin.astro';
 import { listarInscricoes, STATUS_INSCRICAO } from '../../lib/admin.js';
-import { formatarData } from '../../lib/oficinas.js';
+import { formatarData, linkWhatsApp } from '../../lib/oficinas.js';
 import { pegarDB } from '../../lib/env.js';
 
 export const prerender = false;
@@ -29,6 +29,20 @@ const ROTULO_TIPO = {
   inscricao: 'Inscrição',
   lista_espera: 'Lista de espera',
   interesse: 'Interesse',
+};
+
+// Uma mensagem por tipo de registro: quem deixou só o contato (interesse)
+// precisa ser avisado que a turma abriu; quem já tem vaga (inscricao) só
+// precisa da confirmação; quem está na espera é avisado quando surgir vaga.
+const MENSAGEM_WHATSAPP = {
+  interesse: (i) =>
+    `Olá, ${i.nome}! Aqui é da Arcádia Psicologia. A turma da oficina "${i.oficina_nome}" já está com inscrições abertas — quer garantir sua vaga?`,
+  inscricao: (i) =>
+    `Olá, ${i.nome}! Aqui é da Arcádia Psicologia. Confirmando sua inscrição na oficina "${i.oficina_nome}"` +
+    (i.data_inicio ? `, com início em ${formatarData(i.data_inicio)}` : '') +
+    `. Qualquer dúvida, estamos por aqui!`,
+  lista_espera: (i) =>
+    `Olá, ${i.nome}! Aqui é da Arcádia Psicologia. Você está na lista de espera da oficina "${i.oficina_nome}" — avisamos assim que surgir uma vaga.`,
 };
 ---
 <Admin titulo="Inscrições" atual="/admin/inscricoes">
@@ -64,7 +78,7 @@ const ROTULO_TIPO = {
         <thead>
           <tr>
             <th>Pessoa</th><th>Oficina</th><th>Tipo</th>
-            <th>Recebida</th><th>Situação</th><th></th>
+            <th>Recebida</th><th>Situação</th><th></th><th></th>
           </tr>
         </thead>
         <tbody>
@@ -94,6 +108,19 @@ const ROTULO_TIPO = {
                 </form>
               </td>
               <td>
+                {i.telefone && (
+                  <a
+                    class="botao zap"
+                    href={linkWhatsApp(i.telefone, MENSAGEM_WHATSAPP[i.tipo]?.(i) ?? '')}
+                    target="_blank"
+                    rel="noopener"
+                    title={`Falar com ${i.nome} no WhatsApp`}
+                  >
+                    WhatsApp
+                  </a>
+                )}
+              </td>
+              <td>
                 {/* Apagar é o pedido de exclusão de dados da LGPD, e é
                     diferente de cancelar: cancelar guarda a linha. */}
                 <form method="POST" action="/api/admin/salvar" class="embutido"
@@ -118,4 +145,6 @@ const ROTULO_TIPO = {
   .contagem { font-size: 0.85rem; color: #6b6259; margin: 0 0 0.75rem; }
   .fraco { color: #8a7f72; font-size: 0.82rem; }
   td select { padding: 0.3rem; font-size: 0.82rem; }
+  .botao.zap { background: #25963f; padding: 0.35rem 0.7rem; font-size: 0.8rem; white-space: nowrap; }
+  .botao.zap:hover { background: #1e7a33; }
 </style>

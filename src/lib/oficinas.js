@@ -243,8 +243,17 @@ export function formatarData(iso) {
     .format(new Date(iso));
 }
 
-/** Mensagem pré-preenchida de WhatsApp identificando a oficina. */
-export function linkWhatsApp(numero, oficinaNome) {
-  const texto = `Olá! Tenho interesse na oficina "${oficinaNome}".`;
-  return `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
+/**
+ * Link "clique para conversar" do WhatsApp, a partir do número informado no
+ * formulário e de uma mensagem já pronta.
+ *
+ * Quem preenche o formulário digita o número no formato que usa no dia a dia
+ * (com DDD, sem DDI) — por isso o 55 entra aqui, e não é pedido à pessoa.
+ * Só some quando o número já veio com DDI (12+ dígitos).
+ */
+export function linkWhatsApp(telefone, mensagem) {
+  const digitos = String(telefone ?? '').replace(/\D/g, '');
+  if (!digitos) return null;
+  const numero = digitos.length <= 11 ? `55${digitos}` : digitos;
+  return `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
 }
