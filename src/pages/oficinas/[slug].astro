@@ -91,37 +91,36 @@ const jsonLd = {
 <Base titulo={oficina.nome} descricao={oficina.resumo} tipo="article">
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
-  <div class="topo">
-    <div class="dentro">
-      <nav class="trilha" aria-label="Você está em">
-        <a href="/oficinas">Oficinas</a> <span aria-hidden="true">›</span> <span>{oficina.nome}</span>
-      </nav>
+  <nav class="trilha" aria-label="Você está em">
+    <a href="/oficinas">Oficinas</a> <span aria-hidden="true">›</span> <span>{oficina.nome}</span>
+  </nav>
+
+  {/* Faixa de largura total, foto de um lado / texto do outro — mesmo
+      padrão medido no site anterior (ver servicos.astro): caixa clara no
+      título, subtítulo entre aspas em itálico, "Por que participar?" como
+      lista de verdade, e a assinatura "Facilitador(a): Nome (CRP)" no fim
+      do texto — não uma lista separada de "Quem conduz". */}
+  <div class="dupla-oficina">
+    {arte && (
+      <figure class="arte">
+        <img src={arte.src} alt={arte.alt} width={arte.l} height={arte.a} fetchpriority="high" decoding="async" />
+      </figure>
+    )}
+    <article class="texto">
       {turma && <span class:list={['selo', turma.status]}>{ROTULO_STATUS[turma.status]}</span>}
       <h1>{oficina.nome}</h1>
       {oficina.subtitulo && <p class="sub">{oficina.subtitulo}</p>}
-    </div>
-  </div>
 
-  <div class="colunas">
-    <article class="texto">
-      {arte && (
-        <figure class="arte">
-          {/* Sem legenda de propósito: a imagem é da própria oficina, e uma
-              legenda repetindo o título só acrescentaria ruído. A descrição
-              vive no alt, onde serve a quem usa leitor de tela. */}
-          <img src={arte.src} alt={arte.alt} width={arte.l} height={arte.a} fetchpriority="high" decoding="async" />
-        </figure>
-      )}
-
-      <p class="resumo">{oficina.resumo}</p>
-
-      <h2>Sobre a oficina</h2>
       <p>{oficina.descricao}</p>
 
       {oficina.por_que_participar && (
         <>
-          <h2>Por que participar</h2>
-          <p>{oficina.por_que_participar}</p>
+          <h2>Por que participar?</h2>
+          <ul class="pontos">
+            {oficina.por_que_participar.split('\n').map((linha) => linha.trim()).filter(Boolean).map((linha) => (
+              <li>{linha}</li>
+            ))}
+          </ul>
         </>
       )}
 
@@ -133,21 +132,22 @@ const jsonLd = {
       )}
 
       {oficina.facilitadoras?.length > 0 && (
-        <>
-          <h2>Quem conduz</h2>
-          <ul class="equipe">
-            {oficina.facilitadoras.map((f) => (
-              <li>
-                <strong>{f.nome}</strong>
-                <span>CRP {f.crp}</span>
-                {f.papel === 'cofacilitadora' && <em>cofacilitação</em>}
-              </li>
-            ))}
-          </ul>
-        </>
+        <p class="assinatura">
+          {oficina.facilitadoras.length > 1 ? 'Facilitadoras' : 'Facilitadora'}:{' '}
+          {oficina.facilitadoras.map((f, i) => (
+            <>
+              {i > 0 && ' & '}
+              {f.nome}(CRP-{f.crp})
+            </>
+          ))}
+        </p>
       )}
-    </article>
 
+      <a class="cadastre" href="#inscricao">Cadastre-se para a próxima turma</a>
+    </article>
+  </div>
+
+  <div class="colunas">
     <aside>
       <div class="caixa" id="inscricao">
         {resultado && (
@@ -244,12 +244,14 @@ const jsonLd = {
 </Base>
 
 <style>
-  .topo { background: var(--creme); border-bottom: 1px solid var(--linha); }
-  .dentro { max-width: 1120px; margin: 0 auto; padding: var(--e-4) var(--e-3) var(--e-5); }
-  .trilha { font-size: var(--t-sm); margin-bottom: var(--e-2); color: var(--apagado); }
+  .trilha {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: var(--e-3) var(--e-3) 0;
+    font-size: var(--t-sm);
+    color: var(--apagado);
+  }
   .trilha a { text-decoration: none; }
-  h1 { font-size: var(--t-3xl); margin: 0.4rem 0 0.3rem; max-width: 20ch; }
-  .sub { font-size: var(--t-lg); color: var(--terracota); margin: 0; }
 
   .selo {
     display: inline-block;
@@ -259,43 +261,92 @@ const jsonLd = {
     background: var(--terracota);
     color: #fff;
     letter-spacing: 0.02em;
+    margin-bottom: var(--e-2);
   }
   .selo.ultimas_vagas { background: var(--ocre); color: var(--tinta); }
 
-  .colunas {
-    max-width: 1120px;
-    margin: 0 auto;
-    padding: var(--e-4) var(--e-3) 0;
+  /* Faixa de largura total, foto de um lado / texto do outro — mesmo padrão
+     medido no site anterior e já usado em servicos.astro: a imagem cobre a
+     altura inteira da faixa (object-fit: cover via posição absoluta, porque
+     height:100% num item de grid não resolve sozinho), e o texto fica
+     colado no topo, sem centralizar. */
+  .dupla-oficina {
     display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: var(--e-5);
-    align-items: start;
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+    margin-top: var(--e-3);
   }
-  .texto { max-width: var(--medida); }
-
-  /* A arte fica contida em 360px em vez de ocupar a coluna inteira: quase todas
-     são retratos 3:4, e em largura cheia empurrariam o texto para baixo da
-     dobra. `height: auto` deixa a proporção seguir o arquivo — os atributos
-     width/height do <img> existem só para reservar espaço, não para deformar. */
   .arte {
-    margin: 0 0 var(--e-3);
-    max-width: 360px;
+    position: relative;
+    overflow: hidden;
+    margin: 0;
   }
   .arte img {
-    width: 100%;
-    height: auto;
+    position: absolute;
+    inset: 0;
     display: block;
-    border-radius: var(--raio);
-    background: var(--creme);
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
+  .texto { padding: var(--e-4) 76px; }
 
-  .resumo { font-size: var(--t-lg); color: var(--tinta); }
+  /* Título: caixa clara, Cardo, terracota — mesma caixa das outras páginas
+     internas. Subtítulo entre aspas, itálico, sem caixa. */
+  h1 {
+    display: inline-block;
+    background: rgb(236, 234, 223);
+    color: var(--terracota);
+    font-family: var(--fonte-titulo);
+    font-size: 29.6px;
+    font-weight: 400;
+    text-align: center;
+    padding: var(--e-2) var(--e-3);
+    margin: 0 0 var(--e-2);
+  }
+  .sub {
+    font-family: var(--fonte-titulo);
+    font-style: italic;
+    font-size: var(--t-lg);
+    color: var(--terracota);
+    margin: 0 0 var(--e-3);
+  }
+  .texto p { color: var(--terracota); font-size: 16.8px; margin: 0 0 1em; }
   .texto h2 {
     font-size: var(--t-xl);
-    margin: var(--e-4) 0 var(--e-1);
-    padding-bottom: 4px;
-    border-bottom: 2px solid var(--ocre);
-    display: inline-block;
+    color: var(--terracota);
+    margin: var(--e-3) 0 var(--e-2);
+  }
+  .pontos { margin: 0 0 var(--e-3); padding-left: 1.2em; color: var(--terracota); }
+  .pontos li { margin-bottom: 0.4em; }
+  .assinatura { color: var(--terracota); font-size: 16.8px; margin: 0 0 var(--e-3); }
+
+  /* "Cadastre-se para a próxima turma": no site anterior é um acordeão que
+     abre o formulário embutido; aqui leva até a caixa de inscrição real,
+     que é a melhoria de verdade — link em vez de acordeão falso. */
+  .cadastre {
+    display: block;
+    background: var(--papel);
+    border: 1px solid var(--linha);
+    border-radius: var(--raio);
+    padding: var(--e-2) var(--e-3);
+    color: var(--terracota);
+    text-decoration: none;
+    font-size: var(--t-sm);
+  }
+  .cadastre::before { content: '▸ '; }
+  .cadastre:hover { background: var(--creme); }
+
+  @media (max-width: 900px) {
+    .dupla-oficina { grid-template-columns: 1fr; }
+    .arte { height: 50vh; }
+    .texto { padding: var(--e-4) var(--e-3); }
+  }
+
+  .colunas {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: var(--e-5) var(--e-3);
   }
 
   .equipe { list-style: none; padding: 0; margin: var(--e-2) 0 0; }
@@ -310,7 +361,6 @@ const jsonLd = {
   .equipe span { font-size: var(--t-sm); color: var(--apagado); }
   .equipe em { font-size: var(--t-xs); color: var(--ocre); font-style: normal; }
 
-  aside { position: sticky; top: var(--e-2); }
   .caixa {
     border: 1px solid var(--linha);
     border-top: 3px solid var(--terracota);
@@ -383,9 +433,4 @@ const jsonLd = {
   }
   .aviso { font-size: var(--t-sm); color: var(--corpo); margin: 0 0 var(--e-2); }
 
-  @media (max-width: 900px) {
-    .colunas { grid-template-columns: 1fr; }
-    aside { position: static; }
-    h1 { font-size: var(--t-2xl); }
-  }
 </style>
