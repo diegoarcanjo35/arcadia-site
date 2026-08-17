@@ -118,7 +118,10 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
 
 <style>
   .corpo { max-width: 1120px; margin: 0 auto; padding: var(--e-4) var(--e-3) 0; }
-  .acao-secao { margin: var(--e-3) 0 0; }
+  /* Medido no original: o botão fica dentro de uma coluna mais estreita
+     (800px), centralizada na página — não solto na borda esquerda do
+     .corpo inteiro (1120px), que é como estava antes. */
+  .acao-secao { max-width: 800px; margin: var(--e-3) auto 0; }
 
   /* Mesma capa da Home (ver index.astro): só a foto, sem véu, sem texto por
      cima. Altura de tela cheia, foto vertical no celular. */
