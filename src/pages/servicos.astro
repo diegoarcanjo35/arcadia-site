@@ -1,6 +1,5 @@
 ---
 import Base from '../layouts/Base.astro';
-import Prosa from '../components/Prosa.astro';
 import FaixaFoto from '../components/FaixaFoto.astro';
 import Revelar from '../components/Revelar.astro';
 import { buscarConteudo } from '../lib/dados.js';
@@ -11,99 +10,19 @@ const conteudo = await buscarConteudo('servicos');
 const titulo = conteudo?.titulo || 'Serviços';
 
 /**
- * Divide o texto do painel nos três serviços.
+ * Os três serviços, com o texto do site anterior sem uma palavra alterada —
+ * inclusive o negrito nos rótulos ("Individuais:", "Casais:"...) e nas
+ * palavras de fechamento, que Prosa não reproduz de propósito (só parágrafo e
+ * "## título", ver componente). Por isso este texto é fixo aqui, e não vem do
+ * banco: o painel não tem como editar negrito, e editar só o texto sem poder
+ * tocar o negrito criaria uma versão "meio editável" mais confusa que útil.
  *
- * Por que isto existe: no site anterior cada serviço aparece UMA vez, com o
- * texto longo embaixo do seu próprio título. Aqui o texto longo vinha inteiro
- * num bloco só, no fim da página, **depois** de três blocos curtos que diziam
- * quase a mesma coisa. Resultado: a página falava tudo duas vezes, e a segunda
- * vez vinha sem título nenhum separando um serviço do outro.
- *
- * O texto guardado no painel já vem dividido — as linhas `ART&CLÍNICA`,
- * `ART&MÉTRICA` e `ART&TERAPIA` separam as três partes, exatamente como no site
- * anterior. É por elas que cortamos.
- *
- * Falha fechada: se não encontrar as três marcas (alguém renomeou um serviço,
- * por exemplo), devolve null e a página volta ao arranjo antigo, com os textos
- * curtos e o texto do painel inteiro no fim. Nunca some conteúdo.
+ * Cada serviço é uma faixa de largura total (a mesma foto+texto 50/50 que a
+ * pintura da página A Arcádia), não mais um cartão com moldura dentro da
+ * coluna de 1120px — media ANTES achava que o quadro era ilustração; no
+ * site anterior ele é metade da tela, com corte (object-fit: cover), do
+ * mesmo jeito nos três.
  */
-function dividirPorServico(corpo) {
-  const linhas = String(corpo ?? '')
-    .replace(/\r\n/g, '\n')
-    .split('\n');
-
-  const marcas = [];
-  linhas.forEach((linha, i) => {
-    if (/^ART\s*&\s*(CLÍNICA|MÉTRICA|TERAPIA)\s*$/i.test(linha.trim())) marcas.push(i);
-  });
-  if (marcas.length !== 3) return null;
-
-  return marcas.map((inicio, k) => {
-    const fim = k + 1 < marcas.length ? marcas[k + 1] : linhas.length;
-    return linhas.slice(inicio + 1, fim).join('\n').trim();
-  });
-}
-
-const partes = dividirPorServico(conteudo?.corpo);
-
-/**
- * As três linhas de serviço da clínica, com os textos do site anterior sem uma
- * palavra alterada. O prefixo ART& é dela: a fusão entre arte e psicologia
- * aparece no nome, não na decoração.
- *
- * A página anterior intercalava três fotografias fixas entre os blocos — o
- * mesmo ritmo está aqui, com as mesmas fotos.
- *
- * Os quadros são obras que existem na clínica, e cada uma pertence a um
- * serviço. Quem decidiu o par foi a Wanda. O significado de cada uma está
- * guardado aqui e no `alt` da imagem, mas NÃO aparece na tela: a clínica pediu
- * para tirar as legendas. Quadro com explicação embaixo deixa de ser quadro e
- * vira ilustração de texto.
- *
- *   Clínica     — "os dois círculos sugerem uma relação, para simbolizar a
- *                  relação terapêutica onde paciente e terapeuta comparecem"
- *   Métrica     — "o círculo é o símbolo da perfeição, sem começo nem fim.
- *                  Aqui quem está sendo visto é o paciente na avaliação"
- *   Terapia     — "todos são representação do self, que também está na
- *                  logomarca dentro dos arcos"
- *
- * Os arquivos vieram da biblioteca do site antigo, em tamanho original, e não
- * das fotos de tela que ela mandou pelo WhatsApp — aquelas têm moiré do monitor
- * e não aguentam ampliação.
- */
-const SERVICOS = [
-  {
-    nome: 'ART&CLÍNICA',
-    resumo: 'Psicoterapia individual, de casais, famílias e grupos.',
-    texto:
-      'Arcádia Art&Clínica oferece atendimentos individuais, de casais, famílias e grupos, com foco na promoção da saúde mental e no fortalecimento dos vínculos interpessoais. Combinando técnicas tradicionais de psicoterapia com abordagens criativas.',
-    quadro: '/quadros/clinica.webp',
-    l: 900,
-    a: 1216,
-    alt: 'Quadro da clínica: dois círculos em espiral, lado a lado, sobre fundo escuro.',
-  },
-  {
-    nome: 'ART&MÉTRICA',
-    resumo: 'Avaliação psicológica com instrumentos validados pelo CFP.',
-    texto:
-      'Arcádia Art&Métrica, serviço de avaliação psicológica da Arcádia, oferece um processo completo e criterioso, baseado em entrevistas, observações e testes psicológicos validados pelo Conselho Federal de Psicologia (CFP).',
-    quadro: '/quadros/avaliacao.webp',
-    l: 900,
-    a: 1431,
-    alt: 'Quadro da clínica: um círculo formado por espirais em preto, creme e terracota.',
-  },
-  {
-    nome: 'ART&TERAPIA',
-    resumo: 'Arteterapia: a expressão do que é difícil de dizer em palavras.',
-    texto:
-      'Arcádia ART&TERAPIA oferece um espaço dedicado à expressão emocional através da arte, permitindo que sentimentos e experiências que, muitas vezes, são difíceis de verbalizar, sejam trabalhados de forma segura e criativa.',
-    quadro: '/quadros/arteterapia.webp',
-    l: 900,
-    a: 1216,
-    alt: 'Quadro da clínica: figuras sob uma sequência de arcos, com discos suspensos no ar.',
-  },
-];
-
 ---
 <Base
   titulo={titulo}
@@ -124,103 +43,182 @@ const SERVICOS = [
   </div>
 
   {/* Cada serviço é anunciado por uma faixa de foto do espaço, e a faixa vem
-      ANTES do texto, não entre um bloco e outro. É essa ordem que produz o
-      efeito que a clínica reconhece: a foto fica presa na tela e o texto sobe
-      por cima dela. Invertido, a foto vira separador e o efeito se perde.
-      As três fotos e a ordem são as do site anterior — conferi uma a uma pelo
-      endereço do arquivo. */}
+      ANTES do texto, não entre um bloco e outro. As três fotos e a ordem são
+      as do site anterior — conferi uma a uma pelo endereço do arquivo. */}
   <FaixaFoto foto="/espaco/0f2a4509.webp" altura="66vh" />
 
-  <section class="bloco">
-    <div class="miolo dupla">
-      <Revelar>
-        <div class="texto">
-          <h2>{SERVICOS[0].nome}</h2>
-          {partes
-            ? <Prosa texto={partes[0]} />
-            : <><p class="resumo">{SERVICOS[0].resumo}</p><p>{SERVICOS[0].texto}</p></>}
+  <section class="servico">
+    <Revelar>
+      <div class="dupla-servico">
+        <div class="texto-servico">
+          <h2>ART&CLÍNICA</h2>
+          <p>
+            A Arcádia Art&Clínica oferece um espaço acolhedor, integrando
+            psicoterapia e arteterapia para promover saúde mental, fortalecer
+            vínculos e ressignificar experiências difíceis. Nossa abordagem
+            une ciência, arte e humanismo, ajudando no autoconhecimento e no
+            enfrentamento de desafios emocionais.
+          </p>
+          <p>
+            Atendemos diferentes contextos, considerando as necessidades
+            específicas de cada situação:
+          </p>
+          <p>
+            • <strong>Individuais:</strong> Nossos atendimentos acolhem
+            crianças, adolescentes e adultos, ajudando-os a enfrentar
+            questões como ansiedade, baixa autoestima, dificuldades
+            emocionais e momentos de transição, sempre com foco na escuta
+            empática e no fortalecimento da autonomia emocional.
+          </p>
+          <p>
+            • <strong>Casais:</strong> Auxiliamos na construção de uma
+            comunicação mais clara e empática, ajudando a identificar
+            padrões que geram conflitos e promovendo estratégias conjuntas
+            para lidar com desafios no relacionamento, sempre respeitando os
+            limites e o ritmo do casal.
+          </p>
+          <p>
+            • <strong>Famílias:</strong> Atuamos como facilitadores do
+            diálogo e da compreensão entre os membros da família, ajudando a
+            identificar dinâmicas que podem ser ajustadas para promover
+            harmonia e equilíbrio nas relações, com o suporte constante de
+            dois profissionais para uma abordagem mais ampla e integrada.
+          </p>
+          <p>
+            • <strong>Grupos:</strong> Promovemos espaços coletivos onde a
+            troca de experiências e o fortalecimento de conexões
+            interpessoais são incentivados. O trabalho em grupo valoriza o
+            apoio mútuo e a construção de vínculos em um ambiente seguro e
+            acolhedor.
+          </p>
+          <p>
+            Se você busca compreender melhor suas <strong>emoções</strong>,
+            enfrentar <strong>dificuldades</strong> nos relacionamentos ou
+            encontrar novas formas de lidar com{' '}
+            <strong>questões pessoais</strong>, estamos aqui para
+            acompanhá-lo em uma jornada de equilíbrio e transformação.
+          </p>
         </div>
-      </Revelar>
-      <Revelar>
-        <figure class="quadro">
+        <figure class="quadro-cheio">
           <img
-            src={SERVICOS[0].quadro}
-            alt={SERVICOS[0].alt}
-            width={SERVICOS[0].l}
-            height={SERVICOS[0].a}
+            src="/quadros/clinica.webp"
+            alt="Quadro da clínica: dois círculos em espiral, lado a lado, sobre fundo escuro."
+            width="900"
+            height="1216"
             loading="lazy"
             decoding="async"
           />
         </figure>
-      </Revelar>
-    </div>
+      </div>
+    </Revelar>
   </section>
 
   <FaixaFoto foto="/espaco/sala-de-grupo.webp" altura="66vh" />
 
-  <section class="bloco creme">
-    <div class="miolo dupla">
-      <Revelar>
-        <div class="texto">
-          <h2>{SERVICOS[1].nome}</h2>
-          {partes
-            ? <Prosa texto={partes[1]} />
-            : <><p class="resumo">{SERVICOS[1].resumo}</p><p>{SERVICOS[1].texto}</p></>}
+  <section class="servico creme">
+    <Revelar>
+      <div class="dupla-servico">
+        <div class="texto-servico">
+          <h2>ART&MÉTRICA</h2>
+          <p>
+            A Arcádia Art&Métrica, serviço de avaliação psicológica da
+            Clínica Arcádia, oferece um processo completo, criterioso e
+            personalizado de avaliação. Baseamo-nos em entrevistas,
+            observações e *testes psicológicos validados pelo Conselho
+            Federal de Psicologia (CFP), com o objetivo de compreender cada
+            pessoa em sua singularidade, indo além de um simples
+            diagnóstico.
+          </p>
+          <p>
+            Nossa abordagem é guiada pelo conceito de normalidade de J.
+            Bergeret, que entende o ser humano como plural e adaptável. Para
+            Bergeret, a normalidade é flexível e reflete a capacidade de
+            cada pessoa de se ajustar às circunstâncias da vida. Com essa
+            perspectiva, buscamos identificar não apenas os desafios, mas
+            também as forças e potencialidades de cada indivíduo,
+            promovendo um olhar equilibrado e acolhedor.
+          </p>
+          <p>
+            O processo é conduzido por dois profissionais, garantindo rigor
+            e abrangência em todas as etapas. Essas incluem observação do
+            comportamento, aplicação de testes neuropsicológicos,
+            psicométricos e de personalidade, além de escalas científicas
+            validadas. Ao final, realizamos uma devolutiva, apresentando os
+            resultados e oferecendo orientações sobre intervenções e apoios
+            adequados para o crescimento e o autoconhecimento.
+          </p>
+          <p>
+            Atendemos crianças a partir de dois anos, adolescentes, adultos
+            e idosos, sempre respeitando o contexto, a história e as
+            necessidades de cada indivíduo. Nosso compromisso é oferecer um
+            processo acolhedor, transparente e adaptado, onde ciência e arte
+            se unem para apoiar cada pessoa em sua jornada de
+            autoconhecimento e equilíbrio.
+          </p>
         </div>
-      </Revelar>
-      <Revelar>
-        <figure class="quadro">
+        <figure class="quadro-cheio">
           <img
-            src={SERVICOS[1].quadro}
-            alt={SERVICOS[1].alt}
-            width={SERVICOS[1].l}
-            height={SERVICOS[1].a}
+            src="/quadros/avaliacao.webp"
+            alt="Quadro da clínica: um círculo formado por espirais em preto, creme e terracota."
+            width="900"
+            height="1431"
             loading="lazy"
             decoding="async"
           />
         </figure>
-      </Revelar>
-    </div>
+      </div>
+    </Revelar>
   </section>
 
   {/* Esta é a estante onde o próprio quadro da arteterapia está encostado —
-      por isso ela abre justamente o bloco ART&TERAPIA, como no site anterior. */}
+      por isso ela abre justamente o bloco ART&TERAPIA, como no site
+      anterior. */}
   <FaixaFoto foto="/espaco/atendimento.webp" altura="66vh" />
 
-  <section class="bloco">
-    <div class="miolo dupla">
-      <Revelar>
-        <div class="texto">
-          <h2>{SERVICOS[2].nome}</h2>
-          {partes
-            ? <Prosa texto={partes[2]} />
-            : <><p class="resumo">{SERVICOS[2].resumo}</p><p>{SERVICOS[2].texto}</p></>}
-          <p class="acao"><a class="botao" href="/oficinas">Ver as oficinas</a></p>
-        </div>
-      </Revelar>
-      <Revelar>
-        <figure class="quadro">
+  <section class="servico">
+    <Revelar>
+      {/* Único dos três com a imagem à esquerda — é assim no site anterior,
+          não um erro de padronização. */}
+      <div class="dupla-servico invertida">
+        <figure class="quadro-cheio">
           <img
-            src={SERVICOS[2].quadro}
-            alt={SERVICOS[2].alt}
-            width={SERVICOS[2].l}
-            height={SERVICOS[2].a}
+            src="/quadros/arteterapia.webp"
+            alt="Quadro da clínica: figuras sob uma sequência de arcos, com discos suspensos no ar."
+            width="900"
+            height="1216"
             loading="lazy"
             decoding="async"
           />
         </figure>
-      </Revelar>
-    </div>
+        <div class="texto-servico">
+          <h2>ART&TERAPIA</h2>
+          <p>
+            A Arcádia ART&TERAPIA oferece um espaço único para a expressão
+            emocional por meio da arte, permitindo trabalhar sentimentos
+            difíceis de verbalizar de forma segura e criativa. Inspirados
+            por Jung, que afirmou que “a arte é um reflexo simbólico do
+            mundo interno”, ajudamos a acessar e transformar conteúdos
+            profundos do inconsciente.
+          </p>
+          <p>
+            Com técnicas como colagem, desenho e modelagem com argila, a
+            ART&TERAPIA promove o contato com emoções e conflitos internos,
+            facilitando sua ressignificação e o autoconhecimento. Esse
+            serviço é ideal para quem busca transformar experiências
+            difíceis em algo compreensível e significativo.
+          </p>
+          <p>
+            Integrada aos serviços de ART&CLÍNICA (psicoterapia) e
+            ART&MÉTRICA (avaliação psicológica), a ART&TERAPIA amplia as
+            possibilidades de cuidado. Nosso objetivo é oferecer um espaço
+            onde a expressão artística conecta consciente e inconsciente,
+            apoiando o equilíbrio emocional e a transformação pessoal.
+          </p>
+          <p class="acao"><a class="botao" href="/oficinas">Ver as oficinas</a></p>
+        </div>
+      </div>
+    </Revelar>
   </section>
-
-  {/* Só entra se a divisão acima não tiver funcionado — aí é melhor mostrar o
-      texto inteiro aqui do que perder conteúdo. Com a divisão em pé, cada
-      serviço já mostrou o seu, e repetir seria dizer tudo duas vezes. */}
-  {!partes && conteudo?.corpo && (
-    <section class="bloco creme">
-      <div class="miolo"><Prosa texto={conteudo.corpo} /></div>
-    </section>
-  )}
 </Base>
 
 <style>
@@ -264,75 +262,63 @@ const SERVICOS = [
     text-align: center;
   }
 
-  .bloco { padding: var(--e-6) var(--e-3); }
-  .bloco.creme { background: var(--creme); }
-  .miolo { max-width: 1120px; margin: 0 auto; }
+  .servico.creme { background: var(--creme); }
 
-  /* Texto à esquerda, quadro à direita — o arranjo do site anterior.
-     Centralizado na vertical porque os textos são curtos (quatro linhas) e os
-     quadros são altos: alinhando pelo topo, sobrava um vão embaixo do texto do
-     tamanho de meia tela, e vão desse tamanho parece falta de conteúdo, não
-     respiro. Com as três obras na mesma altura, centralizar dá um bloco
-     equilibrado sem encolher a obra. */
-  .dupla {
+  /* Medido ao vivo no original: faixa de largura total (não os 1120px do
+     resto do site), metade texto metade quadro, sem espaço entre as
+     colunas — o quadro ocupa a altura inteira da faixa, cortado com
+     object-fit: cover, não emoldurado e flutuando como um cartão. */
+  .dupla-servico {
     display: grid;
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-    gap: var(--e-5);
-    align-items: center;
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
   }
+  .dupla-servico.invertida .texto-servico { order: 2; }
+  .dupla-servico.invertida .quadro-cheio { order: 1; }
 
-  /* Altura igual para os três, largura livre.
-     As obras têm proporções diferentes — foram fotografadas, não recortadas
-     para caber. Fixar a largura deixaria uma delas bem mais alta que as outras
-     e abriria um vão embaixo do texto, que é curto. Fixando a altura, as três
-     ficam do mesmo tamanho aparente, como quadros pendurados na mesma parede. */
-  .quadro {
-    margin: 0 auto;
-    width: fit-content;
-    max-width: 100%;
+  .texto-servico {
+    padding: var(--e-6) 76px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
-  .quadro img {
-    display: block;
-    width: auto;
-    max-width: 100%;
-    max-height: 460px;
-    height: auto;
-    border-radius: 2px;
-    /* Sombra curta e baixa: são quadros pendurados numa parede, não cartões
-       flutuando. Sombra demais transforma obra em componente de interface. */
-    box-shadow: 0 6px 22px rgb(34 26 20 / 0.13);
-  }
-
-  h2 {
-    font-family: var(--fonte-texto);
-    font-size: var(--t-lg);
-    font-weight: 700;
-    letter-spacing: 0.06em;
+  /* Título medido no original: caixa clara (mesma cor das outras caixas do
+     site), 29.6px Cardo, peso normal, centralizado — não a etiqueta
+     pequena em caixa alta que tínhamos. */
+  .texto-servico h2 {
+    background: rgb(236, 234, 223);
     color: var(--terracota);
-    margin: 0 0 var(--e-1);
-  }
-  .resumo {
     font-family: var(--fonte-titulo);
-    font-size: var(--t-xl);
-    color: var(--tinta);
+    font-size: 29.6px;
+    font-weight: 400;
+    text-align: center;
     margin: 0 0 var(--e-3);
-    max-width: 30ch;
+    padding: var(--e-2) 0;
   }
-  .bloco p { max-width: var(--medida); margin: 0 0 1em; }
-  .acao { margin-top: var(--e-3); }
+  .texto-servico p {
+    color: var(--terracota);
+    font-size: 16.8px;
+    margin: 0 0 16.8px;
+  }
+  .texto-servico p:last-child { margin-bottom: 0; }
+  .acao { margin-top: var(--e-2) !important; }
 
-  /* Abaixo de 900px o quadro em coluna estreita fica alto e magro demais e
-     empurra o texto para longe. Vira uma coluna só, com o quadro depois do
-     texto e com largura limitada — obra pequena e nítida é melhor que obra
-     grande e esticada. */
+  .quadro-cheio { margin: 0; }
+  .quadro-cheio img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
   @media (max-width: 900px) {
-    .dupla { grid-template-columns: 1fr; gap: var(--e-4); }
-    .quadro { margin: 0; }
-    .quadro img { max-height: 380px; }
-  }
-
-  @media (max-width: 720px) {
-    .bloco { padding: var(--e-5) var(--e-3); }
-    .resumo { font-size: var(--t-lg); }
+    .dupla-servico,
+    .dupla-servico.invertida {
+      grid-template-columns: 1fr;
+    }
+    .dupla-servico.invertida .texto-servico { order: 1; }
+    .dupla-servico.invertida .quadro-cheio { order: 2; }
+    .texto-servico { padding: var(--e-5) var(--e-3); }
+    .quadro-cheio img { max-height: 60vh; }
   }
 </style>
