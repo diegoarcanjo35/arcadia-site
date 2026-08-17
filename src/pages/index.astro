@@ -544,6 +544,13 @@ const SERVICOS = [
     .dupla { grid-template-columns: 1fr; gap: var(--e-4); }
     .colagem { max-width: 380px; }
     .dupla-arcadia { grid-template-columns: 1fr; }
+    /* No mobile, o vídeo do site anterior é bem mais vertical que no
+       desktop — 352,5×430px medido ao vivo (proporção 0,82:1), perto do
+       formato retrato original da gravação (480×848). Ocupa bastante mais
+       tela para baixo do que a proporção 960:528 usada no resto do site, que
+       é a do recorte de desktop — sem essa troca o vídeo ficava baixo demais
+       e o texto seguinte já aparecia colado, junto na mesma tela. */
+    .foto-arcadia { aspect-ratio: 352.5 / 430; }
     /* Sem espaço pra uma linha só num celular — aqui a quebra volta. */
     .tese { white-space: normal; padding: var(--e-3); }
   }
