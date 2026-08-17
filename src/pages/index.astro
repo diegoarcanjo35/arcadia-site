@@ -191,7 +191,7 @@ const SERVICOS = [
               Cada encontro é uma oportunidade única de descoberta e crescimento,
               enriquecida pela interação coletiva.
             </p>
-            <p class="acao-secao"><a class="botao claro" href="/oficinas">Saiba +</a></p>
+            <p class="acao-secao"><a class="botao vermelho" href="/oficinas">Saiba +</a></p>
           </div>
         </Revelar>
 
@@ -418,14 +418,18 @@ const SERVICOS = [
     gap: var(--e-5);
     align-items: center;
   }
-  /* Cabeçalho da faixa terracota. O "Oficinas" logo abaixo é o assunto; este é
-     o anúncio do conjunto, então vem menor e mais espaçado do que ele — se os
-     dois tiverem o mesmo peso, a pessoa lê dois títulos e não uma hierarquia. */
-  .cabecalho-faixa { margin-bottom: var(--e-5); }
-  .cabecalho-faixa .subtitulo-secao { color: #f0e2d4; margin-bottom: 0; }
+  /* Cabeçalho da faixa terracota. Medido ao vivo: os dois títulos ("Atividades
+     e conteúdos" e "Oficinas") têm o MESMO tamanho (40px/peso 400) — não um
+     menor que o outro, como eu tinha suposto sem medir. */
+  .cabecalho-faixa { margin-bottom: var(--e-5); text-align: center; }
+  .cabecalho-faixa .subtitulo-secao { color: #fff; margin-bottom: 0; }
 
-  .texto-claro { color: #f6ede2; }
-  .texto-claro .titulo-secao { color: var(--creme); }
+  .texto-claro { color: rgb(236, 234, 223); }
+  .texto-claro .titulo-secao {
+    color: var(--creme);
+    font-size: 40px;
+    font-weight: 400;
+  }
   .texto-claro p { margin: 0 0 1em; }
 
   .colagem { margin: 0; }
@@ -436,14 +440,19 @@ const SERVICOS = [
     border-radius: var(--raio);
   }
 
-  /* Botão claro sobre a terracota: o terracota-sobre-terracota do site
-     anterior sumia no fundo. */
-  .botao.claro {
-    background: var(--creme);
-    border-color: var(--creme);
-    color: var(--terracota);
+  /* Medido ao vivo no original: NÃO é o botão claro que eu tinha suposto —
+     é um vermelho próprio (rgb(201,34,34), diferente do terracota), largura
+     total da coluna, sem borda, texto centralizado. */
+  .botao.vermelho {
+    display: block;
+    width: 100%;
+    background: rgb(201, 34, 34);
+    border: none;
+    color: var(--creme);
+    text-align: center;
+    padding: 16px 0;
   }
-  .botao.claro:hover { background: #fff; border-color: #fff; color: var(--terracota-escuro); }
+  .botao.vermelho:hover { background: #a01c1c; }
 
   /* ----------------------------------------------------------- cartões */
   .cabeca {
