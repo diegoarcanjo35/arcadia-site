@@ -78,14 +78,19 @@ const ano = new Date().getFullYear();
   }
   .marca-col img { height: 78px; width: auto; }
 
-  /* Tamanho e cor medidos no original (getComputedStyle): 16.8px, cor
-     terracota — não ocre nem caixa alta, que era estilo nosso. */
+  /* Medido no original: 16.8px, terracota, com uma caixa clara atrás do
+     texto (não um título solto) — rgb(236,234,223), cantos retos, padding
+     generoso. Faltava a caixa; sem ela o título parecia só maior, não
+     igual. */
   h2 {
     font-family: var(--fonte-texto);
     font-size: 16.8px;
     color: var(--terracota);
-    margin: 0 0 var(--e-2);
     font-weight: 600;
+    display: inline-block;
+    background: rgb(236, 234, 223);
+    padding: 21px 39.9px;
+    margin: 0 0 var(--e-2) -39.9px;
   }
   ul { list-style: none; margin: 0; padding: 0; }
   li { margin-bottom: 0.55rem; }
