@@ -307,8 +307,11 @@ const SERVICOS = [
   .subtitulo-secao { margin: 0 0 var(--e-4); color: var(--corpo); }
   .acao-secao { margin: var(--e-3) 0 0; }
 
-  .texto-arcadia p { margin: 0 0 1em; max-width: 62ch; }
-  .fecho { max-width: 62ch; margin: var(--e-2) 0 0; font-size: var(--t-lg); color: var(--tinta); }
+  /* Wanda pediu duas vezes: texto menor aqui, pra passar mais rápido pro
+     próximo conteúdo (Oficinas/Artigos) — não é o texto principal da home,
+     é convite pra seção própria (/a-arcadia). */
+  .texto-arcadia p { margin: 0 0 1em; max-width: 62ch; font-size: var(--t-sm); }
+  .fecho { max-width: 62ch; margin: var(--e-2) 0 0; font-size: var(--t-sm); color: var(--tinta); }
 
   /* ---------------------------------------------------------- a arcádia */
   .dupla-arcadia {
