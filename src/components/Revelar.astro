@@ -18,10 +18,14 @@
  * 'esquerda' ou 'direita'. Quem chama decide o lado; o componente não
  * alterna sozinho, porque só quem monta a página sabe qual bloco fica visualmente
  * à esquerda ou à direita do outro.
+ *
+ * `duracao`: quanto tempo dura a entrada, em ms. Padrão 900 — um pouco mais
+ * lento que os 700ms originais. Blocos que devem chamar mais atenção (o
+ * vídeo, por exemplo) recebem um valor bem maior na hora de usar o componente.
  */
-const { direcao = 'cima' } = Astro.props;
+const { direcao = 'cima', duracao = 900 } = Astro.props;
 ---
-<div class="revelar" data-direcao={direcao}><slot /></div>
+<div class="revelar" data-direcao={direcao} style={`--duracao: ${duracao}ms`}><slot /></div>
 
 <style>
   /* Nenhum estado inicial aqui de propósito. O bloco começa visível; a classe
@@ -29,12 +33,13 @@ const { direcao = 'cima' } = Astro.props;
   .revelar {
     --deslocamento: 32px;
     --deslocamento-lateral: 56px;
+    --duracao: 900ms;
   }
 
   :global(html.js-revelar) .revelar {
     opacity: 0;
     transform: translateY(var(--deslocamento));
-    transition: opacity 1200ms ease, transform 1200ms ease;
+    transition: opacity var(--duracao) ease, transform var(--duracao) ease;
   }
   :global(html.js-revelar) .revelar[data-direcao='esquerda'] {
     transform: translateX(calc(var(--deslocamento-lateral) * -1));

@@ -59,11 +59,11 @@ const SERVICOS = [
       clínica, em vez de legenda solta abaixo, que era o tratamento antigo). */}
   <section class="faixa creme">
     <div class="dupla-arcadia">
-      {/* A pedido: vídeo e legenda entram juntos, no mesmo movimento — no
-          site anterior só a legenda tinha entrada animada, mas aqui os dois
-          saem do mesmo <Revelar> de propósito. */}
-      <Revelar direcao="esquerda">
-        <div>
+      {/* Vídeo e legenda entram do mesmo lado, mas em velocidades diferentes:
+          o vídeo é o elemento de maior destaque da seção, então merece uma
+          entrada bem mais lenta e perceptível; a legenda segue o ritmo padrão. */}
+      <div>
+        <Revelar direcao="esquerda" duracao={2600}>
           <figure class="foto-arcadia">
             <video
               class="video-arcadia"
@@ -77,14 +77,16 @@ const SERVICOS = [
               <source src="/capa-arcos.mp4" type="video/mp4" />
             </video>
           </figure>
-          {/* Legenda simples embaixo, sem véu nem sobreposição — é assim que o
-              site anterior mostra essa frase (fundo claro, não sobre a imagem). */}
+        </Revelar>
+        {/* Legenda simples embaixo, sem véu nem sobreposição — é assim que o
+            site anterior mostra essa frase (fundo claro, não sobre a imagem). */}
+        <Revelar direcao="esquerda">
           <p class="legenda-arcadia">
             Arcádia representa um refúgio de paz, simplicidade e harmonia com a
             natureza, distante das inquietações do mundo moderno.
           </p>
-        </div>
-      </Revelar>
+        </Revelar>
+      </div>
       <Revelar direcao="direita">
         <div class="texto-arcadia">
           <h2 class="titulo-secao titulo-caixa">A ARCÁDIA</h2>
