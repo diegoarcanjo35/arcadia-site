@@ -13,8 +13,22 @@ export const prerender = false;
 
 const conteudo = await buscarConteudo('a-arcadia');
 const titulo = conteudo?.titulo || 'A Arcádia';
+
+/**
+ * No site anterior, só o primeiro bloco ("por que esse nome") vinha ao lado
+ * da pintura (arcadismo.jpg) — texto à esquerda, imagem à direita. Os dois
+ * blocos seguintes ("Arcádia na Psicologia", "Arcádia e o Ambiente
+ * Terapêutico") vinham em largura cheia, sem imagem. Por isso o corpo é
+ * cortado aqui: tudo antes de "## Arcádia na Psicologia" forma a dupla com a
+ * pintura; o resto segue como texto corrido, igual já estava.
+ */
+const corpo = conteudo?.corpo || '';
+const corteResto = '## Arcádia na Psicologia';
+const indiceCorte = corpo.indexOf(corteResto);
+const introducao = indiceCorte >= 0 ? corpo.slice(0, indiceCorte).trim() : corpo;
+const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
 ---
-<Base titulo={titulo} descricao="A história, a proposta e o conceito de marca da Arcádia Psicologia.">
+<Base titulo={titulo} descricao="A história, a proposta e o conceito de marca da Arcádia Psicologia." cabecalhoSobreImagem>
   {/* Capa dos arcos, como em todas as páginas internas do site anterior. A foto
       do consultório que estava aqui era, lá, a faixa fixa do meio da página —
       está de volta ao lugar dela, logo abaixo do texto. */}
@@ -25,15 +39,54 @@ const titulo = conteudo?.titulo || 'A Arcádia';
     altura="cheia"
   />
   <div class="corpo">
-    {conteudo?.corpo
-      ? <Prosa texto={conteudo.corpo} />
-      : <AguardandoConteudo itens={["o texto de apresentação da clínica", "a origem do nome e o conceito da marca", "a abordagem de trabalho"]} />}
+    {conteudo?.corpo ? (
+      <>
+        <div class="dupla-nome">
+          <Prosa texto={introducao} />
+          <figure class="pintura">
+            <img src="/a-arcadia/arcadismo.jpg" alt="" width="846" height="697" loading="lazy" decoding="async" />
+          </figure>
+        </div>
+        {resto && <Prosa texto={resto} />}
+      </>
+    ) : (
+      <AguardandoConteudo itens={["o texto de apresentação da clínica", "a origem do nome e o conceito da marca", "a abordagem de trabalho"]} />
+    )}
     {/* Link do site anterior: a página de nome ("Quem Somos") levava à página
         de marca ("Nossa Marca"). Mantido aqui pelo mesmo motivo do lá. */}
     <p class="acao-secao"><a class="botao" href="/nossa-marca">Conheça nossa marca</a></p>
   </div>
 
   <FaixaFoto foto="/espaco/0f2a4516.webp" altura="66vh" />
+
+  {/* "Psicóloga Responsável": existia no site anterior nesta mesma página
+      (foto + bio da Wanda), com fundo próprio separado do resto do texto.
+      Tinha ficado de fora achando que /equipe (que não existia lá) resolvia
+      sozinho — mas o site anterior tinha as duas coisas, e aqui é onde
+      "quem está por trás" fica ao lado da explicação do nome. */}
+  <section class="responsavel">
+    <div class="corpo">
+      <h2 class="titulo-secao">Psicóloga Responsável</h2>
+      <figure class="retrato">
+        <img src="/equipe/wanda-meyer-mattos.webp" alt="Wanda Meyer, psicóloga" width="266" height="266" loading="lazy" decoding="async" />
+      </figure>
+      <p>
+        Seja bem-vindo(a)! Sou <strong>Wanda Meyer</strong>, psicóloga fascinada
+        pela arte, pelos símbolos e pela psique. Acredito que a arte e a
+        psicologia podem caminhar juntas, abrindo espaços para o
+        autoconhecimento, a transformação e a construção de sentidos.
+      </p>
+      <p>
+        Minha trajetória une Psicologia Analítica, História da Arte,
+        Arteterapia e Mitologia, explorando as temáticas que nos atravessam —
+        sejam elas conscientes ou não. No meu trabalho, atuo no atendimento
+        clínico individual, com familiares e em grupo; na avaliação
+        psicológica; e nas oficinas com Arteterapia. Aqui, a criatividade não
+        é vista como um talento, mas como uma linguagem — um caminho para
+        acessar o que, muitas vezes, as palavras não alcançam.
+      </p>
+    </div>
+  </section>
 
   <div class="corpo">
     {/* As fotos entram mesmo sem o texto: elas não dependem de ninguém
@@ -46,4 +99,40 @@ const titulo = conteudo?.titulo || 'A Arcádia';
 <style>
   .corpo { max-width: 1120px; margin: 0 auto; padding: var(--e-4) var(--e-3) 0; }
   .acao-secao { margin: var(--e-3) 0 0; }
+
+  .dupla-nome {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: var(--e-5);
+    align-items: center;
+    margin-bottom: var(--e-4);
+  }
+  .pintura { margin: 0; }
+  .pintura img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--raio);
+  }
+  @media (max-width: 800px) {
+    .dupla-nome { grid-template-columns: 1fr; }
+  }
+
+  .responsavel {
+    background: var(--creme);
+    padding: var(--e-5) 0;
+    margin-top: var(--e-4);
+    text-align: center;
+  }
+  .responsavel .corpo { padding-top: 0; }
+  .responsavel .titulo-secao { text-align: center; }
+  .retrato {
+    margin: 0 auto var(--e-3);
+    width: 266px;
+    height: 266px;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+  .retrato img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .responsavel p { max-width: 68ch; margin: 0 auto 1em; text-align: left; }
 </style>
