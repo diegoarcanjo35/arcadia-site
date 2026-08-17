@@ -114,3 +114,25 @@ export async function buscarArtigo(slug) {
     return null;
   }
 }
+
+/** Comentários aprovados de um artigo. Sem banco ou tabela ainda, lista vazia. */
+export async function listarComentariosAprovados(artigoId) {
+  const db = await pegarDB();
+  if (!db) return [];
+  try {
+    return await a.listarComentariosAprovados(db, artigoId);
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Grava um comentário pendente de aprovação.
+ * Sem fallback de exemplo, igual a `registrarInscricao`: gravar em lugar
+ * nenhum e responder "recebido" mentiria para quem escreveu.
+ */
+export async function registrarComentario(dados) {
+  const db = await pegarDB();
+  if (!db) return { ok: false, erro: 'sem_banco' };
+  return a.registrarComentario(db, dados);
+}

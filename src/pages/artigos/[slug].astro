@@ -1,7 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Prosa from '../../components/Prosa.astro';
-import { buscarArtigo, listarArtigos } from '../../lib/dados.js';
+import { buscarArtigo, listarArtigos, listarComentariosAprovados } from '../../lib/dados.js';
 import { formatarDataArtigo, tempoDeLeitura } from '../../lib/artigos.js';
 
 export const prerender = false;
@@ -20,6 +20,36 @@ const data = formatarDataArtigo(artigo.publicado_em);
 const minutos = tempoDeLeitura(artigo.corpo);
 
 const outros = (await listarArtigos()).filter((a) => a.slug !== slug).slice(0, 3);
+const comentarios = await listarComentariosAprovados(artigo.id);
+
+/**
+ * Resultado do POST em /api/comentario, devolvido como `?c=`.
+ * Mesmo desenho de RESULTADOS em oficinas/[slug].astro — a API decide o que
+ * aconteceu, a página decide como contar.
+ */
+const RESULTADOS_COMENTARIO = {
+  recebido: {
+    tom: 'bom',
+    titulo: 'Comentário recebido.',
+    texto: 'Ele aparece aqui assim que a equipe da Arcádia aprovar.',
+  },
+  consentimento: {
+    tom: 'aviso',
+    titulo: 'Falta o aceite da Política de Privacidade.',
+    texto: 'Sem esse aceite não podemos guardar seu comentário. Marque a caixa e envie de novo.',
+  },
+  nome: { tom: 'aviso', titulo: 'Confira o nome.', texto: 'Precisamos do nome para saber quem escreveu.' },
+  email: { tom: 'aviso', titulo: 'Confira o e-mail.', texto: 'O endereço informado parece incompleto.' },
+  corpo: { tom: 'aviso', titulo: 'O comentário ficou vazio.', texto: 'Escreva algo antes de enviar.' },
+  indisponivel: {
+    tom: 'ruim',
+    titulo: 'Não conseguimos registrar agora.',
+    texto: 'Foi uma falha nossa, não sua. Tente novamente em instantes.',
+  },
+  erro: { tom: 'ruim', titulo: 'Algo deu errado no envio.', texto: 'Tente novamente em instantes.' },
+};
+
+const resultadoComentario = RESULTADOS_COMENTARIO[Astro.url.searchParams.get('c')] ?? null;
 
 // Schema.org do artigo. O Google usa isto para mostrar autor e data no
 // resultado de busca — e data visível é o que separa "texto de clínica" de
@@ -62,6 +92,69 @@ const jsonLd = {
   <article class="corpo">
     <Prosa texto={artigo.corpo} />
   </article>
+
+  <section class="comentarios" id="comentarios">
+    <h2>Comentários</h2>
+
+    {comentarios.length > 0 ? (
+      <ul class="lista-comentarios">
+        {comentarios.map((c) => (
+          <li>
+            <p class="autor-comentario">
+              <strong>{c.nome}</strong>
+              <span class="quando">{formatarDataArtigo(c.criado_em?.slice(0, 10)) ?? ''}</span>
+            </p>
+            <p class="texto-comentario">{c.corpo}</p>
+            {c.resposta && (
+              <div class="resposta-clinica">
+                <strong>Resposta da Arcádia</strong>
+                <p>{c.resposta}</p>
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p class="sem-comentarios">Seja a primeira pessoa a comentar.</p>
+    )}
+
+    {resultadoComentario && (
+      <div class:list={['resultado', resultadoComentario.tom]} role="status" tabindex="-1">
+        <strong>{resultadoComentario.titulo}</strong>
+        <p>{resultadoComentario.texto}</p>
+      </div>
+    )}
+
+    <form method="POST" action="/api/comentario" class="form-comentario">
+      <input type="hidden" name="artigo_id" value={artigo.id} />
+      <input type="hidden" name="slug" value={artigo.slug} />
+
+      {/* Honeypot: invisível para gente, irresistível para robô. */}
+      <div class="armadilha" aria-hidden="true">
+        <label>Não preencha este campo
+          <input type="text" name="confirme_nao_preencher" tabindex="-1" autocomplete="off" />
+        </label>
+      </div>
+
+      <div class="linha-forma">
+        <label>Nome<input type="text" name="nome" required autocomplete="name" /></label>
+        <label>E-mail<input type="email" name="email" required autocomplete="email" /></label>
+      </div>
+      <label>Comentário<textarea name="corpo" required></textarea></label>
+
+      {/* Sem relato clínico incentivado — é comentário sobre o texto, não
+          espaço de queixa. A Política de Privacidade cobre o resto. */}
+      <label class="aceite">
+        <input type="checkbox" name="consentimento" value="1" required />
+        <span>
+          Concordo que meu nome e comentário sejam publicados aqui após aprovação, conforme a{' '}
+          <a href="/politica-de-privacidade">Política de Privacidade</a>.
+        </span>
+      </label>
+
+      <button type="submit">Enviar comentário</button>
+    </form>
+  </section>
 
   {outros.length > 0 && (
     <aside class="mais">
@@ -110,7 +203,20 @@ const jsonLd = {
   .trilha { font-size: var(--t-sm); color: var(--apagado); margin-bottom: var(--e-2); }
   .trilha a { color: var(--terracota); text-decoration: none; }
 
-  h1 { font-size: var(--t-3xl); margin: 0 0 var(--e-2); max-width: 24ch; }
+  /* Caixa clara, Cardo, terracota — medido ao vivo no site anterior (mesmo
+     padrão das outras páginas internas, mas aqui alinhado à esquerda, não
+     centralizado, e do tamanho do texto — não da coluna inteira). */
+  h1 {
+    display: inline-block;
+    background: rgb(236, 234, 223);
+    color: var(--terracota);
+    font-family: var(--fonte-titulo);
+    font-size: 40px;
+    font-weight: 400;
+    padding: var(--e-2) var(--e-3);
+    margin: 0 0 var(--e-2);
+    max-width: 24ch;
+  }
 
   /* Autor, data e tempo de leitura numa linha só, separados por ponto médio
      desenhado em CSS — assim o separador não é lido em voz alta por leitor de
@@ -138,6 +244,103 @@ const jsonLd = {
     padding: var(--e-5) var(--e-3) 0;
     font-size: var(--t-lg);
     line-height: 1.75;
+    color: var(--terracota);
+  }
+
+  /* ------------------------------------------------------- comentários */
+  .comentarios {
+    max-width: 68ch;
+    margin: var(--e-6) auto 0;
+    padding: var(--e-4) var(--e-3) 0;
+    border-top: 1px solid var(--linha);
+  }
+  .comentarios h2 { font-size: var(--t-xl); margin: 0 0 var(--e-3); }
+
+  .lista-comentarios { list-style: none; margin: 0 0 var(--e-4); padding: 0; }
+  .lista-comentarios li { padding: var(--e-2) 0; border-bottom: 1px solid var(--linha); }
+  .lista-comentarios li:first-child { padding-top: 0; }
+  .autor-comentario { margin: 0 0 0.3rem; font-size: var(--t-sm); }
+  .autor-comentario strong { margin-right: 0.6rem; }
+  .quando { color: var(--apagado); font-size: var(--t-xs); }
+  .texto-comentario { margin: 0; white-space: pre-wrap; }
+
+  .resposta-clinica {
+    margin-top: var(--e-2);
+    padding: var(--e-2) var(--e-3);
+    background: var(--creme-suave);
+    border-left: 3px solid var(--terracota);
+    border-radius: var(--raio);
+    font-size: var(--t-sm);
+  }
+  .resposta-clinica strong {
+    display: block;
+    font-size: var(--t-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--terracota);
+    margin-bottom: 0.25rem;
+  }
+  .resposta-clinica p { margin: 0; white-space: pre-wrap; }
+
+  .sem-comentarios { color: var(--apagado); margin: 0 0 var(--e-4); }
+
+  .resultado {
+    border-radius: var(--raio);
+    padding: var(--e-2) var(--e-3);
+    margin-bottom: var(--e-3);
+    border-left: 3px solid var(--terracota);
+    background: var(--creme-suave);
+  }
+  .resultado strong { display: block; margin-bottom: 0.25rem; }
+  .resultado p { margin: 0; font-size: var(--t-sm); color: var(--corpo); }
+  .resultado.bom { border-left-color: #4a7c59; }
+  .resultado.aviso { border-left-color: var(--ocre); }
+  .resultado.ruim { border-left-color: #a3432f; }
+
+  .form-comentario { display: grid; gap: var(--e-2); margin-bottom: var(--e-4); }
+  .linha-forma { display: grid; grid-template-columns: 1fr 1fr; gap: var(--e-2); }
+  .form-comentario label { display: grid; gap: 0.3rem; font-size: var(--t-sm); color: var(--corpo); }
+  .form-comentario input[type='text'],
+  .form-comentario input[type='email'],
+  .form-comentario textarea {
+    font: inherit;
+    font-size: var(--t-sm);
+    padding: 0.55rem 0.7rem;
+    border: 1px solid var(--linha);
+    border-radius: var(--raio);
+    background: var(--papel);
+  }
+  .form-comentario textarea { min-height: 6rem; resize: vertical; }
+  .form-comentario input:focus,
+  .form-comentario textarea:focus { border-color: var(--terracota); }
+
+  .aceite { grid-template-columns: auto 1fr; align-items: start; gap: 0.55rem; font-size: var(--t-xs); }
+  .aceite span { line-height: 1.45; }
+
+  .armadilha {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .form-comentario button {
+    justify-self: start;
+    font: inherit;
+    font-size: var(--t-sm);
+    font-weight: 500;
+    background: var(--terracota);
+    color: #fff;
+    border: 0;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--raio);
+    cursor: pointer;
+  }
+  .form-comentario button:hover { background: var(--terracota-escuro); }
+
+  @media (max-width: 560px) {
+    .linha-forma { grid-template-columns: 1fr; }
   }
 
   .mais {

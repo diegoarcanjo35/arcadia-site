@@ -21,6 +21,7 @@ export const STATUS_TURMA = [
 ];
 export const STATUS_INSCRICAO = ['recebida', 'confirmada', 'cancelada'];
 export const PAPEIS = ['facilitadora', 'cofacilitadora'];
+export const STATUS_COMENTARIO = ['pendente', 'aprovado', 'rejeitado'];
 
 /* ------------------------------------------------------------------ ajuda */
 
@@ -473,6 +474,63 @@ export async function mudarStatusInscricao(db, id, status) {
  */
 export async function apagarInscricao(db, id) {
   await db.prepare(`DELETE FROM inscricoes WHERE id = ?`).bind(num(id)).run();
+  return { ok: true };
+}
+
+/* -------------------------------------------------------- comentários */
+
+export async function listarComentarios(db, { status, busca } = {}) {
+  const onde = [];
+  const args = [];
+
+  if (status && STATUS_COMENTARIO.includes(status)) { onde.push('c.status = ?'); args.push(status); }
+  if (busca) {
+    onde.push('(c.nome LIKE ? OR c.email LIKE ? OR c.corpo LIKE ?)');
+    const p = `%${String(busca).trim().slice(0, 60)}%`;
+    args.push(p, p, p);
+  }
+
+  const { results } = await db
+    .prepare(
+      `SELECT c.*, a.titulo AS artigo_titulo, a.slug AS artigo_slug
+         FROM comentarios c
+         JOIN artigos a ON a.id = c.artigo_id
+        ${onde.length ? 'WHERE ' + onde.join(' AND ') : ''}
+        ORDER BY c.criado_em DESC
+        LIMIT 500`
+    )
+    .bind(...args)
+    .all();
+
+  return results;
+}
+
+export async function mudarStatusComentario(db, id, status) {
+  if (!STATUS_COMENTARIO.includes(status)) return { ok: false, erro: 'status_invalido' };
+  await db.prepare(`UPDATE comentarios SET status=? WHERE id=?`).bind(status, num(id)).run();
+  return { ok: true };
+}
+
+/**
+ * Responder aprova o comentário junto — ninguém escreve uma resposta pública
+ * para deixar o comentário original escondido, e obrigar dois cliques (um
+ * para aprovar, outro para responder) é o tipo de atrito que faz a resposta
+ * não sair no mesmo dia.
+ */
+export async function responderComentario(db, id, resposta) {
+  const texto = txt(resposta, 4000);
+  await db
+    .prepare(
+      `UPDATE comentarios SET resposta=?, respondido_em=datetime('now'), status='aprovado' WHERE id=?`
+    )
+    .bind(texto, num(id))
+    .run();
+  return { ok: true };
+}
+
+/** Caminho da LGPD — remove o comentário e a resposta junto, de vez. */
+export async function apagarComentario(db, id) {
+  await db.prepare(`DELETE FROM comentarios WHERE id = ?`).bind(num(id)).run();
   return { ok: true };
 }
 

@@ -113,6 +113,22 @@ export async function POST({ request }) {
         return voltar(volta, 'apagado');
       }
 
+      /* ----------------------------------------------------- comentários */
+      case 'comentario.status': {
+        const r = await A.mudarStatusComentario(db, campos.id, campos.status);
+        return voltar(volta, r.ok ? 'salvo' : r.erro);
+      }
+
+      case 'comentario.responder': {
+        await A.responderComentario(db, campos.id, campos.resposta);
+        return voltar(volta, 'salvo');
+      }
+
+      case 'comentario.apagar': {
+        await A.apagarComentario(db, campos.id);
+        return voltar(volta, 'apagado');
+      }
+
       /* -------------------------------------------------------- artigos */
       case 'artigo.salvar': {
         const r = await A.salvarArtigo(db, campos);
@@ -156,12 +172,26 @@ export async function POST({ request }) {
 
         if (!['oficina', 'equipe'].includes(colecao)) return voltar(volta, 'colecao_invalida');
 
-        const chave = M.montarChave(colecao, dono, 'capa');
+        // A rota /midia serve com cache "immutable" de um ano (ver
+        // midia/[...chave].js) — isso só é verdade se a chave for nova a cada
+        // envio. Reaproveitar a mesma chave ("capa") a cada troca de imagem
+        // era o defeito: o navegador (e a borda da Cloudflare) ficavam presos
+        // para sempre na primeira foto enviada, porque a URL nunca mudava.
+        const antiga = colecao === 'oficina'
+          ? (await db.prepare('SELECT arte_key FROM oficinas WHERE id = ?').bind(id).first())?.arte_key
+          : (await db.prepare('SELECT foto_key FROM facilitadoras WHERE id = ?').bind(id).first())?.foto_key;
+
+        const chave = M.montarChave(colecao, dono, `capa-${crypto.randomUUID().slice(0, 8)}`);
         const r = await M.guardar(kv, chave, arquivo);
         if (!r.ok) return voltar(volta, r.erro);
 
         if (colecao === 'oficina') await A.definirArteOficina(db, id, chave);
         else await A.definirFotoFacilitadora(db, id, chave);
+
+        // Só depois que o banco já aponta para a chave nova: apagar a antiga
+        // antes disso, e uma falha no meio do caminho deixaria a oficina sem
+        // nenhuma imagem.
+        if (antiga) await M.apagar(kv, antiga);
 
         return voltar(volta, 'imagem_salva');
       }

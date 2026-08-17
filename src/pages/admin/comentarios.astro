@@ -1,0 +1,145 @@
+---
+import Admin from '../../layouts/Admin.astro';
+import { listarComentarios, STATUS_COMENTARIO } from '../../lib/admin.js';
+import { formatarDataArtigo } from '../../lib/artigos.js';
+import { pegarDB } from '../../lib/env.js';
+
+export const prerender = false;
+
+const db = await pegarDB();
+const p = Astro.url.searchParams;
+
+const filtro = {
+  status: p.get('status') ?? '',
+  busca: p.get('busca') ?? '',
+};
+
+const linhas = db ? await listarComentarios(db, filtro) : [];
+const volta = Astro.url.pathname + Astro.url.search;
+
+const ROTULO_STATUS = {
+  pendente: 'Pendente',
+  aprovado: 'Aprovado',
+  rejeitado: 'Rejeitado',
+};
+---
+<Admin titulo="Comentários" atual="/admin/comentarios">
+  <form class="cartao filtros" method="GET">
+    <div class="linha">
+      <label>Buscar por nome, e-mail ou texto
+        <input type="search" name="busca" value={filtro.busca} placeholder="parte do texto…" />
+      </label>
+      <label>Situação
+        <select name="status">
+          <option value="">todas</option>
+          {STATUS_COMENTARIO.map((s) => (
+            <option value={s} selected={filtro.status === s}>{ROTULO_STATUS[s]}</option>
+          ))}
+        </select>
+      </label>
+      <div style="flex:0 0 auto">
+        <button type="submit">Filtrar</button>
+      </div>
+    </div>
+  </form>
+
+  <p class="contagem">
+    {linhas.length} comentário(s){linhas.length === 500 && ' — mostrando os 500 mais recentes'}
+  </p>
+
+  {linhas.length === 0 ? (
+    <div class="cartao"><p class="vazio">Nenhum comentário com esse filtro.</p></div>
+  ) : (
+    linhas.map((c) => (
+      <div class="cartao comentario">
+        <div class="cabeca">
+          <div>
+            <strong>{c.nome}</strong> <span class="fraco">— {c.email}</span>
+            <br />
+            <a href={`/artigos/${c.artigo_slug}`} target="_blank" rel="noopener">{c.artigo_titulo}</a>
+            <span class="fraco"> · {formatarDataArtigo(c.criado_em?.slice(0, 10)) ?? c.criado_em}</span>
+          </div>
+          <span class:list={['selo', c.status]}>{ROTULO_STATUS[c.status] ?? c.status}</span>
+        </div>
+
+        <p class="corpo">{c.corpo}</p>
+
+        {c.resposta && (
+          <div class="resposta-atual">
+            <strong>Resposta enviada</strong>
+            <p>{c.resposta}</p>
+          </div>
+        )}
+
+        <div class="acoes">
+          <form method="POST" action="/api/admin/salvar" class="embutido">
+            <input type="hidden" name="acao" value="comentario.status" />
+            <input type="hidden" name="id" value={c.id} />
+            <input type="hidden" name="volta" value={volta} />
+            <select name="status" onchange="this.form.submit()">
+              {STATUS_COMENTARIO.map((s) => (
+                <option value={s} selected={c.status === s}>{ROTULO_STATUS[s]}</option>
+              ))}
+            </select>
+          </form>
+
+          <details class="responder">
+            <summary class="botao discreto">{c.resposta ? 'editar resposta' : 'responder'}</summary>
+            <form method="POST" action="/api/admin/salvar" class="form-resposta">
+              <input type="hidden" name="acao" value="comentario.responder" />
+              <input type="hidden" name="id" value={c.id} />
+              <input type="hidden" name="volta" value={volta} />
+              <textarea name="resposta" placeholder="Escreva a resposta…">{c.resposta ?? ''}</textarea>
+              <span class="ajuda">Salvar a resposta aprova o comentário junto, se ainda não estiver.</span>
+              <button type="submit">Salvar resposta</button>
+            </form>
+          </details>
+
+          <form method="POST" action="/api/admin/salvar" class="embutido"
+                onsubmit="return confirm('Apagar definitivamente este comentário e a resposta?')">
+            <input type="hidden" name="acao" value="comentario.apagar" />
+            <input type="hidden" name="id" value={c.id} />
+            <input type="hidden" name="volta" value={volta} />
+            <button class="discreto" type="submit" title="Apagar (LGPD)">apagar</button>
+          </form>
+        </div>
+      </div>
+    ))
+  )}
+</Admin>
+
+<style>
+  .filtros { padding-bottom: 0.35rem; }
+  .filtros label { margin-bottom: 0.5rem; }
+  .contagem { font-size: 0.85rem; color: #6b6259; margin: 0 0 0.75rem; }
+  .fraco { color: #8a7f72; font-size: 0.82rem; }
+
+  .comentario { display: flex; flex-direction: column; gap: 0.6rem; }
+  .cabeca { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+  .cabeca a { font-size: 0.85rem; }
+
+  .selo { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.72rem; background: #ece7df; color: #4a423a; white-space: nowrap; }
+  .selo.pendente { background: #f3e4d8; color: #8a4a24; }
+  .selo.aprovado { background: #dcecdf; color: #2f5c3c; }
+  .selo.rejeitado { background: #f7dede; color: #8c3823; }
+
+  .corpo { margin: 0; white-space: pre-wrap; }
+
+  .resposta-atual {
+    background: #f7f5f1; border-left: 3px solid #b8552f; border-radius: 4px;
+    padding: 0.5rem 0.75rem; font-size: 0.9rem;
+  }
+  .resposta-atual strong { display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #8a7f72; margin-bottom: 0.2rem; }
+  .resposta-atual p { margin: 0; white-space: pre-wrap; }
+
+  .acoes { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+  .acoes select { padding: 0.35rem 0.5rem; font-size: 0.82rem; }
+  form.embutido { display: inline; }
+
+  .responder summary { list-style: none; cursor: pointer; }
+  .responder summary::-webkit-details-marker { display: none; }
+  .form-resposta { margin-top: 0.5rem; min-width: 22rem; display: grid; gap: 0.4rem; }
+  .form-resposta textarea { min-height: 5rem; }
+
+  .vazio { color: #8a7f72; font-style: italic; padding: 1.5rem 0; }
+</style>

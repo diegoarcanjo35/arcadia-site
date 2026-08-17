@@ -27,12 +27,29 @@ export async function listarArtigos(db) {
 export async function buscarArtigo(db, slug) {
   return db
     .prepare(
-      `SELECT slug, titulo, resumo, corpo, autor, publicado_em
+      `SELECT id, slug, titulo, resumo, corpo, autor, publicado_em
          FROM artigos
         WHERE slug = ? AND publicado = 1`
     )
     .bind(slug)
     .first();
+}
+
+/**
+ * Comentários aprovados de um artigo, com a resposta da clínica quando houver.
+ * E-mail nunca sai daqui: a página pública não recebe a coluna.
+ */
+export async function listarComentariosAprovados(db, artigoId) {
+  const { results } = await db
+    .prepare(
+      `SELECT id, nome, corpo, resposta, respondido_em, criado_em
+         FROM comentarios
+        WHERE artigo_id = ? AND status = 'aprovado'
+        ORDER BY criado_em ASC`
+    )
+    .bind(artigoId)
+    .all();
+  return results ?? [];
 }
 
 /**
@@ -53,6 +70,37 @@ export async function listarArtigosAdmin(db) {
 /** Um artigo pelo id, para a tela de edição. Rascunho incluído. */
 export async function buscarArtigoAdmin(db, id) {
   return db.prepare(`SELECT * FROM artigos WHERE id = ?`).bind(id).first();
+}
+
+/**
+ * Registra um comentário — sempre 'pendente', nunca aparece na página até
+ * alguém do painel aprovar.
+ *
+ * Mesmos princípios de `registrarInscricao` (oficinas.js): nada do navegador
+ * é confiável, e quem escreveu recebe uma resposta honesta mesmo se o banco
+ * falhar.
+ */
+export async function registrarComentario(db, { artigoId, nome, email, corpo, consentimento }) {
+  if (!consentimento) {
+    return { ok: false, erro: 'consentimento_ausente' };
+  }
+
+  const artigo = await db
+    .prepare(`SELECT id, slug FROM artigos WHERE id = ? AND publicado = 1`)
+    .bind(artigoId)
+    .first();
+
+  if (!artigo) return { ok: false, erro: 'artigo_inexistente' };
+
+  await db
+    .prepare(
+      `INSERT INTO comentarios (artigo_id, nome, email, corpo, consentimento)
+       VALUES (?, ?, ?, ?, 1)`
+    )
+    .bind(artigo.id, nome.trim(), email.trim().toLowerCase(), corpo.trim())
+    .run();
+
+  return { ok: true, slug: artigo.slug };
 }
 
 /**
