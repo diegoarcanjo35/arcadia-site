@@ -13,7 +13,7 @@ const ano = new Date().getFullYear();
           anterior usava a marca colorida (aradia_comsombra.png) até no
           rodapé escuro — a versão creme/branca era só uma adaptação nossa
           que ela não pediu. */}
-      <img src="/logo-sombra.png" alt="Arcádia Psicologia" width="150" height="137" />
+      <img src="/logo-sombra.png" alt="Arcádia Psicologia" width="176" height="160" />
     </div>
 
     {/* Títulos das colunas e agrupamento iguais ao site anterior: "Sobre",
@@ -76,7 +76,10 @@ const ano = new Date().getFullYear();
     grid-template-columns: 1.4fr 1fr 1fr 1fr;
     gap: var(--e-4);
   }
-  .marca-col img { height: 78px; width: auto; }
+  /* Medido no original: 176×160, não 150×137 encolhido pra 78px — o arquivo
+     já é o certo (mesma sombra, mesma cor), só estava renderizando pequeno
+     demais, o que também deixava a cor/sombra pouco perceptível. */
+  .marca-col img { height: 160px; width: auto; }
 
   /* Medido no original: 16.8px, terracota, com uma caixa clara atrás do
      texto (não um título solto) — rgb(236,234,223), cantos retos, padding
