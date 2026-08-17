@@ -304,14 +304,18 @@ const SERVICOS = [
     margin: 0 0 var(--e-2);
     color: var(--terracota);
   }
-  .subtitulo-secao { margin: 0 0 var(--e-4); color: var(--corpo); }
+  /* O site anterior usa a cor de contraste (terracota) como cor padrão do
+     corpo de texto inteiro — não só nos títulos. Corrigido aqui e nos
+     blocos abaixo, que ainda usavam --corpo/--tinta (cinza-marrom neutro,
+     não a cor real do site anterior). */
+  .subtitulo-secao { margin: 0 0 var(--e-4); color: var(--terracota); }
   .acao-secao { margin: var(--e-3) 0 0; }
 
   /* Wanda pediu duas vezes: texto menor aqui, pra passar mais rápido pro
      próximo conteúdo (Oficinas/Artigos) — não é o texto principal da home,
      é convite pra seção própria (/a-arcadia). */
-  .texto-arcadia p { margin: 0 0 1em; max-width: 62ch; font-size: var(--t-sm); }
-  .fecho { max-width: 62ch; margin: var(--e-2) 0 0; font-size: var(--t-sm); color: var(--tinta); }
+  .texto-arcadia p { margin: 0 0 1em; max-width: 62ch; font-size: var(--t-sm); color: var(--terracota); }
+  .fecho { max-width: 62ch; margin: var(--e-2) 0 0; font-size: var(--t-sm); color: var(--terracota); }
 
   /* ---------------------------------------------------------- a arcádia */
   .dupla-arcadia {
@@ -332,7 +336,7 @@ const SERVICOS = [
   .legenda-arcadia {
     margin: var(--e-2) 0 0;
     padding: 0 var(--e-2);
-    color: var(--tinta);
+    color: var(--terracota);
     font-family: var(--fonte-titulo);
     font-style: italic;
     text-align: center;
@@ -362,7 +366,7 @@ const SERVICOS = [
     color: var(--terracota);
     margin: 0 0 var(--e-2);
   }
-  .servicos p { margin: 0; font-size: var(--t-sm); }
+  .servicos p { margin: 0; font-size: var(--t-sm); color: var(--terracota); }
 
   /* ------------------------------------------------------------- tese */
   .tese {
