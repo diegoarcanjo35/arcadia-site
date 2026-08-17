@@ -48,6 +48,13 @@ const ROTULO_STATUS = {
       <label>Nome <span class="obrigatorio">*</span>
         <input type="text" name="nome" required maxlength="160" value={oficina?.nome ?? ''} />
       </label>
+      <label>Categoria
+        <input type="text" name="categoria" maxlength="80" value={oficina?.categoria ?? ''}
+               placeholder="ex.: Oficina de Colagem I" />
+        <span class="ajuda">
+          O título grande da página da oficina. Em branco, usa o Nome no lugar.
+        </span>
+      </label>
       <label>Subtítulo
         <input type="text" name="subtitulo" maxlength="200" value={oficina?.subtitulo ?? ''} />
       </label>

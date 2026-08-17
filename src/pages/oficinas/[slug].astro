@@ -18,6 +18,19 @@ const aberta = Boolean(turma);
 // qualquer parágrafo ser lido.
 const arte = arteDaOficina(oficina);
 
+/**
+ * No site anterior, o título grande da página era um rótulo de categoria
+ * ("Oficina de Colagem I:", "Oficina de Leitura:", "Oficina para Empresas:")
+ * — o nome de verdade da oficina só aparecia na linha de baixo, junto do
+ * subtítulo. `nome` continua sendo o que aparece em todo o resto do site
+ * (cartão do índice, painel, aba do navegador): só a página da própria
+ * oficina troca o título grande pela categoria, quando ela existe.
+ */
+const tituloGrande = oficina.categoria || oficina.nome;
+const linhaSub = oficina.categoria
+  ? oficina.nome + (oficina.subtitulo ? ` – ${oficina.subtitulo}` : '')
+  : oficina.subtitulo;
+
 // E-mail de resgate: aparece sempre que a gravação falhou, para que ninguém
 // que tenha se dado ao trabalho de preencher saia sem um caminho.
 const EMAIL_CLINICA = 'wanda@meyermattos.com.br';
@@ -108,8 +121,8 @@ const jsonLd = {
     )}
     <article class="texto">
       {turma && <span class:list={['selo', turma.status]}>{ROTULO_STATUS[turma.status]}</span>}
-      <h1>{oficina.nome}</h1>
-      {oficina.subtitulo && <p class="sub">{oficina.subtitulo}</p>}
+      <h1>{tituloGrande}</h1>
+      {linhaSub && <p class="sub">{linhaSub}</p>}
 
       <p>{oficina.descricao}</p>
 

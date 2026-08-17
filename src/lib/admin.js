@@ -115,6 +115,7 @@ export async function salvarOficina(db, campos) {
   const dados = {
     slug,
     nome,
+    categoria: txt(campos.categoria, 80),
     subtitulo: txt(campos.subtitulo, 200),
     resumo,
     descricao: txt(campos.descricao, 20000) ?? '',
@@ -130,13 +131,13 @@ export async function salvarOficina(db, campos) {
     if (id) {
       await db
         .prepare(
-          `UPDATE oficinas SET slug=?, nome=?, subtitulo=?, resumo=?, descricao=?,
+          `UPDATE oficinas SET slug=?, nome=?, categoria=?, subtitulo=?, resumo=?, descricao=?,
                   por_que_participar=?, publico_alvo=?, arte_alt=?, publicada=?,
                   atualizado_em=datetime('now')
             WHERE id=?`
         )
         .bind(
-          dados.slug, dados.nome, dados.subtitulo, dados.resumo, dados.descricao,
+          dados.slug, dados.nome, dados.categoria, dados.subtitulo, dados.resumo, dados.descricao,
           dados.por_que_participar, dados.publico_alvo, dados.arte_alt, dados.publicada, id
         )
         .run();
@@ -145,12 +146,12 @@ export async function salvarOficina(db, campos) {
 
     const r = await db
       .prepare(
-        `INSERT INTO oficinas (slug, nome, subtitulo, resumo, descricao,
+        `INSERT INTO oficinas (slug, nome, categoria, subtitulo, resumo, descricao,
                                por_que_participar, publico_alvo, arte_alt, publicada)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
       )
       .bind(
-        dados.slug, dados.nome, dados.subtitulo, dados.resumo, dados.descricao,
+        dados.slug, dados.nome, dados.categoria, dados.subtitulo, dados.resumo, dados.descricao,
         dados.por_que_participar, dados.publico_alvo, dados.arte_alt, dados.publicada
       )
       .run();
