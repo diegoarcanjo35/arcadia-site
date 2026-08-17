@@ -26,11 +26,15 @@ const corteResto = '## Arcádia na Psicologia';
 const indiceCorte = corpo.indexOf(corteResto);
 const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
 ---
-<Base titulo={titulo} descricao="A história, a proposta e o conceito de marca da Arcádia Psicologia.">
-  {/* Conferido ao vivo no site anterior: esta página NÃO tem foto de capa —
-      começa direto com o título "Quem Somos", texto simples, sem caixa nem
-      fundo, sobre o cabeçalho normal (não transparente). A capa dos arcos era
-      suposição nossa; a página real nunca teve isso. */}
+<Base titulo={titulo} descricao="A história, a proposta e o conceito de marca da Arcádia Psicologia." cabecalhoSobreImagem>
+  {/* Mesma capa da Home: só a foto dos arcos, sem véu nem título por cima —
+      igual ao tratamento que a Wanda pediu para manter consistente entre as
+      páginas. */}
+  <section class="capa">
+    <img class="foto-capa" src="/capa-arcos-vertical.jpg" alt="" width="720" height="990" fetchpriority="high" />
+    <img class="foto-capa desktop" src="/capa-arcos.jpg" alt="" width="960" height="528" fetchpriority="high" />
+  </section>
+
   <h1 class="titulo-pagina">Quem Somos</h1>
 
   {/* No site anterior este bloco é um "media-text" de largura ampla (1280px,
@@ -116,9 +120,34 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
   .corpo { max-width: 1120px; margin: 0 auto; padding: var(--e-4) var(--e-3) 0; }
   .acao-secao { margin: var(--e-3) 0 0; }
 
+  /* Mesma capa da Home (ver index.astro): só a foto, sem véu, sem texto por
+     cima. Altura de tela cheia, foto vertical no celular. */
+  .capa {
+    background: var(--tinta);
+    position: relative;
+    overflow: hidden;
+    height: 100vh;
+  }
+  .foto-capa {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .foto-capa.desktop { display: none; }
+  @media (min-width: 900px) {
+    .foto-capa { display: none; }
+    .foto-capa.desktop { display: block; }
+  }
+  @media (max-width: 900px) {
+    .capa { height: 60vh; }
+  }
+
   /* Título da página, medido ao vivo no original: 52.32px Cardo, cor ocre
-     (não terracota), centralizado, sem caixa nem fundo — texto simples no
-     topo da página. */
+     (não terracota), centralizado, sem caixa nem fundo — texto simples,
+     agora logo abaixo da capa. */
   .titulo-pagina {
     color: var(--ocre);
     font-family: var(--fonte-titulo);
