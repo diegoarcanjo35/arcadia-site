@@ -58,7 +58,7 @@ const SERVICOS = [
       bloco "A Arcádia", com a legenda em itálico sobreposta (a pedido da
       clínica, em vez de legenda solta abaixo, que era o tratamento antigo). */}
   <section class="faixa creme">
-    <div class="miolo dupla-arcadia">
+    <div class="dupla-arcadia">
       <Revelar>
         <div>
           <figure class="foto-arcadia">
@@ -318,11 +318,16 @@ const SERVICOS = [
   .fecho { max-width: 62ch; margin: var(--e-2) 0 0; font-size: var(--t-sm); color: var(--terracota); }
 
   /* ---------------------------------------------------------- a arcádia */
+  /* Medido ao vivo no original: esta faixa é mais larga que o miolo padrão
+     (1760px, não 1120px) — quase edge-to-edge, não contida como o resto da
+     home. Proporção vídeo/texto medida também: ~1.4fr / 1fr. */
   .dupla-arcadia {
     display: grid;
-    grid-template-columns: 1.3fr 1fr;
+    grid-template-columns: 1.4fr 1fr;
     gap: var(--e-5);
     align-items: center;
+    max-width: 1760px;
+    margin: 0 auto;
   }
   .foto-arcadia {
     position: relative;
