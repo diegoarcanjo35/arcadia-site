@@ -46,7 +46,7 @@ const RESULTADOS = {
   ok: {
     tom: 'bom',
     titulo: 'Inscrição recebida.',
-    texto: 'A Arcádia entra em contato pelo e-mail informado para confirmar os detalhes.',
+    texto: 'A Arcádia entra em contato pelo WhatsApp informado para confirmar os detalhes.',
   },
   espera: {
     tom: 'bom',
@@ -67,6 +67,11 @@ const RESULTADOS = {
     tom: 'aviso',
     titulo: 'Falta o aceite da Política de Privacidade.',
     texto: 'Sem esse aceite não podemos guardar seu contato. Basta marcar a caixa e enviar de novo.',
+  },
+  telefone: {
+    tom: 'aviso',
+    titulo: 'Falta o WhatsApp.',
+    texto: 'A confirmação da inscrição é feita por WhatsApp — informe o número e envie de novo.',
   },
   horario: {
     tom: 'aviso',
@@ -226,7 +231,10 @@ const jsonLd = {
 
               <label>Nome<input type="text" name="nome" required autocomplete="name" /></label>
               <label>E-mail<input type="email" name="email" required autocomplete="email" /></label>
-              <label>WhatsApp<input type="tel" name="telefone" autocomplete="tel" /></label>
+              {/* Obrigatório aqui: a confirmação da inscrição é feita por
+                  WhatsApp (ver mensagem de sucesso acima), então não dá para
+                  deixar esse campo em branco só nesta forma. */}
+              <label>WhatsApp<input type="tel" name="telefone" required autocomplete="tel" /></label>
 
               {/* Consentimento explícito. Não há campo de relato pessoal:
                   o formulário antigo coletava queixa clínica sem tratamento

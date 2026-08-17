@@ -74,6 +74,10 @@ export async function POST({ request }) {
 
   if (nome.length < 2) return voltar(slug, 'nome');
   if (!EMAIL.test(email)) return voltar(slug, 'email');
+  // Só a inscrição em turma concreta promete confirmação por WhatsApp (ver
+  // mensagem "ok" em oficinas/[slug].astro) — o formulário de interesse, sem
+  // turma marcada ainda, continua sem exigir o campo.
+  if (turmaId && !telefone) return voltar(slug, 'telefone');
   if (!consentimento) return voltar(slug, 'consentimento');
   if (!turmaId && !oficinaId) return voltar(slug, 'erro');
 
