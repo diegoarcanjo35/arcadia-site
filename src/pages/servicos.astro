@@ -1,7 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
 import Prosa from '../components/Prosa.astro';
-import CapaPagina from '../components/CapaPagina.astro';
 import FaixaFoto from '../components/FaixaFoto.astro';
 import Revelar from '../components/Revelar.astro';
 import { buscarConteudo } from '../lib/dados.js';
@@ -109,17 +108,13 @@ const SERVICOS = [
 <Base
   titulo={titulo}
   descricao="Atendimento clínico, avaliação psicológica e arteterapia na Arcádia Psicologia, em Brasília."
+  cabecalhoSobreImagem
 >
-  {/* A capa das páginas internas é a dos arcos, como no site anterior — a mesma
-      cena do vídeo da home, parada. A foto do consultório que estava aqui não
-      era capa lá: era a primeira das três faixas, logo abaixo. Voltou para o
-      lugar dela. */}
-  <CapaPagina
-    foto="/capa-arcos.jpg"
-    fotoVertical="/capa-arcos-vertical.jpg"
-    titulo={titulo}
-    altura="cheia"
-  />
+  {/* Mesma capa da Home: só a foto dos arcos, sem véu nem título por cima. */}
+  <section class="capa">
+    <img class="foto-capa" src="/capa-arcos-vertical.jpg" alt="" width="720" height="990" fetchpriority="high" />
+    <img class="foto-capa desktop" src="/capa-arcos.jpg" alt="" width="960" height="528" fetchpriority="high" />
+  </section>
 
   {/* Cada serviço é anunciado por uma faixa de foto do espaço, e a faixa vem
       ANTES do texto, não entre um bloco e outro. É essa ordem que produz o
@@ -222,6 +217,31 @@ const SERVICOS = [
 </Base>
 
 <style>
+  /* Mesma capa da Home (ver index.astro): só a foto, sem véu, sem texto por
+     cima. Altura de tela cheia, foto vertical no celular. */
+  .capa {
+    background: var(--tinta);
+    position: relative;
+    overflow: hidden;
+    height: 100vh;
+  }
+  .foto-capa {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .foto-capa.desktop { display: none; }
+  @media (min-width: 900px) {
+    .foto-capa { display: none; }
+    .foto-capa.desktop { display: block; }
+  }
+  @media (max-width: 900px) {
+    .capa { height: 60vh; }
+  }
+
   .bloco { padding: var(--e-6) var(--e-3); }
   .bloco.creme { background: var(--creme); }
   .miolo { max-width: 1120px; margin: 0 auto; }
