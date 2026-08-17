@@ -59,9 +59,13 @@ const ano = new Date().getFullYear();
 </footer>
 
 <style>
+  /* Medido ao vivo no site anterior (getComputedStyle): o rodapé não tem
+     fundo próprio (rgba(0,0,0,0)) — é o creme da página que aparece atrás.
+     Nunca foi uma faixa escura; --tinta/--creme aqui era suposição nossa,
+     não o original. */
   footer {
-    background: var(--tinta);
-    color: var(--creme);
+    background: transparent;
+    color: var(--terracota);
     margin-top: var(--e-6);
   }
   .faixa {
@@ -72,31 +76,31 @@ const ano = new Date().getFullYear();
     grid-template-columns: 1.4fr 1fr 1fr 1fr;
     gap: var(--e-4);
   }
-  .marca-col img { height: 78px; width: auto; opacity: 0.95; }
+  .marca-col img { height: 78px; width: auto; }
 
-  /* Tamanho e caixa medidos no original: "medium", sem uppercase — a versão
-     pequena e em caixa alta era estilo nosso, não do site anterior. */
+  /* Tamanho e cor medidos no original (getComputedStyle): 16.8px, cor
+     terracota — não ocre nem caixa alta, que era estilo nosso. */
   h2 {
     font-family: var(--fonte-texto);
-    font-size: var(--t-lg);
-    color: var(--ocre);
+    font-size: 16.8px;
+    color: var(--terracota);
     margin: 0 0 var(--e-2);
     font-weight: 600;
   }
   ul { list-style: none; margin: 0; padding: 0; }
   li { margin-bottom: 0.55rem; }
-  /* Cor de link padrão do site anterior é a mesma em qualquer lugar
-     (inclusive rodapé escuro): --ocre, não --creme. */
+  /* Cor e tamanho medidos no original: terracota a 14.4px — o rodapé usa a
+     cor de contraste, não o dourado padrão de link do corpo do texto. */
   a {
-    color: var(--ocre);
+    color: var(--terracota);
     text-decoration: none;
-    font-size: var(--t-sm);
+    font-size: 14.4px;
     opacity: 0.85;
   }
   a:hover { opacity: 1; }
 
   .base {
-    border-top: 1px solid rgba(243, 240, 231, 0.16);
+    border-top: 1px solid var(--linha);
     max-width: 1120px;
     margin: 0 auto;
     padding: var(--e-2) var(--e-3) var(--e-4);
@@ -105,7 +109,7 @@ const ano = new Date().getFullYear();
     gap: var(--e-2);
     flex-wrap: wrap;
   }
-  .base p { margin: 0; font-size: var(--t-xs); opacity: 0.7; }
+  .base p { margin: 0; font-size: var(--t-xs); color: var(--terracota); opacity: 0.7; }
 
   @media (max-width: 860px) {
     .faixa { grid-template-columns: 1fr 1fr; }

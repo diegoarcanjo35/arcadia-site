@@ -2,7 +2,6 @@
 import Base from '../layouts/Base.astro';
 import AguardandoConteudo from '../components/AguardandoConteudo.astro';
 import Prosa from '../components/Prosa.astro';
-import CapaPagina from '../components/CapaPagina.astro';
 import FaixaFoto from '../components/FaixaFoto.astro';
 import { buscarConteudo } from '../lib/dados.js';
 
@@ -27,50 +26,46 @@ const corteResto = '## Arcádia na Psicologia';
 const indiceCorte = corpo.indexOf(corteResto);
 const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
 ---
-<Base titulo={titulo} descricao="A história, a proposta e o conceito de marca da Arcádia Psicologia." cabecalhoSobreImagem>
-  {/* Capa dos arcos, como em todas as páginas internas do site anterior. A foto
-      do consultório que estava aqui era, lá, a faixa fixa do meio da página —
-      está de volta ao lugar dela, logo abaixo do texto. */}
-  <CapaPagina
-    foto="/capa-arcos.jpg"
-    fotoVertical="/capa-arcos-vertical.jpg"
-    titulo={titulo}
-    altura="cheia"
-  />
-  <div class="corpo">
-    {/* "Quem Somos" — título do site anterior acima do texto, separado do
-        título "A Arcádia" que já está na capa (os dois existiam lá: um na
-        faixa, outro aqui em cima do conteúdo). */}
-    <p class="pretitulo">Quem Somos</p>
+<Base titulo={titulo} descricao="A história, a proposta e o conceito de marca da Arcádia Psicologia.">
+  {/* Conferido ao vivo no site anterior: esta página NÃO tem foto de capa —
+      começa direto com o título "Quem Somos", texto simples, sem caixa nem
+      fundo, sobre o cabeçalho normal (não transparente). A capa dos arcos era
+      suposição nossa; a página real nunca teve isso. */}
+  <h1 class="titulo-pagina">Quem Somos</h1>
 
-    <div class="dupla-nome">
-      <div class="texto-nome">
-        <h2>Arcádia — por que esse nome?</h2>
-        <p>
-          O nome <strong>Arcádia</strong> foi escolhido para o nosso espaço por
-          seu profundo <strong>simbolismo de paz e harmonia</strong>. Na
-          mitologia e na literatura, Arcádia representa um lugar de
-          serenidade, onde a vida acontece <strong>em equilíbrio com a
-          natureza, longe das pressões do mundo moderno</strong>. Esse conceito
-          se alinha à nossa proposta terapêutica, que busca oferecer um
-          ambiente acolhedor e seguro, onde cada pessoa possa se reconectar
-          consigo mesma e encontrar alívio para suas inquietações.
-        </p>
-        <p>
-          <strong>Na psicologia, Arcádia é uma metáfora para o equilíbrio
-          emocional e mental, um estado de serenidade interior que permite
-          lidar melhor com desafios e ansiedades</strong>. A Arcádia se propõe
-          a ser esse espaço de acolhimento e transformação, um lugar onde o
-          autoconhecimento e o crescimento psicológico acontecem de forma
-          respeitosa e cuidadosa, tal como o ideal arcadiano de simplicidade e
-          bem-estar.
-        </p>
-      </div>
-      <figure class="pintura">
-        <img src="/a-arcadia/arcadismo.jpg" alt="" width="846" height="697" loading="lazy" decoding="async" />
-      </figure>
+  {/* No site anterior este bloco é um "media-text" de largura ampla (1280px,
+      metade texto/metade imagem, sem espaço entre as duas colunas) — não faz
+      parte da coluna de conteúdo de 1120px do resto da página. Por isso mora
+      fora do .corpo, como uma faixa própria. */}
+  <div class="dupla-nome">
+    <div class="texto-nome">
+      <h2>Arcádia — por que esse nome?</h2>
+      <p>
+        O nome <strong>Arcádia</strong> foi escolhido para o nosso espaço por
+        seu profundo <strong>simbolismo de paz e harmonia</strong>. Na
+        mitologia e na literatura, Arcádia representa um lugar de
+        serenidade, onde a vida acontece <strong>em equilíbrio com a
+        natureza, longe das pressões do mundo moderno</strong>. Esse conceito
+        se alinha à nossa proposta terapêutica, que busca oferecer um
+        ambiente acolhedor e seguro, onde cada pessoa possa se reconectar
+        consigo mesma e encontrar alívio para suas inquietações.
+      </p>
+      <p>
+        <strong>Na psicologia, Arcádia é uma metáfora para o equilíbrio
+        emocional e mental, um estado de serenidade interior que permite
+        lidar melhor com desafios e ansiedades</strong>. A Arcádia se propõe
+        a ser esse espaço de acolhimento e transformação, um lugar onde o
+        autoconhecimento e o crescimento psicológico acontecem de forma
+        respeitosa e cuidadosa, tal como o ideal arcadiano de simplicidade e
+        bem-estar.
+      </p>
     </div>
+    <figure class="pintura">
+      <img src="/a-arcadia/arcadismo.jpg" alt="" width="846" height="697" loading="lazy" decoding="async" />
+    </figure>
+  </div>
 
+  <div class="corpo">
     {/* Link do site anterior: a página de nome ("Quem Somos") levava à página
         de marca ("Nossa Marca"). Mantido aqui pelo mesmo motivo do lá. */}
     <p class="acao-secao"><a class="botao" href="/nossa-marca">Conheça nossa marca</a></p>
@@ -121,45 +116,61 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
   .corpo { max-width: 1120px; margin: 0 auto; padding: var(--e-4) var(--e-3) 0; }
   .acao-secao { margin: var(--e-3) 0 0; }
 
-  /* "Quem Somos": título separado, acima do conteúdo — existia assim no
-     site anterior, numa caixa clara, distinto do título "A Arcádia" da capa. */
-  .pretitulo {
-    background: var(--creme-suave);
-    border-radius: var(--raio);
-    color: var(--terracota);
+  /* Título da página, medido ao vivo no original: 52.32px Cardo, cor ocre
+     (não terracota), centralizado, sem caixa nem fundo — texto simples no
+     topo da página. */
+  .titulo-pagina {
+    color: var(--ocre);
     font-family: var(--fonte-titulo);
-    font-size: var(--t-3xl);
+    font-size: 52.32px;
+    font-weight: 400;
     text-align: center;
-    padding: var(--e-3);
-    margin: 0 0 var(--e-5);
+    margin: var(--e-4) 0 var(--e-3);
   }
 
+  /* Medido no bloco real do site anterior: faixa de 1280px, metade texto
+     metade imagem (grid 1fr/1fr), sem espaço entre as colunas — não é o
+     1.2fr/1fr com gap que tínhamos, que deixava a pintura menor e mais
+     "apertada" do que no original. */
   .dupla-nome {
     display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: var(--e-5);
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
     align-items: center;
-    margin-bottom: var(--e-4);
+    max-width: 1280px;
+    margin: 0 auto var(--e-4);
   }
+  .texto-nome {
+    padding: 0 var(--e-4);
+  }
+  /* Título e peso medidos no original: 40px Cardo, peso normal (não 700) —
+     era mais leve que os outros h2 da página. */
   .texto-nome h2 {
-    font-size: var(--t-2xl);
+    font-size: 40px;
+    font-weight: 400;
     color: var(--terracota);
     margin: 0 0 var(--e-2);
   }
   .texto-nome p { margin: 0 0 1em; color: var(--terracota); }
   /* O site anterior tem a cor de contraste (terracota) como cor padrão do
      corpo inteiro — não só nos títulos. Aqui alcança o texto que vem do
-     banco via Prosa (que não define cor própria de propósito). */
+     banco via Prosa (que não define cor própria de propósito). Título "##"
+     também sai em 40px/peso normal e centralizado, igual ao medido lá. */
   .corpo :global(.prosa p) { color: var(--terracota); }
+  .corpo :global(.prosa h2) {
+    font-size: 40px;
+    font-weight: 400;
+    text-align: center;
+  }
   .pintura { margin: 0; }
   .pintura img {
     display: block;
     width: 100%;
     height: auto;
-    border-radius: var(--raio);
   }
   @media (max-width: 800px) {
     .dupla-nome { grid-template-columns: 1fr; }
+    .texto-nome { padding: 0 var(--e-3); }
   }
 
   /* "Psicóloga Responsável": no site anterior esse bloco inteiro — título,
@@ -174,8 +185,11 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
     color: var(--terracota);
   }
   .responsavel .corpo { padding-top: 0; }
+  /* Medido no original: 40px Cardo, peso normal — mesmo tratamento do
+     título "Arcádia na Psicologia" acima. */
   .responsavel h2 {
-    font-size: var(--t-2xl);
+    font-size: 40px;
+    font-weight: 400;
     color: var(--terracota);
     margin: 0 0 var(--e-3);
   }
@@ -184,5 +198,13 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
     width: 266px;
   }
   .retrato img { width: 100%; height: auto; display: block; }
-  .responsavel p { max-width: 68ch; margin: 0 auto 1em; text-align: left; color: var(--terracota); }
+  /* Medido no original: 16.8px Inter — não o --t-base padrão (17px), que era
+     chute nosso. */
+  .responsavel p {
+    max-width: 68ch;
+    margin: 0 auto 1em;
+    text-align: left;
+    color: var(--terracota);
+    font-size: 16.8px;
+  }
 </style>

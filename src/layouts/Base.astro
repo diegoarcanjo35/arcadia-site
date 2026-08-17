@@ -72,21 +72,24 @@ const tituloCompleto = titulo ? `${titulo} · Arcádia Psicologia` : 'Arcádia P
         escopado de um componente-página não alcança. Morava só no index.astro
         antes, e por isso só funcionava lá — nas outras páginas o link "botão"
         renderizava sem nenhum estilo. */}
+    {/* Medido direto no botão real do site anterior (getComputedStyle), não
+        estimado: 14.4px, padding 9.6px/16px, radius 5.28px, texto creme
+        (não branco puro), sem borda — o site anterior não tem contorno. */}
     <style is:global>
       .botao {
         display: inline-block;
         background: var(--terracota);
-        color: #fff;
+        color: var(--creme);
         text-decoration: none;
-        padding: 0.7rem 1.4rem;
-        border-radius: var(--raio);
-        font-size: var(--t-sm);
+        padding: 0.6rem 1rem;
+        border-radius: 0.33rem;
+        font-size: 0.9rem;
         font-weight: 500;
-        border: 1.5px solid var(--terracota);
+        border: none;
       }
-      .botao:hover { background: var(--terracota-escuro); border-color: var(--terracota-escuro); color: #fff; }
-      .botao.vazado { background: transparent; color: var(--terracota); }
-      .botao.vazado:hover { background: var(--terracota); color: #fff; }
+      .botao:hover { background: var(--terracota-escuro); color: var(--creme); }
+      .botao.vazado { background: transparent; color: var(--terracota); border: 1.5px solid var(--terracota); }
+      .botao.vazado:hover { background: var(--terracota); color: var(--creme); }
     </style>
   </body>
 </html>
