@@ -116,6 +116,13 @@ const SERVICOS = [
     <img class="foto-capa desktop" src="/capa-arcos.jpg" alt="" width="960" height="528" fetchpriority="high" />
   </section>
 
+  {/* Título da página no site anterior é "Áreas de atuação", não "Serviços"
+      (esse é só o rótulo do menu). Caixa clara centralizada (800px), Cardo
+      52px, cor ocre, medida ao vivo no original. */}
+  <div class="faixa-titulo">
+    <h1>Áreas de atuação</h1>
+  </div>
+
   {/* Cada serviço é anunciado por uma faixa de foto do espaço, e a faixa vem
       ANTES do texto, não entre um bloco e outro. É essa ordem que produz o
       efeito que a clínica reconhece: a foto fica presa na tela e o texto sobe
@@ -240,6 +247,21 @@ const SERVICOS = [
   }
   @media (max-width: 900px) {
     .capa { height: 60vh; }
+  }
+
+  .faixa-titulo {
+    background: var(--creme);
+    padding: 72px var(--e-3);
+  }
+  .faixa-titulo h1 {
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgb(236, 234, 223);
+    color: var(--ocre);
+    font-family: var(--fonte-titulo);
+    font-size: 52.32px;
+    font-weight: 400;
+    text-align: center;
   }
 
   .bloco { padding: var(--e-6) var(--e-3); }
