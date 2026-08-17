@@ -13,19 +13,34 @@
  * lento ou com JavaScript quebrado, o texto está lá.
  *
  * Funcionando, ninguém percebe diferença. A diferença é quando dá errado.
+ *
+ * `direcao`: de que lado o bloco entra — 'cima' (padrão, o mesmo de sempre),
+ * 'esquerda' ou 'direita'. Quem chama decide o lado; o componente não
+ * alterna sozinho, porque só quem monta a página sabe qual bloco fica visualmente
+ * à esquerda ou à direita do outro.
  */
+const { direcao = 'cima' } = Astro.props;
 ---
-<div class="revelar"><slot /></div>
+<div class="revelar" data-direcao={direcao}><slot /></div>
 
 <style>
   /* Nenhum estado inicial aqui de propósito. O bloco começa visível; a classe
      que o esconde só existe se o script rodar. */
-  .revelar { --deslocamento: 32px; }
+  .revelar {
+    --deslocamento: 32px;
+    --deslocamento-lateral: 56px;
+  }
 
   :global(html.js-revelar) .revelar {
     opacity: 0;
     transform: translateY(var(--deslocamento));
-    transition: opacity 700ms ease, transform 700ms ease;
+    transition: opacity 1200ms ease, transform 1200ms ease;
+  }
+  :global(html.js-revelar) .revelar[data-direcao='esquerda'] {
+    transform: translateX(calc(var(--deslocamento-lateral) * -1));
+  }
+  :global(html.js-revelar) .revelar[data-direcao='direita'] {
+    transform: translateX(var(--deslocamento-lateral));
   }
   :global(html.js-revelar) .revelar.visivel {
     opacity: 1;

@@ -62,7 +62,7 @@ const SERVICOS = [
       {/* A pedido: vídeo e legenda entram juntos, no mesmo movimento — no
           site anterior só a legenda tinha entrada animada, mas aqui os dois
           saem do mesmo <Revelar> de propósito. */}
-      <Revelar>
+      <Revelar direcao="esquerda">
         <div>
           <figure class="foto-arcadia">
             <video
@@ -85,7 +85,7 @@ const SERVICOS = [
           </p>
         </div>
       </Revelar>
-      <Revelar>
+      <Revelar direcao="direita">
         <div class="texto-arcadia">
           <h2 class="titulo-secao titulo-caixa">A ARCÁDIA</h2>
           <p>
@@ -119,7 +119,7 @@ const SERVICOS = [
   {/* ------------------------------------------------------ o que fazemos */}
   <section class="faixa">
     <div class="miolo-largo">
-      <Revelar>
+      <Revelar direcao="esquerda">
         <h2 class="titulo-secao titulo-caixa">O que fazemos</h2>
         <p class="subtitulo-secao">Conheça nossos serviços e veja qual se encaixa em sua busca.</p>
       </Revelar>
@@ -131,9 +131,9 @@ const SERVICOS = [
         conjunto.
       */}
       <ul class="servicos">
-        {SERVICOS.map((s) => (
+        {SERVICOS.map((s, i) => (
           <li>
-            <Revelar>
+            <Revelar direcao={i % 2 === 0 ? 'direita' : 'esquerda'}>
               <h3>{s.nome}</h3>
               <p>{s.texto}</p>
             </Revelar>
@@ -151,7 +151,7 @@ const SERVICOS = [
      quebra, o que exige largura generosa e nada de max-width em "ch". */}
   <section class="faixa creme">
     <div class="miolo-largo">
-      <Revelar>
+      <Revelar direcao="direita">
         <blockquote class="tese">
           Um espaço onde a psicologia encontra a arte como um caminho para o autoconhecimento
         </blockquote>
@@ -166,7 +166,7 @@ const SERVICOS = [
           "Oficinas", abre em "Atividades e conteúdos" — é ela que anuncia que
           dali para baixo vêm as oficinas E os artigos. Sem esta linha, o bloco
           de artigos aparece depois sem nada tê-lo apresentado. */}
-      <Revelar>
+      <Revelar direcao="esquerda">
         <div class="texto-claro cabecalho-faixa">
           <h2 class="titulo-secao">Atividades e conteúdos</h2>
           <p class="subtitulo-secao">Aqui você acessa oficinas e artigos.</p>
@@ -174,7 +174,7 @@ const SERVICOS = [
       </Revelar>
 
       <div class="dupla">
-        <Revelar>
+        <Revelar direcao="esquerda">
           <div class="texto-claro">
             <h2 class="titulo-secao">Oficinas</h2>
             <p>
@@ -198,7 +198,7 @@ const SERVICOS = [
           </div>
         </Revelar>
 
-        <Revelar>
+        <Revelar direcao="direita">
           {/*
             Esta é a colagem que o site anterior exibia a 579×558 a partir de um
             arquivo de 211×300 — quase três vezes o tamanho real, e ainda
@@ -243,12 +243,12 @@ const SERVICOS = [
   {artigos.length > 0 && (
     <section class="faixa creme">
       <div class="miolo dupla-artigos">
-        <Revelar>
+        <Revelar direcao="esquerda">
           <figure class="foto-artigos">
             <img src="/home/passaro.webp" alt="" width="1080" height="1080" loading="lazy" decoding="async" />
           </figure>
         </Revelar>
-        <Revelar>
+        <Revelar direcao="direita">
           <div class="lista-artigos">
             <h2 class="titulo-secao">Artigos</h2>
             <ul>
