@@ -30,13 +30,39 @@ const semTurma = todas.filter((o) => !o.status);
     <img class="foto-capa desktop" src="/capa-arcos.jpg" alt="" width="960" height="528" fetchpriority="high" />
   </section>
 
-  <div class="topo">
-    <div class="dentro">
-      <h1>Oficinas</h1>
+  {/* Título medido ao vivo no original: caixa clara centralizada (mesmo
+      padrão das outras páginas internas), Cardo 52px, cor terracota — sem
+      parágrafo embaixo, que era acréscimo nosso. */}
+  <div class="faixa-titulo">
+    <h1>Oficinas</h1>
+  </div>
+
+  {/* "Sobre nossas oficinas": existia no site anterior logo abaixo do
+      título, e tinha sumido na reconstrução. Faixa de largura total, foto à
+      esquerda / texto à direita, medida ao vivo no original. */}
+  <div class="sobre-oficinas">
+    <figure class="foto-sobre">
+      <img src="/oficinas/sobre.png" alt="" width="814" height="1078" loading="lazy" decoding="async" />
+    </figure>
+    <div class="texto-sobre">
+      <p class="titulo-sobre">Sobre nossas oficinas</p>
       <p>
-        Percursos temáticos em grupo, com número reduzido de participantes e
-        duração definida. Cada oficina tem página própria, com data, formato e
-        inscrição.
+        As oficinas de arteterapia da clínica Arcádia oferecem um espaço
+        acolhedor para a expressão e o autoconhecimento, utilizando a arte
+        como meio de explorar emoções e fortalecer vínculos. Com atividades
+        como colagem, leitura e escrita, criam um ambiente seguro para quem
+        busca reconexão pessoal ou deseja aprimorar relações interpessoais.
+      </p>
+      <p>
+        O trabalho em grupo, central nas oficinas, promove troca de
+        experiências, empatia e apoio mútuo, ajudando os participantes a
+        superar barreiras internas e se expressarem sem medo de
+        julgamentos. O grupo atua como uma rede de inspiração e suporte,
+        ampliando o potencial criativo e emocional de cada participante.
+      </p>
+      <p>
+        Cada encontro é uma oportunidade única de descoberta e crescimento,
+        enriquecida pela interação coletiva.
       </p>
     </div>
   </div>
@@ -108,10 +134,74 @@ const semTurma = todas.filter((o) => !o.status);
     .capa { height: 60vh; }
   }
 
-  .topo { background: var(--creme); border-bottom: 1px solid var(--linha); }
-  .dentro { max-width: 1120px; margin: 0 auto; padding: var(--e-5) var(--e-3); }
-  h1 { font-size: var(--t-3xl); margin: 0 0 var(--e-2); }
-  .dentro p { max-width: 58ch; margin: 0; font-size: var(--t-lg); }
+  /* Título medido no original: caixa clara (236,234,223), Cardo 52px,
+     terracota, centralizada — mesma caixa das outras páginas internas. */
+  .faixa-titulo {
+    background: var(--creme);
+    padding: 72px var(--e-3);
+  }
+  .faixa-titulo h1 {
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgb(236, 234, 223);
+    color: var(--terracota);
+    font-family: var(--fonte-titulo);
+    font-size: 52.32px;
+    font-weight: 400;
+    text-align: center;
+  }
+
+  /* "Sobre nossas oficinas": faixa de largura total, foto à esquerda /
+     texto à direita, medida ao vivo no original (mesmo padrão dos blocos de
+     serviço — ver servicos.astro). Aqui o texto fica centralizado na
+     vertical, não colado no topo. */
+  .sobre-oficinas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+  }
+  .foto-sobre {
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+  }
+  .foto-sobre img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Medido no original: o corte não é centralizado — fica quase no canto
+       inferior direito, pra manter a figura saltando visível em vez da
+       flor no topo. */
+    object-position: 79% 96%;
+  }
+  .texto-sobre {
+    padding: 0 71px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .titulo-sobre {
+    font-family: var(--fonte-titulo);
+    font-style: italic;
+    font-size: 40px;
+    font-weight: 400;
+    color: var(--terracota);
+    text-align: center;
+    margin: var(--e-3) 0;
+  }
+  .texto-sobre p:not(.titulo-sobre) {
+    color: var(--terracota);
+    font-size: 16.8px;
+    margin: 0;
+  }
+  @media (max-width: 900px) {
+    .sobre-oficinas { grid-template-columns: 1fr; }
+    .foto-sobre { height: 50vh; }
+    .texto-sobre { padding: var(--e-4) var(--e-3); }
+  }
 
   .corpo { max-width: 1120px; margin: 0 auto; padding: var(--e-4) var(--e-3) 0; }
   section { margin-bottom: var(--e-5); }
