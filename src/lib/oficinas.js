@@ -26,7 +26,7 @@ export const ROTULO_STATUS = {
 export async function listarOficinas(db) {
   const { results } = await db
     .prepare(
-      `SELECT o.id, o.slug, o.nome, o.subtitulo, o.resumo, o.arte_key, o.arte_alt,
+      `SELECT o.id, o.slug, o.nome, o.categoria, o.subtitulo, o.resumo, o.arte_key, o.arte_alt,
               t.id AS turma_id, t.status, t.data_inicio, t.formato, t.vagas_total,
               (SELECT COUNT(*) FROM inscricoes i
                 WHERE i.turma_id = t.id AND i.tipo = 'inscricao'

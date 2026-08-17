@@ -17,6 +17,7 @@ const arte = arteDaOficina(oficina);
     </div>
 
     <div class="texto">
+      {oficina.categoria && <p class="categoria">{oficina.categoria}</p>}
       <h3>{oficina.nome}</h3>
       {oficina.subtitulo && <p class="sub">{oficina.subtitulo}</p>}
       <p class="resumo">{oficina.resumo}</p>
@@ -32,6 +33,11 @@ const arte = arteDaOficina(oficina);
           <div><dt>Vagas</dt><dd>{oficina.vagas_restantes} restantes</dd></div>
         )}
       </dl>
+
+      {/* O cartão inteiro já é um link — isto é só o sinal visual de que dá
+          para clicar, não um segundo link (âncora dentro de âncora não é
+          HTML válido). Mesmo texto e cor dos botões "Saiba +" da Home. */}
+      <span class="saiba-mais">Saiba +</span>
     </div>
   </a>
 </article>
@@ -72,9 +78,27 @@ const arte = arteDaOficina(oficina);
   .selo.em_breve { background: var(--corpo); }
 
   .texto { padding: var(--e-2) var(--e-2) var(--e-3); }
+  .categoria {
+    margin: 0 0 0.2rem;
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--apagado);
+  }
   h3 { margin: 0 0 0.2rem; font-size: var(--t-lg); }
   .sub { margin: 0 0 0.5rem; color: var(--terracota); font-size: var(--t-sm); }
   .resumo { margin: 0 0 var(--e-2); font-size: var(--t-sm); color: var(--corpo); }
+
+  .saiba-mais {
+    display: inline-block;
+    background: var(--terracota);
+    color: var(--creme);
+    padding: 0.35rem 0.75rem;
+    border-radius: 0.33rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  .card:hover .saiba-mais { background: var(--terracota-escuro); }
 
   .meta { display: flex; flex-wrap: wrap; gap: var(--e-2); margin: 0; }
   .meta dt {
