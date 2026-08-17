@@ -84,7 +84,7 @@ const SERVICOS = [
       </Revelar>
       <Revelar>
         <div class="texto-arcadia">
-          <h2 class="titulo-secao">A Arcádia</h2>
+          <h2 class="titulo-secao titulo-caixa">A ARCÁDIA</h2>
           <p>
             O termo “Arcádia” tem suas raízes na mitologia e na geografia da
             Grécia Antiga. Originalmente, Arcádia era uma região montanhosa no
@@ -115,9 +115,9 @@ const SERVICOS = [
 
   {/* ------------------------------------------------------ o que fazemos */}
   <section class="faixa">
-    <div class="miolo">
+    <div class="miolo-largo">
       <Revelar>
-        <h2 class="titulo-secao">O que fazemos</h2>
+        <h2 class="titulo-secao titulo-caixa">O que fazemos</h2>
         <p class="subtitulo-secao">Conheça nossos serviços e veja qual se encaixa em sua busca.</p>
       </Revelar>
 
@@ -143,12 +143,14 @@ const SERVICOS = [
   </section>
 
   {/* ------------------------------------------------------------- tese */}
-  <section class="faixa creme-suave">
-    <div class="miolo">
+  {/* Medido no original: faixa creme de tela cheia, com uma caixa arredondada
+     (não creme-suave, nem sem caixa) dentro — texto numa linha só, sem
+     quebra, o que exige largura generosa e nada de max-width em "ch". */}
+  <section class="faixa creme">
+    <div class="miolo-largo">
       <Revelar>
         <blockquote class="tese">
-          Um espaço onde a psicologia encontra a arte como um caminho para o
-          autoconhecimento
+          Um espaço onde a psicologia encontra a arte como um caminho para o autoconhecimento
         </blockquote>
       </Revelar>
     </div>
@@ -294,6 +296,10 @@ const SERVICOS = [
      Nunca branco puro. */
   .faixa { padding: var(--e-6) var(--e-3); background: var(--papel); }
   .miolo { max-width: 1120px; margin: 0 auto; }
+  /* Medido ao vivo: seções como "O que fazemos" e "A Arcádia" usam uma
+     coluna bem mais larga que o miolo padrão (perto de 1700-1760px), quase
+     ocupando a tela inteira — não os 1120px do resto do site. */
+  .miolo-largo { max-width: 1700px; margin: 0 auto; text-align: center; }
 
   .creme { background: var(--creme); }
   .creme-suave { background: var(--creme-suave); border-block: 1px solid var(--linha); }
@@ -303,6 +309,17 @@ const SERVICOS = [
     font-size: var(--t-2xl);
     margin: 0 0 var(--e-2);
     color: var(--terracota);
+  }
+  /* Caixa clara medida no original: fundo rgb(236,234,223), Cardo 40px,
+     centralizada, largura quase total da seção — mesma caixa usada nos
+     títulos de página em outras partes do site. */
+  .titulo-caixa {
+    display: block;
+    background: rgb(236, 234, 223);
+    font-size: 40px;
+    font-weight: 400;
+    text-align: center;
+    padding: var(--e-2) var(--e-3);
   }
   /* O site anterior usa a cor de contraste (terracota) como cor padrão do
      corpo de texto inteiro — não só nos títulos. Corrigido aqui e nos
@@ -374,14 +391,20 @@ const SERVICOS = [
   .servicos p { margin: 0; font-size: var(--t-sm); color: var(--terracota); }
 
   /* ------------------------------------------------------------- tese */
+  /* Medido no original: caixa arredondada (radius 24px), fundo
+     rgb(236,234,223), padding 52px, largura ~1617px — cabe numa linha só,
+     por isso sem max-width em "ch" (que forçava quebra). */
   .tese {
     font-family: var(--fonte-titulo);
     font-style: italic;
-    font-size: clamp(1.4rem, 2.6vw, 2.1rem);
+    font-size: 29.6px;
     line-height: 1.35;
     text-align: center;
     color: var(--terracota);
-    max-width: 30ch;
+    background: rgb(236, 234, 223);
+    border-radius: 24px;
+    padding: 52px;
+    white-space: nowrap;
     margin: 0 auto;
     quotes: '“' '”';
   }
@@ -496,6 +519,8 @@ const SERVICOS = [
     .dupla { grid-template-columns: 1fr; gap: var(--e-4); }
     .colagem { max-width: 380px; }
     .dupla-arcadia { grid-template-columns: 1fr; }
+    /* Sem espaço pra uma linha só num celular — aqui a quebra volta. */
+    .tese { white-space: normal; padding: var(--e-3); }
   }
   @media (max-width: 720px) {
     .faixa { padding: var(--e-5) var(--e-3); }
