@@ -74,24 +74,26 @@ const ano = new Date().getFullYear();
   }
   .marca-col img { height: 78px; width: auto; opacity: 0.95; }
 
+  /* Tamanho e caixa medidos no original: "medium", sem uppercase — a versão
+     pequena e em caixa alta era estilo nosso, não do site anterior. */
   h2 {
     font-family: var(--fonte-texto);
-    font-size: var(--t-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
+    font-size: var(--t-lg);
     color: var(--ocre);
     margin: 0 0 var(--e-2);
     font-weight: 600;
   }
   ul { list-style: none; margin: 0; padding: 0; }
   li { margin-bottom: 0.55rem; }
+  /* Cor de link padrão do site anterior é a mesma em qualquer lugar
+     (inclusive rodapé escuro): --ocre, não --creme. */
   a {
-    color: var(--creme);
+    color: var(--ocre);
     text-decoration: none;
     font-size: var(--t-sm);
     opacity: 0.85;
   }
-  a:hover { opacity: 1; color: var(--ocre); }
+  a:hover { opacity: 1; }
 
   .base {
     border-top: 1px solid rgba(243, 240, 231, 0.16);

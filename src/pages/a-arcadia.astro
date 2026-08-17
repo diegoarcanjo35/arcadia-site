@@ -71,15 +71,22 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
       </figure>
     </div>
 
-    {resto
-      ? <Prosa texto={resto} />
-      : <AguardandoConteudo itens={["a origem do nome e o conceito da marca", "a abordagem de trabalho"]} />}
     {/* Link do site anterior: a página de nome ("Quem Somos") levava à página
         de marca ("Nossa Marca"). Mantido aqui pelo mesmo motivo do lá. */}
     <p class="acao-secao"><a class="botao" href="/nossa-marca">Conheça nossa marca</a></p>
   </div>
 
+  {/* A ordem importa: no site anterior a foto do consultório vem ANTES de
+      "Arcádia na Psicologia", não depois — ela separa o bloco do nome do
+      bloco da psicologia, e não fecha a página. Tinha ficado no fim por
+      engano. */}
   <FaixaFoto foto="/espaco/0f2a4516.webp" altura="66vh" />
+
+  <div class="corpo">
+    {resto
+      ? <Prosa texto={resto} />
+      : <AguardandoConteudo itens={["a origem do nome e o conceito da marca", "a abordagem de trabalho"]} />}
+  </div>
 
   {/* "Psicóloga Responsável": existia no site anterior nesta mesma página
       (foto + bio da Wanda). No original o bloco inteiro (título, foto e
@@ -119,9 +126,9 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
   .pretitulo {
     background: var(--creme-suave);
     border-radius: var(--raio);
-    color: var(--ocre);
+    color: var(--terracota);
     font-family: var(--fonte-titulo);
-    font-size: var(--t-2xl);
+    font-size: var(--t-3xl);
     text-align: center;
     padding: var(--e-3);
     margin: 0 0 var(--e-5);
@@ -139,7 +146,11 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
     color: var(--terracota);
     margin: 0 0 var(--e-2);
   }
-  .texto-nome p { margin: 0 0 1em; }
+  .texto-nome p { margin: 0 0 1em; color: var(--terracota); }
+  /* O site anterior tem a cor de contraste (terracota) como cor padrão do
+     corpo inteiro — não só nos títulos. Aqui alcança o texto que vem do
+     banco via Prosa (que não define cor própria de propósito). */
+  .corpo :global(.prosa p) { color: var(--terracota); }
   .pintura { margin: 0; }
   .pintura img {
     display: block;
