@@ -78,6 +78,17 @@ export async function POST({ request }) {
         return voltar(volta, r.ok ? 'apagado' : r.erro);
       }
 
+      /* ------------------------------------------------------- horários */
+      case 'horario.salvar': {
+        const r = await A.salvarHorario(db, campos);
+        return voltar(volta, r.ok ? 'salvo' : r.erro);
+      }
+
+      case 'horario.apagar': {
+        const r = await A.apagarHorario(db, Number(campos.id));
+        return voltar(volta, r.ok ? 'apagado' : r.erro);
+      }
+
       /* -------------------------------------------------- facilitadoras */
       case 'facilitadora.salvar': {
         const r = await A.salvarFacilitadora(db, campos);

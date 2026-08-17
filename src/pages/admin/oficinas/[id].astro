@@ -227,7 +227,56 @@ const ROTULO_STATUS = {
                         </div>
                       </form>
 
-                      <form method="POST" action="/api/admin/salvar" style="margin-top:0.5rem"
+                      {/* Horários: opcional. Turma sem nenhum continua
+                          funcionando só com o campo Vagas acima — é o
+                          caminho simples, que a maioria das turmas usa.
+                          Quando a turma tem horário cadastrado, a vaga que
+                          vale pra cada inscrição é a do horário escolhido,
+                          não mais o total da turma. */}
+                      <div class="horarios">
+                        <p class="rotulo-secao">Horários</p>
+                        {t.horarios.length === 0 && (
+                          <p class="vazio pequeno">
+                            Nenhum horário. Sem horário cadastrado, vale só o campo Vagas acima.
+                          </p>
+                        )}
+                        {t.horarios.map((h) => (
+                          <details class="horario-item">
+                            <summary class="botao discreto">
+                              {h.rotulo}
+                              {h.vagas_total != null && (
+                                <span class="fraco"> — {h.inscritos} de {h.vagas_total}</span>
+                              )}
+                            </summary>
+                            <form method="POST" action="/api/admin/salvar" class="linha" style="margin-top:0.5rem">
+                              <input type="hidden" name="acao" value="horario.salvar" />
+                              <input type="hidden" name="id" value={h.id} />
+                              <input type="hidden" name="turma_id" value={t.id} />
+                              <input type="hidden" name="volta" value={volta} />
+                              <label>Descrição<input type="text" name="rotulo" value={h.rotulo} required /></label>
+                              <label>Vagas<input type="number" name="vagas_total" min="0" value={h.vagas_total ?? ''} /></label>
+                              <button type="submit">Salvar</button>
+                            </form>
+                            <form method="POST" action="/api/admin/salvar" style="margin-top:0.4rem"
+                                  onsubmit="return confirm('Apagar este horário?')">
+                              <input type="hidden" name="acao" value="horario.apagar" />
+                              <input type="hidden" name="id" value={h.id} />
+                              <input type="hidden" name="volta" value={volta} />
+                              <button class="discreto" type="submit">Apagar horário</button>
+                            </form>
+                          </details>
+                        ))}
+                        <form method="POST" action="/api/admin/salvar" class="linha" style="margin-top:0.6rem; align-items:flex-end">
+                          <input type="hidden" name="acao" value="horario.salvar" />
+                          <input type="hidden" name="turma_id" value={t.id} />
+                          <input type="hidden" name="volta" value={volta} />
+                          <label>Novo horário<input type="text" name="rotulo" placeholder="ex.: Terças, 14h" required /></label>
+                          <label>Vagas<input type="number" name="vagas_total" min="0" /></label>
+                          <button type="submit">Adicionar horário</button>
+                        </form>
+                      </div>
+
+                      <form method="POST" action="/api/admin/salvar" style="margin-top:0.75rem"
                             onsubmit="return confirm('Apagar esta turma?')">
                         <input type="hidden" name="acao" value="turma.apagar" />
                         <input type="hidden" name="id" value={t.id} />
@@ -300,4 +349,9 @@ const ROTULO_STATUS = {
   .editar-turma { margin-top: 0.9rem; padding-top: 0.9rem; border-top: 1px solid #eae4da; }
   .perigo-zona { border-color: #e8cfc7; }
   code { background: #f2efe9; padding: 1px 4px; border-radius: 3px; }
+
+  .horarios { margin-top: 0.9rem; padding-top: 0.9rem; border-top: 1px solid #eae4da; }
+  .rotulo-secao { margin: 0 0 0.4rem; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #8a7f72; }
+  .horario-item { margin-bottom: 0.4rem; }
+  .vazio.pequeno { font-size: 0.82rem; margin: 0 0 0.5rem; }
 </style>

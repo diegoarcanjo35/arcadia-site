@@ -52,6 +52,41 @@ export async function listarOficinas(db) {
   return results.map(comVagasRestantes);
 }
 
+/**
+ * Horários de uma ou mais turmas, com vagas restantes já calculadas —
+ * contando só `tipo = 'inscricao'`, igual ao critério de vagas da turma:
+ * gente na lista de espera não ocupa vaga de ninguém.
+ *
+ * Devolve um Map turma_id -> horario[], pronto para anexar em cada turma.
+ * Turma sem nenhum horário cadastrado simplesmente não aparece no mapa —
+ * é o sinal de que o formulário público não precisa pedir escolha nenhuma.
+ */
+export async function buscarHorarios(db, idsTurmas) {
+  const porTurma = new Map();
+  if (!idsTurmas.length) return porTurma;
+
+  const marcadores = idsTurmas.map(() => '?').join(',');
+  const { results } = await db
+    .prepare(
+      `SELECT h.*,
+              (SELECT COUNT(*) FROM inscricoes i
+                WHERE i.horario_id = h.id AND i.tipo = 'inscricao'
+                  AND i.status <> 'cancelada') AS inscritos
+         FROM horarios h
+        WHERE h.turma_id IN (${marcadores})
+        ORDER BY h.ordem, h.id`
+    )
+    .bind(...idsTurmas)
+    .all();
+
+  for (const h of results) {
+    const item = comVagasRestantes(h);
+    if (!porTurma.has(h.turma_id)) porTurma.set(h.turma_id, []);
+    porTurma.get(h.turma_id).push(item);
+  }
+  return porTurma;
+}
+
 /** Uma oficina pelo slug, com facilitadoras e todas as turmas. */
 export async function buscarOficina(db, slug) {
   const oficina = await db
@@ -61,7 +96,7 @@ export async function buscarOficina(db, slug) {
 
   if (!oficina) return null;
 
-  const [{ results: turmas }, { results: facilitadoras }] = await Promise.all([
+  const [{ results: turmasBrutas }, { results: facilitadoras }] = await Promise.all([
     db
       .prepare(
         `SELECT t.*,
@@ -86,11 +121,17 @@ export async function buscarOficina(db, slug) {
       .all(),
   ]);
 
+  const horariosPorTurma = await buscarHorarios(db, turmasBrutas.map((t) => t.id));
+  const turmas = turmasBrutas.map((t) => ({
+    ...comVagasRestantes(t),
+    horarios: horariosPorTurma.get(t.id) ?? [],
+  }));
+
   return {
     ...oficina,
     facilitadoras,
-    turmas: turmas.map(comVagasRestantes),
-    turmaAberta: turmas.map(comVagasRestantes).find((t) => STATUS_ABERTOS.includes(t.status)) || null,
+    turmas,
+    turmaAberta: turmas.find((t) => STATUS_ABERTOS.includes(t.status)) || null,
   };
 }
 
@@ -112,10 +153,15 @@ export async function listarSlugs(db) {
  * preencheu o formulário é entrar numa lista, nunca ver o dado sumir.
  *
  * Recebe `turmaId` OU `oficinaId`. Quando os dois vêm, a turma manda.
+ *
+ * `horarioId` só importa quando a turma tem horário cadastrado — aí a vaga
+ * que conta é a daquele horário, não o total da turma (um horário lotado não
+ * pode empurrar gente pra lista de espera de um horário que ainda tem vaga).
+ * Turma sem horário nenhum ignora `horarioId` e funciona como sempre funcionou.
  */
 export async function registrarInscricao(
   db,
-  { turmaId, oficinaId, nome, email, telefone, consentimento, origem }
+  { turmaId, oficinaId, horarioId, nome, email, telefone, consentimento, origem }
 ) {
   if (!consentimento) {
     return { ok: false, erro: 'consentimento_ausente' };
@@ -141,17 +187,27 @@ export async function registrarInscricao(
 
     if (!turma) return { ok: false, erro: 'turma_inexistente' };
 
-    const lotada = turma.vagas_total != null && turma.inscritos >= turma.vagas_total;
+    const horarios = (await buscarHorarios(db, [turmaId])).get(turmaId) ?? [];
+    let horario = null;
+
+    if (horarios.length > 0) {
+      horario = horarios.find((h) => h.id === horarioId);
+      if (!horario) return { ok: false, erro: 'horario_invalido', turma, slug: turma.oficina_slug };
+    }
+
     const aberta = STATUS_ABERTOS.includes(turma.status);
+    const lotada = horario
+      ? horario.vagas_total != null && horario.vagas_restantes <= 0
+      : turma.vagas_total != null && turma.inscritos >= turma.vagas_total;
     const tipo = !aberta || lotada ? 'lista_espera' : 'inscricao';
 
     try {
       await db
         .prepare(
-          `INSERT INTO inscricoes (turma_id, oficina_id, nome, email, telefone, tipo, consentimento, origem)
-           VALUES (?, NULL, ?, ?, ?, ?, 1, ?)`
+          `INSERT INTO inscricoes (turma_id, oficina_id, horario_id, nome, email, telefone, tipo, consentimento, origem)
+           VALUES (?, NULL, ?, ?, ?, ?, ?, 1, ?)`
         )
-        .bind(turmaId, nomeLimpo, emailLimpo, telLimpo, tipo, origem || 'site')
+        .bind(turmaId, horario?.id ?? null, nomeLimpo, emailLimpo, telLimpo, tipo, origem || 'site')
         .run();
     } catch (e) {
       // índice único parcial (turma_id, email)

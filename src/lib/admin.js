@@ -83,7 +83,7 @@ export async function buscarOficinaAdmin(db, id) {
   const oficina = await db.prepare(`SELECT * FROM oficinas WHERE id = ?`).bind(id).first();
   if (!oficina) return null;
 
-  const [{ results: turmas }, { results: vinculos }] = await Promise.all([
+  const [{ results: turmasBrutas }, { results: vinculos }] = await Promise.all([
     db
       .prepare(
         `SELECT t.*,
@@ -99,7 +99,43 @@ export async function buscarOficinaAdmin(db, id) {
       .all(),
   ]);
 
+  const idsTurmas = turmasBrutas.map((t) => t.id);
+  const horariosPorTurma = await buscarHorariosAdmin(db, idsTurmas);
+  const turmas = turmasBrutas.map((t) => ({ ...t, horarios: horariosPorTurma.get(t.id) ?? [] }));
+
   return { ...oficina, turmas, vinculos };
+}
+
+/**
+ * Horários de uma ou mais turmas, para o painel.
+ *
+ * Diferente da versão pública (`oficinas.js`), conta TODA inscrição não
+ * cancelada — inclusive lista de espera — porque quem administra quer ver o
+ * volume real de gente interessada naquele horário, não só quem ocupa vaga.
+ * É o mesmo critério que `buscarOficinaAdmin` já usa para turmas.
+ */
+async function buscarHorariosAdmin(db, idsTurmas) {
+  const porTurma = new Map();
+  if (!idsTurmas.length) return porTurma;
+
+  const marcadores = idsTurmas.map(() => '?').join(',');
+  const { results } = await db
+    .prepare(
+      `SELECT h.*,
+              (SELECT COUNT(*) FROM inscricoes i
+                WHERE i.horario_id = h.id AND i.status <> 'cancelada') AS inscritos
+         FROM horarios h
+        WHERE h.turma_id IN (${marcadores})
+        ORDER BY h.ordem, h.id`
+    )
+    .bind(...idsTurmas)
+    .all();
+
+  for (const h of results) {
+    if (!porTurma.has(h.turma_id)) porTurma.set(h.turma_id, []);
+    porTurma.get(h.turma_id).push(h);
+  }
+  return porTurma;
 }
 
 export async function salvarOficina(db, campos) {
@@ -261,6 +297,53 @@ export async function apagarTurma(db, id) {
   return { ok: true };
 }
 
+/* --------------------------------------------------------------- horários */
+
+export async function salvarHorario(db, campos) {
+  const turmaId = num(campos.turma_id);
+  if (!turmaId) return { ok: false, erro: 'turma_obrigatoria' };
+
+  const rotulo = txt(campos.rotulo, 120);
+  if (!rotulo) return { ok: false, erro: 'rotulo_obrigatorio' };
+
+  const vagas = num(campos.vagas_total);
+  if (vagas !== null && vagas < 0) return { ok: false, erro: 'vagas_negativas' };
+
+  const ordem = num(campos.ordem) ?? 0;
+  const id = num(campos.id);
+
+  if (id) {
+    await db
+      .prepare(`UPDATE horarios SET turma_id=?, rotulo=?, vagas_total=?, ordem=? WHERE id=?`)
+      .bind(turmaId, rotulo, vagas, ordem, id)
+      .run();
+    return { ok: true, id };
+  }
+
+  const r = await db
+    .prepare(`INSERT INTO horarios (turma_id, rotulo, vagas_total, ordem) VALUES (?, ?, ?, ?)`)
+    .bind(turmaId, rotulo, vagas, ordem)
+    .run();
+  return { ok: true, id: r.meta?.last_row_id };
+}
+
+/**
+ * Mesma regra de `apagarTurma`: não some com o horário de quem já se
+ * inscreveu nele. A inscrição em si não seria apagada (o vínculo é
+ * ON DELETE SET NULL), mas perderia a informação de qual horário a pessoa
+ * escolheu — e isso é exatamente o dado que este recurso existe para guardar.
+ */
+export async function apagarHorario(db, id) {
+  const n = await db
+    .prepare(`SELECT COUNT(*) AS n FROM inscricoes WHERE horario_id = ? AND status <> 'cancelada'`)
+    .bind(id)
+    .first();
+  if (n?.n > 0) return { ok: false, erro: 'tem_inscricoes', inscritos: n.n };
+
+  await db.prepare(`DELETE FROM horarios WHERE id = ?`).bind(id).run();
+  return { ok: true };
+}
+
 /* --------------------------------------------------------- facilitadoras */
 
 export async function listarFacilitadorasAdmin(db) {
@@ -361,10 +444,12 @@ export async function listarInscricoes(db, { turmaId, status, busca } = {}) {
 
   const { results } = await db
     .prepare(
-      `SELECT i.*, o.nome AS oficina_nome, o.slug AS oficina_slug, t.data_inicio, t.formato
+      `SELECT i.*, o.nome AS oficina_nome, o.slug AS oficina_slug, t.data_inicio, t.formato,
+              h.rotulo AS horario_rotulo
          FROM inscricoes i
          LEFT JOIN turmas   t ON t.id = i.turma_id
          LEFT JOIN oficinas o ON o.id = COALESCE(t.oficina_id, i.oficina_id)
+         LEFT JOIN horarios h ON h.id = i.horario_id
         ${onde.length ? 'WHERE ' + onde.join(' AND ') : ''}
         ORDER BY i.criado_em DESC
         LIMIT 500`

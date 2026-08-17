@@ -68,6 +68,11 @@ const RESULTADOS = {
     titulo: 'Falta o aceite da Política de Privacidade.',
     texto: 'Sem esse aceite não podemos guardar seu contato. Basta marcar a caixa e enviar de novo.',
   },
+  horario: {
+    tom: 'aviso',
+    titulo: 'Escolha um horário.',
+    texto: 'Esta turma tem mais de um horário — selecione qual você quer antes de enviar.',
+  },
   nome: { tom: 'aviso', titulo: 'Confira o nome.', texto: 'Precisamos do nome para saber com quem falamos.' },
   email: { tom: 'aviso', titulo: 'Confira o e-mail.', texto: 'O endereço informado parece incompleto.' },
   indisponivel: {
@@ -178,7 +183,7 @@ const jsonLd = {
               {turma.formato && (<><dt>Formato</dt><dd>{turma.formato}</dd></>)}
               {turma.encontros && (<><dt>Encontros</dt><dd>{turma.encontros}</dd></>)}
               {turma.carga_horaria && (<><dt>Carga horária</dt><dd>{turma.carga_horaria}h</dd></>)}
-              {turma.vagas_restantes != null && (
+              {turma.vagas_restantes != null && turma.horarios.length === 0 && (
                 <><dt>Vagas</dt><dd>{turma.vagas_restantes} de {turma.vagas_total}</dd></>
               )}
             </dl>
@@ -195,6 +200,29 @@ const jsonLd = {
                   <input type="text" name="confirme_nao_preencher" tabindex="-1" autocomplete="off" />
                 </label>
               </div>
+
+              {/* Só aparece quando a turma tem horário cadastrado — turma
+                  sem horário nenhum continua sem esta pergunta, exatamente
+                  como antes. As vagas mostradas aqui são por horário, não da
+                  turma inteira: um horário cheio não deve parecer que a
+                  turma toda lotou. */}
+              {turma.horarios.length > 0 && (
+                <label>Horário
+                  <select name="horario_id" required>
+                    <option value="">Escolha um horário</option>
+                    {turma.horarios.map((h) => (
+                      <option value={h.id}>
+                        {h.rotulo}
+                        {h.vagas_total != null && (
+                          h.vagas_restantes > 0
+                            ? ` — ${h.vagas_restantes} vaga${h.vagas_restantes === 1 ? '' : 's'}`
+                            : ' — lista de espera'
+                        )}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
 
               <label>Nome<input type="text" name="nome" required autocomplete="name" /></label>
               <label>E-mail<input type="email" name="email" required autocomplete="email" /></label>
@@ -413,7 +441,7 @@ const jsonLd = {
 
   form { display: grid; gap: var(--e-2); }
   label { display: grid; gap: 0.3rem; font-size: var(--t-sm); color: var(--corpo); }
-  input[type='text'], input[type='email'], input[type='tel'] {
+  input[type='text'], input[type='email'], input[type='tel'], select {
     font: inherit;
     font-size: var(--t-sm);
     padding: 0.55rem 0.7rem;
@@ -421,7 +449,7 @@ const jsonLd = {
     border-radius: var(--raio);
     background: var(--papel);
   }
-  input:focus { border-color: var(--terracota); }
+  input:focus, select:focus { border-color: var(--terracota); }
 
   .aceite { grid-template-columns: auto 1fr; align-items: start; gap: 0.55rem; font-size: var(--t-xs); }
   .aceite span { line-height: 1.45; }

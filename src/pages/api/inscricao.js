@@ -70,6 +70,7 @@ export async function POST({ request }) {
   const consentimento = form.get('consentimento') === '1';
   const turmaId = inteiro(form.get('turma_id'));
   const oficinaId = inteiro(form.get('oficina_id'));
+  const horarioId = inteiro(form.get('horario_id'));
 
   if (nome.length < 2) return voltar(slug, 'nome');
   if (!EMAIL.test(email)) return voltar(slug, 'email');
@@ -82,6 +83,7 @@ export async function POST({ request }) {
     r = await registrarInscricao({
       turmaId,
       oficinaId,
+      horarioId,
       nome,
       email,
       telefone,
@@ -106,6 +108,8 @@ export async function POST({ request }) {
       return voltar(destino, 'duplicada');
     case 'consentimento_ausente':
       return voltar(destino, 'consentimento');
+    case 'horario_invalido':
+      return voltar(destino, 'horario');
     case 'sem_banco':
       console.error('[inscricao] binding DB ausente — inscrição NÃO gravada');
       return voltar(destino, 'indisponivel');
