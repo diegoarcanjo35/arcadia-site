@@ -548,6 +548,14 @@ const SERVICOS = [
     }
     .dupla { grid-template-columns: 1fr; gap: var(--e-4); }
     .colagem { max-width: 380px; }
+    /* Só no mobile: a imagem sobe para cima do nome "Oficinas" — no desktop
+       (colunas lado a lado) a imagem continua à direita, como já era. O
+       order tem que ir no filho direto do grid (o .revelar que embrulha a
+       figura) — .colagem é neta do .dupla, não filha, então order nela não
+       tinha efeito nenhum na ordem visual. :global() porque esse filho é
+       renderizado pelo componente Revelar, com o escopo dele — sem isso o
+       seletor exige um atributo de escopo que esse elemento não tem. */
+    .dupla > :global(:last-child) { order: -1; }
     .dupla-arcadia { grid-template-columns: 1fr; }
     /* No mobile, o vídeo do site anterior é bem mais vertical que no
        desktop — 352,5×430px medido ao vivo (proporção 0,82:1), perto do

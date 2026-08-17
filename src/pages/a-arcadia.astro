@@ -208,6 +208,9 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
   @media (max-width: 800px) {
     .dupla-nome { grid-template-columns: 1fr; }
     .texto-nome { padding: 0 var(--e-3); }
+    /* Só no mobile: a imagem sobe para logo abaixo de "Quem Somos", antes do
+       texto — no desktop (colunas lado a lado) ela continua à direita. */
+    .pintura { order: -1; }
   }
 
   /* "Psicóloga Responsável": no site anterior esse bloco inteiro — título,
