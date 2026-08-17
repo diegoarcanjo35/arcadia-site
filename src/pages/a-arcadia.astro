@@ -188,7 +188,12 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
      corpo inteiro — não só nos títulos. Aqui alcança o texto que vem do
      banco via Prosa (que não define cor própria de propósito). Título "##"
      também sai em 40px/peso normal e centralizado, igual ao medido lá. */
-  .corpo :global(.prosa p) { color: var(--terracota); }
+  /* Medido ao vivo no original: a coluna de texto tem 832px (não os 68ch/
+     571px padrão do Prosa, que era estreito demais e forçava o título a
+     quebrar em duas linhas) e os parágrafos ficam colados, sem espaço entre
+     eles (margem zero, não 1em). */
+  .corpo :global(.prosa) { max-width: 832px; margin: 0 auto; }
+  .corpo :global(.prosa p) { color: var(--terracota); margin: 0; }
   .corpo :global(.prosa h2) {
     font-size: 40px;
     font-weight: 400;
