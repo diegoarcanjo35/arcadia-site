@@ -89,6 +89,20 @@ const ativo = (href) => (href === '/' ? rota === '/' : rota.startsWith(href));
 </script>
 
 <style>
+  /* Entrada do cabeçalho: no site anterior o menu (junto com a marca) nasce
+     transparente e some para opacidade 1 em 3s, ao carregar a página — não
+     ao rolar. Por isso é uma animação de CSS puro no carregamento, e não o
+     componente Revelar (que dispara por rolagem, pensado para conteúdo mais
+     abaixo — o cabeçalho já está sempre visível na primeira tela). */
+  @keyframes entrada-cabecalho {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  header { animation: entrada-cabecalho 3s ease-out; }
+  @media (prefers-reduced-motion: reduce) {
+    header { animation: none; }
+  }
+
   header {
     position: relative;
     border-bottom: 1px solid var(--linha);
