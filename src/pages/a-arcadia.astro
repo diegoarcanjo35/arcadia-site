@@ -96,34 +96,6 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
       ? <Prosa texto={resto} />
       : <AguardandoConteudo itens={["a origem do nome e o conceito da marca", "a abordagem de trabalho"]} />}
   </div>
-
-  {/* "Psicóloga Responsável": existia no site anterior nesta mesma página
-      (foto + bio da Wanda). No original o bloco inteiro (título, foto e
-      texto) usa a cor de contraste da marca (terracota) — não a cor de corpo
-      padrão — e a foto é quadrada, não redonda. */}
-  <section class="responsavel">
-    <div class="corpo">
-      <h2>Psicóloga Responsável</h2>
-      <figure class="retrato">
-        <img src="/equipe/wanda-meyer-mattos.webp" alt="Wanda Meyer, psicóloga" width="266" height="266" loading="lazy" decoding="async" />
-      </figure>
-      <p>
-        Seja bem-vindo(a)! Sou <strong>Wanda Meyer</strong>, psicóloga fascinada
-        pela arte, pelos símbolos e pela psique. Acredito que a arte e a
-        psicologia podem caminhar juntas, abrindo espaços para o
-        autoconhecimento, a transformação e a construção de sentidos.
-      </p>
-      <p>
-        Minha trajetória une Psicologia Analítica, História da Arte,
-        Arteterapia e Mitologia, explorando as temáticas que nos atravessam —
-        sejam elas conscientes ou não. No meu trabalho, atuo no atendimento
-        clínico individual, com familiares e em grupo; na avaliação
-        psicológica; e nas oficinas com Arteterapia. Aqui, a criatividade não
-        é vista como um talento, mas como uma linguagem — um caminho para
-        acessar o que, muitas vezes, as palavras não alcançam.
-      </p>
-    </div>
-  </section>
 </Base>
 
 <style>
@@ -219,40 +191,5 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
        .revelar (com o escopo do próprio componente) — por isso o order vai
        no filho direto via :global(), e não em .pintura, que é neta. */
     .dupla-nome > :global(:last-child) { order: -1; }
-  }
-
-  /* "Psicóloga Responsável": no site anterior esse bloco inteiro — título,
-     foto e texto — usa a cor de contraste da marca (terracota), não a cor de
-     corpo padrão. A foto lá é quadrada (só encolhida a 266px), sem recorte
-     circular. */
-  .responsavel {
-    background: var(--creme);
-    padding: var(--e-5) 0;
-    margin-top: var(--e-4);
-    text-align: center;
-    color: var(--terracota);
-  }
-  .responsavel .corpo { padding-top: 0; }
-  /* Medido no original: 40px Cardo, peso normal — mesmo tratamento do
-     título "Arcádia na Psicologia" acima. */
-  .responsavel h2 {
-    font-size: 40px;
-    font-weight: 400;
-    color: var(--terracota);
-    margin: 0 0 var(--e-3);
-  }
-  .retrato {
-    margin: 0 auto var(--e-3);
-    width: 266px;
-  }
-  .retrato img { width: 100%; height: auto; display: block; }
-  /* Medido no original: 16.8px Inter — não o --t-base padrão (17px), que era
-     chute nosso. */
-  .responsavel p {
-    max-width: 68ch;
-    margin: 0 auto 1em;
-    text-align: left;
-    color: var(--terracota);
-    font-size: 16.8px;
   }
 </style>
