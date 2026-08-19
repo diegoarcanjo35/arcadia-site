@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import AguardandoConteudo from '../components/AguardandoConteudo.astro';
 import Prosa from '../components/Prosa.astro';
 import FaixaFoto from '../components/FaixaFoto.astro';
+import Revelar from '../components/Revelar.astro';
 import { buscarConteudo } from '../lib/dados.js';
 
 // Deixou de ser estática: o texto agora vem do banco e a clínica edita pelo
@@ -42,31 +43,40 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
       parte da coluna de conteúdo de 1120px do resto da página. Por isso mora
       fora do .corpo, como uma faixa própria. */}
   <div class="dupla-nome">
-    <div class="texto-nome">
-      <h2>ARCÁDIA – POR QUE ESSE NOME?</h2>
-      <p>
-        O nome <strong>Arcádia</strong> foi escolhido para o nosso espaço por
-        seu profundo <strong>simbolismo de paz e harmonia</strong>. Na
-        mitologia e na literatura, Arcádia representa um lugar de
-        serenidade, onde a vida acontece <strong>em equilíbrio com a
-        natureza, longe das pressões do mundo moderno</strong>. Esse conceito
-        se alinha à nossa proposta terapêutica, que busca oferecer um
-        ambiente acolhedor e seguro, onde cada pessoa possa se reconectar
-        consigo mesma e encontrar alívio para suas inquietações.
-      </p>
-      <p>
-        <strong>Na psicologia, Arcádia é uma metáfora para o equilíbrio
-        emocional e mental, um estado de serenidade interior que permite
-        lidar melhor com desafios e ansiedades</strong>. A Arcádia se propõe
-        a ser esse espaço de acolhimento e transformação, um lugar onde o
-        autoconhecimento e o crescimento psicológico acontecem de forma
-        respeitosa e cuidadosa, tal como o ideal arcadiano de simplicidade e
-        bem-estar.
-      </p>
-    </div>
-    <figure class="pintura">
-      <img src="/a-arcadia/arcadismo.jpg" alt="" width="846" height="697" loading="lazy" decoding="async" />
-    </figure>
+    <Revelar direcao="esquerda">
+      <div class="texto-nome">
+        {/* No site anterior isto NÃO é um título — é só o primeiro
+            parágrafo do bloco, com "ARCÁDIA" e "POR QUE ESSE NOME?" em
+            negrito, do mesmo tamanho do corpo do texto. Media como <h2> de
+            40px (como estava aqui antes) deixava desproporcional — bem maior
+            que no original. */}
+        <p class="abre-nome"><strong>ARCÁDIA</strong> – <strong>POR QUE ESSE NOME?</strong></p>
+        <p>
+          O nome <strong>Arcádia</strong> foi escolhido para o nosso espaço por
+          seu profundo <strong>simbolismo de paz e harmonia</strong>. Na
+          mitologia e na literatura, Arcádia representa um lugar de
+          serenidade, onde a vida acontece <strong>em equilíbrio com a
+          natureza, longe das pressões do mundo moderno</strong>. Esse conceito
+          se alinha à nossa proposta terapêutica, que busca oferecer um
+          ambiente acolhedor e seguro, onde cada pessoa possa se reconectar
+          consigo mesma e encontrar alívio para suas inquietações.
+        </p>
+        <p>
+          <strong>Na psicologia, Arcádia é uma metáfora para o equilíbrio
+          emocional e mental, um estado de serenidade interior que permite
+          lidar melhor com desafios e ansiedades</strong>. A Arcádia se propõe
+          a ser esse espaço de acolhimento e transformação, um lugar onde o
+          autoconhecimento e o crescimento psicológico acontecem de forma
+          respeitosa e cuidadosa, tal como o ideal arcadiano de simplicidade e
+          bem-estar.
+        </p>
+      </div>
+    </Revelar>
+    <Revelar direcao="direita">
+      <figure class="pintura">
+        <img src="/a-arcadia/arcadismo.jpg" alt="" width="846" height="697" loading="lazy" decoding="async" />
+      </figure>
+    </Revelar>
   </div>
 
   <div class="corpo">
@@ -148,13 +158,16 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
     .capa { height: 60vh; }
   }
 
-  /* Título da página, medido ao vivo no original: 52.32px Cardo, cor ocre
-     (não terracota), centralizado, sem caixa nem fundo — texto simples,
-     agora logo abaixo da capa. */
+  /* Título da página, medido ao vivo no original: cor ocre (não terracota),
+     centralizado, sem caixa nem fundo — texto simples, agora logo abaixo da
+     capa. O tamanho não é fixo lá — é a mesma escala fluida do preset
+     "xx-large" do tema (clamp), 40px no mobile (375px) subindo até 52.32px
+     no desktop (1280px+). Fixar em 52.32px pra qualquer largura deixava o
+     título grande demais no celular — Wanda notou. */
   .titulo-pagina {
     color: var(--ocre);
     font-family: var(--fonte-titulo);
-    font-size: 52.32px;
+    font-size: clamp(2.5rem, 2.5rem + ((1vw - 0.2rem) * 1.283), 3.27rem);
     font-weight: 400;
     text-align: center;
     margin: var(--e-4) 0 var(--e-3);
@@ -174,14 +187,6 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
   }
   .texto-nome {
     padding: 0 var(--e-4);
-  }
-  /* Título e peso medidos no original: 40px Cardo, peso normal (não 700) —
-     era mais leve que os outros h2 da página. */
-  .texto-nome h2 {
-    font-size: 40px;
-    font-weight: 400;
-    color: var(--terracota);
-    margin: 0 0 var(--e-2);
   }
   .texto-nome p { margin: 0 0 1em; color: var(--terracota); }
   /* O site anterior tem a cor de contraste (terracota) como cor padrão do
@@ -209,8 +214,11 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
     .dupla-nome { grid-template-columns: 1fr; }
     .texto-nome { padding: 0 var(--e-3); }
     /* Só no mobile: a imagem sobe para logo abaixo de "Quem Somos", antes do
-       texto — no desktop (colunas lado a lado) ela continua à direita. */
-    .pintura { order: -1; }
+       texto — no desktop (colunas lado a lado) ela continua à direita. Agora
+       que os dois lados entraram num <Revelar>, o filho direto do grid é o
+       .revelar (com o escopo do próprio componente) — por isso o order vai
+       no filho direto via :global(), e não em .pintura, que é neta. */
+    .dupla-nome > :global(:last-child) { order: -1; }
   }
 
   /* "Psicóloga Responsável": no site anterior esse bloco inteiro — título,
