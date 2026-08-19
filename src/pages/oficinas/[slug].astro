@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Prosa from '../../components/Prosa.astro';
 import { buscarOficina } from '../../lib/dados.js';
 import { ROTULO_STATUS, formatarData } from '../../lib/oficinas.js';
 import { arteDaOficina } from '../../lib/artes.js';
@@ -134,7 +135,11 @@ const jsonLd = {
       <h1>{tituloGrande}</h1>
       {linhaSub && <p class="sub">{linhaSub}</p>}
 
-      <p>{oficina.descricao}</p>
+      {/* Mesmo bug da bio da Equipe: texto do painel com linha em branco
+          entre parágrafos, mas um <p> só não quebra nada — virava parede de
+          texto (foi o caso da Entre-Nós que a Wanda apontou). Prosa quebra
+          nos mesmos lugares que o textarea do admin já aceita. */}
+      <Prosa texto={oficina.descricao} />
 
       {oficina.por_que_participar && (
         <>
@@ -361,7 +366,11 @@ const jsonLd = {
     color: var(--terracota);
     margin: 0 0 var(--e-3);
   }
-  .texto p { color: var(--terracota); font-size: 16.8px; margin: 0 0 1em; }
+  /* :global() no p: a descrição agora vem de dentro do componente Prosa, que
+     renderiza os parágrafos com o próprio escopo dele — sem :global() esta
+     regra não alcançaria esses <p>, do mesmo jeito que "order" não alcançava
+     o conteúdo dentro de Revelar (ver index.astro). */
+  .texto :global(p) { color: var(--terracota); font-size: 16.8px; margin: 0 0 1em; }
   .texto h2 {
     font-size: var(--t-xl);
     color: var(--terracota);

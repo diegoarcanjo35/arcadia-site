@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import AguardandoConteudo from '../components/AguardandoConteudo.astro';
+import Prosa from '../components/Prosa.astro';
 import { listarFacilitadoras } from '../lib/dados.js';
 import { retratoDe } from '../lib/artes.js';
 
@@ -35,7 +36,11 @@ const equipe = await listarFacilitadoras();
             <div class="dados">
               <h2>{p.nome}</h2>
               <p class="crp">Psicóloga · CRP {p.crp}</p>
-              {p.bio && <p class="bio">{p.bio}</p>}
+              {/* Prosa, não um <p> só: a Wanda pediu espaço de respiro no
+                  texto — bio como parágrafo único vira parede de texto. O
+                  textarea do painel já aceita linha em branco entre
+                  parágrafos, só faltava a página pública quebrar nelas. */}
+              {p.bio && <Prosa texto={p.bio} />}
             </div>
           </li>
         ))}
@@ -74,7 +79,6 @@ const equipe = await listarFacilitadoras();
 
   h2 { font-size: var(--t-xl); margin: 0 0 0.2rem; }
   .crp { margin: 0 0 var(--e-2); font-size: var(--t-sm); color: var(--terracota); }
-  .bio { margin: 0; max-width: var(--medida); }
 
   @media (max-width: 620px) {
     .pessoa { grid-template-columns: 1fr; }
