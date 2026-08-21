@@ -250,13 +250,18 @@ const titulo = conteudo?.titulo || 'Serviços';
     background: var(--creme);
     padding: 72px var(--e-3);
   }
+  /* Tamanho não é fixo no original — é a escala fluida do preset "xx-large"
+     do tema (clamp), 40px no mobile subindo até 52.32px no desktop (mesma
+     medição feita em a-arcadia.astro). Fixar em 52.32px pra qualquer
+     largura deixava o título grande demais e quebrando em duas linhas no
+     celular, onde no original cabe numa linha só. */
   .faixa-titulo h1 {
     max-width: 800px;
     margin: 0 auto;
     background: rgb(236, 234, 223);
     color: var(--ocre);
     font-family: var(--fonte-titulo);
-    font-size: 52.32px;
+    font-size: clamp(2.5rem, 2.5rem + ((1vw - 0.2rem) * 1.283), 3.27rem);
     font-weight: 400;
     text-align: center;
   }
@@ -326,9 +331,18 @@ const titulo = conteudo?.titulo || 'Serviços';
     .dupla-servico.invertida {
       grid-template-columns: 1fr;
     }
-    .dupla-servico.invertida .texto-servico { order: 1; }
-    .dupla-servico.invertida .quadro-cheio { order: 2; }
-    .texto-servico { padding: var(--e-5) var(--e-3); }
-    .quadro-cheio img { max-height: 60vh; }
+    /* No original, cada serviço é sempre [foto grande do espaço] → [quadro]
+       → [título + texto] — o quadro nunca vem depois do texto, nem no
+       bloco invertido (que antes tinha uma regra própria pondo o texto
+       primeiro no mobile, ao contrário dos outros dois). Uma regra só,
+       valendo pros três. */
+    /* No desktop o quadro herda altura de align-items:stretch, na mesma
+       linha da coluna de texto (que tem conteúdo de verdade). Empilhado no
+       mobile, o quadro vira a única coisa na própria linha — e como só tem
+       a imagem position:absolute dentro (ver comentário acima), essa linha
+       colapsa pra 0px e a arte desaparece, venha ela antes ou depois do
+       texto. Por isso a altura tem que ir no próprio .quadro-cheio agora,
+       não só na imagem lá dentro. */
+    .quadro-cheio { order: -1; height: 60vh; }
   }
 </style>

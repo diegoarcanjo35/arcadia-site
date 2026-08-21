@@ -140,13 +140,17 @@ const semTurma = todas.filter((o) => !o.status);
     background: var(--creme);
     padding: 72px var(--e-3);
   }
+  /* Tamanho fluido, não fixo — mesma escala do preset "xx-large" do tema
+     (clamp), 40px no mobile subindo a 52.32px no desktop (medido em
+     a-arcadia.astro). 52.32px fixo pra qualquer largura deixava grande
+     demais no celular. */
   .faixa-titulo h1 {
     max-width: 800px;
     margin: 0 auto;
     background: rgb(236, 234, 223);
     color: var(--terracota);
     font-family: var(--fonte-titulo);
-    font-size: 52.32px;
+    font-size: clamp(2.5rem, 2.5rem + ((1vw - 0.2rem) * 1.283), 3.27rem);
     font-weight: 400;
     text-align: center;
   }
