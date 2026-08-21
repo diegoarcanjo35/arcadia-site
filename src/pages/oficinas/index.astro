@@ -219,12 +219,17 @@ const semTurma = todas.filter((o) => !o.status);
 
   .corpo { max-width: 1120px; margin: 0 auto; padding: var(--e-4) var(--e-3) 0; }
   section { margin-bottom: var(--e-5); }
+  /* Centralizado igual à grade de cartões abaixo — display:block +
+     width:fit-content em vez de inline-block porque margin:auto só
+     centraliza de verdade num bloco com largura definida; inline-block não
+     garante isso em todo navegador. */
   h2 {
     font-size: var(--t-xl);
-    margin: 0 0 var(--e-2);
+    display: block;
+    width: fit-content;
+    margin: 0 auto var(--e-2);
     padding-bottom: var(--e-1);
     border-bottom: 2px solid var(--ocre);
-    display: inline-block;
   }
   .nota { font-size: var(--t-sm); color: var(--apagado); max-width: 60ch; margin: 0 0 var(--e-3); }
   .grade {
