@@ -44,8 +44,12 @@ const titulo = conteudo?.titulo || 'Serviços';
 
   {/* Cada serviço é anunciado por uma faixa de foto do espaço, e a faixa vem
       ANTES do texto, não entre um bloco e outro. As três fotos e a ordem são
-      as do site anterior — conferi uma a uma pelo endereço do arquivo. */}
-  <FaixaFoto foto="/espaco/0f2a4509.webp" altura="730px" alturaMobile={70} />
+      as do site anterior — conferi uma a uma pelo endereço do arquivo.
+      Altura no mobile medida ao vivo no bloco equivalente do site anterior
+      (wp-block-cover has-parallax entre Art&Métrica e Art&Terapia): 812px
+      num viewport de 375×812 — ou seja, 100% da altura de tela, não os
+      30vh padrão do componente. */}
+  <FaixaFoto foto="/espaco/0f2a4509.webp" altura="730px" alturaMobile={100} />
 
   <section class="servico">
     <Revelar direcao="esquerda">
@@ -113,7 +117,7 @@ const titulo = conteudo?.titulo || 'Serviços';
     </Revelar>
   </section>
 
-  <FaixaFoto foto="/espaco/sala-de-grupo.webp" altura="730px" alturaMobile={70} />
+  <FaixaFoto foto="/espaco/sala-de-grupo.webp" altura="730px" alturaMobile={100} />
 
   <section class="servico creme">
     <Revelar direcao="direita">
@@ -173,7 +177,7 @@ const titulo = conteudo?.titulo || 'Serviços';
   {/* Esta é a estante onde o próprio quadro da arteterapia está encostado —
       por isso ela abre justamente o bloco ART&TERAPIA, como no site
       anterior. */}
-  <FaixaFoto foto="/espaco/atendimento.webp" altura="730px" alturaMobile={70} />
+  <FaixaFoto foto="/espaco/atendimento.webp" altura="730px" alturaMobile={100} />
 
   <section class="servico">
     <Revelar direcao="esquerda">
