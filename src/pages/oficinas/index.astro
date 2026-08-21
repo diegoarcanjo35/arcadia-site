@@ -158,12 +158,26 @@ const semTurma = todas.filter((o) => !o.status);
   .sobre-oficinas {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    align-items: stretch;
+    align-items: center;
+    /* Sem isso, em tela bem larga as colunas crescem sem limite (nenhum
+       outro bloco do site faz isso — .corpo trava em 1120px) e a proporção
+       fixa da foto acima faz a faixa inteira virar uma torre, muito mais
+       alta que o texto ao lado. Mesmo teto de largura do resto da página. */
+    max-width: 1120px;
+    margin: 0 auto;
   }
   .foto-sobre {
     position: relative;
     overflow: hidden;
     margin: 0;
+    /* Proporção fixa — antes a altura vinha de align-items:stretch,
+       acompanhando a altura do texto ao lado. Como o texto não tem largura
+       máxima, numa tela bem larga ele quebra em poucas linhas, a faixa fica
+       baixa e o corte da imagem fica bem mais fechado do que numa janela
+       estreita — o mesmo bloco parecia "outra foto" dependendo do tamanho
+       da janela. Wanda pediu a mesma proporção sempre. Valor medido no
+       próprio corte que já ficava bom (~1100px de largura). */
+    aspect-ratio: 0.93;
   }
   .foto-sobre img {
     position: absolute;
