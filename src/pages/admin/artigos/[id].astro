@@ -40,6 +40,10 @@ const minutos = artigo?.corpo ? tempoDeLeitura(artigo.corpo) : null;
         <input type="date" name="publicado_em" value={artigo?.publicado_em?.slice(0, 10) ?? ''} />
         <span class="ajuda">Obrigatória para publicar. É a data que o leitor vê.</span>
       </label>
+      <label>Ordem
+        <input type="number" name="ordem" value={artigo?.ordem ?? 0} />
+        <span class="ajuda">Define a posição nas listas — menor número aparece primeiro. Não é por data.</span>
+      </label>
     </div>
 
     <label>Endereço da página
@@ -101,7 +105,7 @@ const minutos = artigo?.corpo ? tempoDeLeitura(artigo.corpo) : null;
 </Admin>
 
 <style>
-  .linha { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .linha { display: grid; grid-template-columns: 1fr 1fr 0.6fr; gap: 1rem; }
   @media (max-width: 640px) { .linha { grid-template-columns: 1fr; } }
 
   .caixa { display: flex; align-items: center; gap: 0.5rem; font-weight: 500; }

@@ -10,14 +10,22 @@
  * ir ao ar — e num site de clínica isso não é um errinho de layout.
  */
 
-/** Lista para o índice público. Sem o corpo: o índice não precisa dele. */
+/**
+ * Lista para o índice público. Sem o corpo: o índice não precisa dele.
+ *
+ * A ordem é escolhida à mão (`ordem`), não por data: no site anterior os
+ * quatro artigos já apareciam fora de ordem cronológica (um de 2024 entre
+ * dois de 2025), então não existe data que reproduza a sequência certa — só
+ * um campo de ordem mesmo, editável no painel. Data continua como critério
+ * de desempate para artigos novos que ainda não receberam uma ordem.
+ */
 export async function listarArtigos(db) {
   const { results } = await db
     .prepare(
       `SELECT slug, titulo, resumo, autor, publicado_em
          FROM artigos
         WHERE publicado = 1
-        ORDER BY publicado_em DESC, id DESC`
+        ORDER BY ordem ASC, publicado_em DESC, id DESC`
     )
     .all();
   return results ?? [];

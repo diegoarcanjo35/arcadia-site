@@ -622,6 +622,7 @@ export async function salvarArtigo(db, campos) {
     autor: txt(campos.autor, 160),
     publicado_em: quando,
     publicado,
+    ordem: num(campos.ordem) ?? 0,
   };
 
   const id = num(campos.id);
@@ -631,22 +632,22 @@ export async function salvarArtigo(db, campos) {
       await db
         .prepare(
           `UPDATE artigos SET slug=?, titulo=?, resumo=?, corpo=?, autor=?,
-                  publicado_em=?, publicado=?, atualizado_em=datetime('now')
+                  publicado_em=?, publicado=?, ordem=?, atualizado_em=datetime('now')
             WHERE id=?`
         )
         .bind(dados.slug, dados.titulo, dados.resumo, dados.corpo, dados.autor,
-              dados.publicado_em, dados.publicado, id)
+              dados.publicado_em, dados.publicado, dados.ordem, id)
         .run();
       return { ok: true, id, slug };
     }
 
     const r = await db
       .prepare(
-        `INSERT INTO artigos (slug, titulo, resumo, corpo, autor, publicado_em, publicado)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`
+        `INSERT INTO artigos (slug, titulo, resumo, corpo, autor, publicado_em, publicado, ordem)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
       )
       .bind(dados.slug, dados.titulo, dados.resumo, dados.corpo, dados.autor,
-            dados.publicado_em, dados.publicado)
+            dados.publicado_em, dados.publicado, dados.ordem)
       .run();
     return { ok: true, id: r.meta?.last_row_id, slug };
   } catch (e) {
