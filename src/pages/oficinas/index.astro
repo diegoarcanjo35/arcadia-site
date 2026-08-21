@@ -229,7 +229,14 @@ const semTurma = todas.filter((o) => !o.status);
   .nota { font-size: var(--t-sm); color: var(--apagado); max-width: 60ch; margin: 0 0 var(--e-3); }
   .grade {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    /* auto-fill + 1fr fazia a única oficina esticar só a primeira coluna e
+       deixava as colunas vazias seguintes reservando espaço em branco à
+       direita — cartão preso no canto esquerdo, não centralizado. Com
+       auto-fit (que colapsa colunas vazias) e um teto fixo em vez de 1fr,
+       sobra de espaço vira margem, e justify-content centraliza a fileira
+       inteira — com 1, 2 ou várias oficinas, sempre centralizada. */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 345px));
+    justify-content: center;
     gap: var(--e-3);
     margin-top: var(--e-2);
   }
