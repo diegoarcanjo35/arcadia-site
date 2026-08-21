@@ -10,9 +10,18 @@
  * Decorativa por definição: `alt` vazio e `aria-hidden`. Descrever "sala de
  * atendimento" a cada respiro não ajuda quem usa leitor de tela, atrapalha.
  */
-const { foto, altura = '42vh' } = Astro.props;
+/**
+ * `alturaMobile`: número (percentual de altura de tela), não string com
+ * unidade — o componente monta as duas variantes (vh e svh) sozinho. Ver
+ * comentário no media query abaixo sobre por que as duas existem.
+ */
+const { foto, altura = '42vh', alturaMobile = 30 } = Astro.props;
 ---
-<div class="faixa-foto" style={`--altura: ${altura}; background-image: url(${foto})`} aria-hidden="true"></div>
+<div
+  class="faixa-foto"
+  style={`--altura: ${altura}; --altura-mobile: ${alturaMobile}vh; --altura-mobile-svh: ${alturaMobile}svh; background-image: url(${foto})`}
+  aria-hidden="true"
+></div>
 
 <style>
   .faixa-foto {
@@ -27,7 +36,11 @@ const { foto, altura = '42vh' } = Astro.props;
   @media (max-width: 900px) {
     .faixa-foto {
       background-attachment: scroll;
-      min-height: 30vh;
+      /* svh, não só vh: no Safari mobile a barra de endereço recolhe ao
+         rolar e vh muda de valor junto, fazendo a faixa "pular" de
+         tamanho — svh usa a menor altura possível e fica estável. */
+      min-height: var(--altura-mobile);
+      min-height: var(--altura-mobile-svh);
     }
   }
   @media (prefers-reduced-motion: reduce) {
