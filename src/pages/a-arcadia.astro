@@ -117,8 +117,14 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
      que se via ali era só o efeito da centralização, não margem de
      verdade; o botão gruda no fim da LINHA (a imagem), não no fim do
      texto. */
-  .corpo-acao { padding-top: 0; }
+  .corpo-acao { padding-top: 0; padding-bottom: 30px; }
   .dupla-nome + .corpo-acao .acao-secao { margin-top: 0; }
+  /* Depois do botão, antes da faixa de foto, o respiro é outro: medido ao
+     vivo, 30px no mobile e 102px no desktop — por isso o padding-bottom
+     muda de novo aqui, e não fica preso ao mesmo valor do gap de cima. */
+  @media (min-width: 900px) {
+    .corpo-acao { padding-bottom: 102px; }
+  }
 
   /* Mesma capa da Home (ver index.astro): só a foto, sem véu, sem texto por
      cima. Altura de tela cheia, foto vertical no celular. */
