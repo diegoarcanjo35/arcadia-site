@@ -287,39 +287,37 @@ const titulo = conteudo?.titulo || 'Serviços';
     .faixa-titulo { padding: 102px 0 39px; }
   }
 
-  /* A faixa da estante (única com esse pedido, ver comentário no markup) —
-     terceira versão, só pro desktop. As duas primeiras tentativas focaram
-     só em "não cortar": largura cheia da tela com altura nascendo da
-     proporção do arquivo (960×1280) virava uma caixa gigante (1687px no
-     desktop) que dominava a página inteira, engolindo as outras faixas e
-     quadros — "tomou conta de todas as outras imagens", no relato da
-     cliente. Pedido dela: grande, mas só no seu lugar — mesma ALTURA das
-     outras duas faixas (730px, igual nelas), não a largura cheia da tela.
-     Como a proporção do arquivo é fixa (0,75), fixar a altura em 730px
-     define também a largura certa pra não cortar nada: 730 × (960/1280) =
-     547,5px — por isso a faixa vira uma coluna estreita e alta, centralizada
-     na página, em vez de uma tira horizontal de ponta a ponta. Só no
-     desktop: em 547,5px de largura fixa, o mobile ficaria cortado pela
-     lateral (a tela é mais estreita que isso) — por isso o mobile mantém a
-     versão anterior (largura cheia, altura pela proporção, ~500px numa
-     tela de 375px), que a cliente já sinalizou como aceitável.
-     background-size em pixels explícitos (não "cover"/percentual) continua
-     necessário: com background-attachment:fixed o tamanho é calculado
-     contra a JANELA, não contra a caixa — só um comprimento absoluto (não
-     percentual) escapa desse recálculo e mantém o "gruda enquanto rola"
-     das outras duas faixas sem cortar a imagem. */
+  /* A faixa da estante (única com esse pedido, ver comentário no markup).
+     No mobile, o componente agora usa scroll por padrão (ver FaixaFoto.astro
+     sobre o bug do Safari do iPhone com background-attachment:fixed — era
+     exatamente isso que causava a faixa "sobrepondo" as outras seções que a
+     cliente reportou). Com scroll, background-size volta a calcular contra
+     a própria caixa (não a janela), então basta a caixa nascer na proporção
+     real do arquivo (960×1280, min-height:0 pra não brigar com os 730px
+     fixos que o componente herdaria do prop alturaMobile) — "cover" (padrão
+     do componente) não tem nada pra cortar quando a caixa já é do tamanho
+     certo. Resultado: ~500px numa tela de 375px, imagem completa, sem
+     truque de tamanho nenhum. */
   :global(.faixa-completa.faixa-completa.faixa-completa) {
     aspect-ratio: 960 / 1280;
     min-height: 0;
-    background-attachment: fixed;
-    background-size: 100vw auto;
   }
+  /* No desktop ("Web", que a cliente confirmou estar ok), em vez de
+     "largura cheia + altura pela proporção" (1687px, dominava a página
+     inteira, "tomou conta de todas as outras imagens"), a altura fica
+     igual à das outras duas faixas (730px) e a largura nasce da proporção
+     real do arquivo: 730 × (960/1280) = 547,5px — uma coluna estreita e
+     alta, centralizada, em vez de uma tira de ponta a ponta. Aqui o
+     desktop mantém fixed (sem o bug do Safari mobile) — e com fixed, o
+     tamanho volta a ser calculado contra a JANELA, não a caixa, por isso
+     precisa do background-size em pixels explícitos de novo, não "cover". */
   @media (min-width: 900px) {
     :global(.faixa-completa.faixa-completa.faixa-completa) {
       width: 547.5px;
       height: 730px;
       aspect-ratio: auto;
       margin: 0 auto;
+      background-attachment: fixed;
       background-size: 547.5px 730px;
     }
   }

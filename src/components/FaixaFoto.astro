@@ -41,13 +41,23 @@ const alturaMobileSvh = alturaMobileFixa ? alturaMobile : `${alturaMobile}svh`;
 
   @media (max-width: 900px) {
     .faixa-foto {
-      /* Continua fixed no mobile também — conferido ao vivo na regra real
-         do site anterior (.has-parallax { background-attachment: fixed })：
-         não existe breakpoint que desliga isso lá, só prefers-reduced-motion
-         (que já tratamos abaixo). É esse "fixa enquanto o texto rola" que dá
-         a sensação de o texto vir descendo por cima da foto; um "scroll"
-         aqui — que eu tinha posto por cautela, sem checar se era preciso —
-         fazia foto e texto se moverem juntos, "colados". */
+      /* Volta pra scroll no mobile. A regra do site anterior (.has-parallax
+         { background-attachment: fixed }) de fato não tem breakpoint que
+         desligue isso no CSS — mas eu só tinha conferido essa regra lendo
+         o CSS e testando em Chrome desktop, nunca num iPhone de verdade.
+         O Safari do iPhone ignora background-attachment:fixed há anos (bug
+         conhecido, documentado antigamente neste mesmo componente antes de
+         eu "corrigir" errado) — ou seja, o site anterior TAMBÉM cai pra
+         scroll no celular de fato, só que silenciosamente, via bug do
+         navegador, não porque o CSS pedia isso. Deixar fixed explícito
+         aqui não reproduz esse comportamento com segurança: em vez de cair
+         limpo pra scroll, pode renderizar de forma inconsistente/quebrada
+         (a cliente reportou a faixa "sobrepondo" as outras seções, only no
+         celular — nunca reproduzi isso no Chrome, mas bate exatamente com
+         esse tipo de bug). Scroll explícito aqui garante o comportamento
+         seguro em vez de depender de como cada versão do Safari lida com
+         fixed. */
+      background-attachment: scroll;
       /* svh, não só vh: no Safari mobile a barra de endereço recolhe ao
          rolar e vh muda de valor junto, fazendo a faixa "pular" de
          tamanho — svh usa a menor altura possível e fica estável. */
