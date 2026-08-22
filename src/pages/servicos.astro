@@ -287,34 +287,41 @@ const titulo = conteudo?.titulo || 'Serviços';
     .faixa-titulo { padding: 102px 0 39px; }
   }
 
-  /* A faixa da estante (única com esse pedido, ver comentário no markup):
-     em vez do min-height:730px fixo (que corta a foto vertical), a altura
-     nasce da proporção real do arquivo (960×1280) — object-fit/cover não
-     tem nada pra cortar quando a caixa já nasce do tamanho certo. A regra
-     do componente (.faixa-foto, escopada) tem a mesma especificidade da
-     nossa (classe+atributo de escopo vs. duas classes) — o ".faixa-completa"
-     repetido garante que esta vença o empate, não importa a ordem de
-     carregamento dos estilos.
-     background-size:cover com background-attachment:fixed calcula o
-     tamanho contra a JANELA, não contra a caixa do elemento (é assim que a
-     especificação define "fixed") — por isso a primeira tentativa (trocar
-     cover por scroll) resolvia o corte mas tirava o efeito "gruda enquanto
-     rola" que as outras duas faixas têm, quebrando o padrão. A saída que
-     mantém as duas coisas: "100vw auto" em vez de "cover". 100vw é um
-     comprimento (não uma porcentagem), então não sofre esse recálculo
-     contra a janela — e como a faixa já é 100% da largura da tela, 100vw
-     bate exatamente com a largura real da caixa. A altura em "auto" segue
-     a proporção do arquivo (960×1280) a partir daí, dando exatamente os
-     mesmos pixels que a caixa já tem (via aspect-ratio) — sem sobrar corte
-     nenhum, com o fixed de volta. */
+  /* A faixa da estante (única com esse pedido, ver comentário no markup) —
+     terceira versão, só pro desktop. As duas primeiras tentativas focaram
+     só em "não cortar": largura cheia da tela com altura nascendo da
+     proporção do arquivo (960×1280) virava uma caixa gigante (1687px no
+     desktop) que dominava a página inteira, engolindo as outras faixas e
+     quadros — "tomou conta de todas as outras imagens", no relato da
+     cliente. Pedido dela: grande, mas só no seu lugar — mesma ALTURA das
+     outras duas faixas (730px, igual nelas), não a largura cheia da tela.
+     Como a proporção do arquivo é fixa (0,75), fixar a altura em 730px
+     define também a largura certa pra não cortar nada: 730 × (960/1280) =
+     547,5px — por isso a faixa vira uma coluna estreita e alta, centralizada
+     na página, em vez de uma tira horizontal de ponta a ponta. Só no
+     desktop: em 547,5px de largura fixa, o mobile ficaria cortado pela
+     lateral (a tela é mais estreita que isso) — por isso o mobile mantém a
+     versão anterior (largura cheia, altura pela proporção, ~500px numa
+     tela de 375px), que a cliente já sinalizou como aceitável.
+     background-size em pixels explícitos (não "cover"/percentual) continua
+     necessário: com background-attachment:fixed o tamanho é calculado
+     contra a JANELA, não contra a caixa — só um comprimento absoluto (não
+     percentual) escapa desse recálculo e mantém o "gruda enquanto rola"
+     das outras duas faixas sem cortar a imagem. */
   :global(.faixa-completa.faixa-completa.faixa-completa) {
     aspect-ratio: 960 / 1280;
     min-height: 0;
     background-attachment: fixed;
     background-size: 100vw auto;
   }
-  @media (max-width: 900px) {
-    :global(.faixa-completa.faixa-completa.faixa-completa) { min-height: 0; }
+  @media (min-width: 900px) {
+    :global(.faixa-completa.faixa-completa.faixa-completa) {
+      width: 547.5px;
+      height: 730px;
+      aspect-ratio: auto;
+      margin: 0 auto;
+      background-size: 547.5px 730px;
+    }
   }
 
   .faixa-titulo h1 {
