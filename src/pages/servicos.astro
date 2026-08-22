@@ -303,24 +303,35 @@ const titulo = conteudo?.titulo || 'Serviços';
   .dupla-servico.invertida .texto-servico { order: 2; }
   .dupla-servico.invertida .quadro-cheio { order: 1; }
 
-  /* Medido no original: só padding horizontal (76px), sem centralizar
-     verticalmente — o texto começa colado no topo da faixa, junto com a
-     imagem, não flutuando no meio de um vão vazio. */
+  /* Padding horizontal medido no original: 76px é o valor de desktop (ainda
+     não conferido a fundo); no mobile o texto anterior ia bem mais perto da
+     borda — 30px, medido ao vivo — e não os mesmos 76px aplicados em
+     qualquer largura, que apertavam demais a coluna e quebravam o texto
+     cedo demais. Sem centralizar verticalmente — o texto começa colado no
+     topo da faixa, junto com a imagem, não flutuando no meio de um vão
+     vazio. */
   .texto-servico {
     padding: 0 76px;
   }
+  @media (max-width: 900px) {
+    .texto-servico { padding: 0 30px; }
+  }
   /* Título medido no original: caixa clara (mesma cor das outras caixas do
-     site), 29.6px Cardo, peso normal, centralizado — não a etiqueta
-     pequena em caixa alta que tínhamos. */
+     site), Cardo, peso normal, centralizado. Tamanho e respiros (padding
+     lateral, margem vertical) escalam junto com a fonte — por isso em em,
+     não em px fixo: 22.66px no mobile subindo a 29.6px no desktop, mesma
+     escala fluida "large" usada em "A ARCÁDIA" na Home. Fixar em 29.6px pra
+     qualquer largura, sem padding lateral (o que tínhamos), deixava a caixa
+     maior e mais apertada que o original no celular. */
   .texto-servico h2 {
     background: rgb(236, 234, 223);
     color: var(--terracota);
     font-family: var(--fonte-titulo);
-    font-size: 29.6px;
+    font-size: clamp(1.39rem, 1.39rem + ((1vw - 0.2rem) * 0.767), 1.85rem);
     font-weight: 400;
     text-align: center;
-    margin: 24.6px 0;
-    padding: var(--e-2) 0;
+    margin: 0.83em 0;
+    padding: var(--e-2) 2.375em;
   }
   .texto-servico p {
     color: var(--terracota);
