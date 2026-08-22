@@ -205,7 +205,10 @@ const jsonLd = {
     border-bottom: 1px solid var(--linha);
   }
   dt { font-size: var(--t-xs); text-transform: uppercase; letter-spacing: 0.1em; color: var(--apagado); }
-  dd { margin: 0; }
+  /* Sem min-width:0 o item de grid não encolhe abaixo do tamanho intrínseco
+     do conteúdo — um e-mail comprido (uma palavra só, sem espaço pra
+     quebrar) empurrava a coluna pra fora da tela em vez de quebrar linha. */
+  dd { margin: 0; min-width: 0; overflow-wrap: break-word; }
   .pendente { color: var(--apagado); font-style: italic; font-size: var(--t-sm); }
 
   .nota {
