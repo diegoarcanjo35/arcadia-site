@@ -235,7 +235,10 @@ const semTurma = todas.filter((o) => !o.status);
     padding-bottom: var(--e-1);
     border-bottom: 2px solid var(--ocre);
   }
-  .nota { font-size: var(--t-sm); color: var(--apagado); max-width: 60ch; margin: 0 0 var(--e-3); }
+  /* Centralizado igual ao título acima (h2) — a caixa com max-width e
+     margin:0 sem "auto" deixava o texto preso na borda esquerda enquanto o
+     título já tinha sido centralizado numa correção anterior. */
+  .nota { font-size: var(--t-sm); color: var(--apagado); max-width: 60ch; margin: 0 auto var(--e-3); text-align: center; }
   .grade {
     display: grid;
     /* auto-fill + 1fr fazia a única oficina esticar só a primeira coluna e
