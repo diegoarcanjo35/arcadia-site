@@ -53,11 +53,14 @@ const titulo = conteudo?.titulo || 'Serviços';
   {/* Cada serviço é anunciado por uma faixa de foto do espaço, e a faixa vem
       ANTES do texto, não entre um bloco e outro. As três fotos e a ordem são
       as do site anterior — conferi uma a uma pelo endereço do arquivo.
-      Altura no mobile medida ao vivo no bloco equivalente do site anterior
-      (wp-block-cover has-parallax entre Art&Métrica e Art&Terapia): 812px
-      num viewport de 375×812 — ou seja, 100% da altura de tela, não os
-      30vh padrão do componente. */}
-  <FaixaFoto foto="/espaco/0f2a4509.webp" altura="730px" alturaMobile={100} />
+      Altura medida ao vivo no bloco equivalente do site anterior (o
+      wp-block-cover tem min-height:730px fixo no estilo inline, igual nos
+      três, e SEM variação por media query) — ou seja, 730px tanto no
+      desktop quanto no mobile, não um valor relativo a vh. A medição
+      anterior (812px, "100% da altura de tela") tinha vindo da página órfã
+      errada (ver comentário no topo do arquivo) — nesta, a certa, a faixa
+      não muda de tamanho entre os dois breakpoints. */}
+  <FaixaFoto foto="/espaco/0f2a4509.webp" altura="730px" alturaMobile="730px" />
 
   <section class="servico">
     <Revelar direcao="esquerda">
@@ -125,7 +128,7 @@ const titulo = conteudo?.titulo || 'Serviços';
     </Revelar>
   </section>
 
-  <FaixaFoto foto="/espaco/sala-de-grupo.webp" altura="730px" alturaMobile={100} />
+  <FaixaFoto foto="/espaco/sala-de-grupo.webp" altura="730px" alturaMobile="730px" />
 
   <section class="servico creme">
     <Revelar direcao="direita">
@@ -185,7 +188,7 @@ const titulo = conteudo?.titulo || 'Serviços';
   {/* Esta é a estante onde o próprio quadro da arteterapia está encostado —
       por isso ela abre justamente o bloco ART&TERAPIA, como no site
       anterior. */}
-  <FaixaFoto foto="/espaco/atendimento.webp" altura="730px" alturaMobile={100} />
+  <FaixaFoto foto="/espaco/atendimento.webp" altura="730px" alturaMobile="730px" />
 
   <section class="servico">
     <Revelar direcao="esquerda">
@@ -354,7 +357,11 @@ const titulo = conteudo?.titulo || 'Serviços';
        a imagem position:absolute dentro (ver comentário acima), essa linha
        colapsa pra 0px e a arte desaparece, venha ela antes ou depois do
        texto. Por isso a altura tem que ir no próprio .quadro-cheio agora,
-       não só na imagem lá dentro. */
-    .quadro-cheio { order: -1; height: 60vh; }
+       não só na imagem lá dentro. Valor medido ao vivo no bloco equivalente
+       do site anterior: min-height:250px fixo (é o próprio padrão do
+       WordPress para blocos media-text "image-fill" empilhados no mobile,
+       não algo relativo a vh — 60vh media a ~490-505px, bem mais alto que
+       o original). */
+    .quadro-cheio { order: -1; height: 250px; }
   }
 </style>

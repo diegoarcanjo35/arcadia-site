@@ -11,15 +11,21 @@
  * atendimento" a cada respiro não ajuda quem usa leitor de tela, atrapalha.
  */
 /**
- * `alturaMobile`: número (percentual de altura de tela), não string com
- * unidade — o componente monta as duas variantes (vh e svh) sozinho. Ver
- * comentário no media query abaixo sobre por que as duas existem.
+ * `alturaMobile`: normalmente um número (percentual de altura de tela) — o
+ * componente monta as duas variantes (vh e svh) sozinho, ver comentário no
+ * media query abaixo sobre por que as duas existem. Também aceita uma string
+ * com unidade própria (ex.: "730px"), para o caso em que o original usa uma
+ * altura fixa igual no mobile e no desktop (min-height do wp-block-cover não
+ * muda por breakpoint) — aí não faz sentido nenhuma das duas variantes vh.
  */
 const { foto, altura = '42vh', alturaMobile = 30 } = Astro.props;
+const alturaMobileFixa = typeof alturaMobile !== 'number';
+const alturaMobileVh = alturaMobileFixa ? alturaMobile : `${alturaMobile}vh`;
+const alturaMobileSvh = alturaMobileFixa ? alturaMobile : `${alturaMobile}svh`;
 ---
 <div
   class="faixa-foto"
-  style={`--altura: ${altura}; --altura-mobile: ${alturaMobile}vh; --altura-mobile-svh: ${alturaMobile}svh; background-image: url(${foto})`}
+  style={`--altura: ${altura}; --altura-mobile: ${alturaMobileVh}; --altura-mobile-svh: ${alturaMobileSvh}; background-image: url(${foto})`}
   aria-hidden="true"
 ></div>
 
