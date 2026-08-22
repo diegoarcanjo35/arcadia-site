@@ -13,6 +13,13 @@ import Base from '../layouts/Base.astro';
 // 959×968), baixado de lá com autorização — logo-sombra.png (300×274, feito
 // pro cabeçalho pequeno) ficava borrado nesse tamanho grande, ampliado 2x+
 // da resolução original.
+//
+// O arquivo baixado, porém, tem uma margem transparente MUITO desigual ao
+// redor do desenho (89px à esquerda contra 30px à direita; 58px em cima
+// contra 115px embaixo, medido com sharp/trim) — por isso a logo aparecia
+// descentralizada e "flutuando" longe do texto abaixo, mesmo com o CSS
+// certo. nossamarca-1-cortada.png é o mesmo arquivo, cortado bem rente ao
+// desenho (840×795, sem sobra de nenhum lado), gerado uma vez com sharp.
 ---
 <Base
   titulo="Nossa Marca"
@@ -41,7 +48,7 @@ import Base from '../layouts/Base.astro';
       resto do texto. */}
   <div class="marca-explicacao">
     <figure class="logo-marca">
-      <img src="/nossamarca-1.png" alt="A marca da Arcádia: arcos sobre um círculo, com o nome Arcádia Psicologia." width="959" height="968" loading="lazy" decoding="async" />
+      <img src="/nossamarca-1-cortada.png" alt="A marca da Arcádia: arcos sobre um círculo, com o nome Arcádia Psicologia." width="840" height="795" loading="lazy" decoding="async" />
     </figure>
 
     <div class="texto-marca">

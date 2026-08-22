@@ -294,10 +294,19 @@ const titulo = conteudo?.titulo || 'Serviços';
      do componente (.faixa-foto, escopada) tem a mesma especificidade da
      nossa (classe+atributo de escopo vs. duas classes) — o ".faixa-completa"
      repetido garante que esta vença o empate, não importa a ordem de
-     carregamento dos estilos. */
+     carregamento dos estilos.
+     background-attachment:fixed também precisou ser desligado só aqui: pra
+     um fundo fixo, background-size/position são calculados contra a
+     JANELA (viewport), não contra a caixa do elemento — então aumentar a
+     altura da caixa (o aspect-ratio acima) não mudava nem um pixel do que
+     aparecia, só esticava o scroll até o próximo texto (exatamente o que a
+     cliente reportou: "a única coisa que você fez foi aumentar o tamanho
+     da rolagem"). Com scroll, cover volta a calcular contra a própria
+     caixa, e aí sim a imagem completa aparece. */
   :global(.faixa-completa.faixa-completa.faixa-completa) {
     aspect-ratio: 960 / 1280;
     min-height: 0;
+    background-attachment: scroll;
   }
   @media (max-width: 900px) {
     :global(.faixa-completa.faixa-completa.faixa-completa) { min-height: 0; }
@@ -336,16 +345,29 @@ const titulo = conteudo?.titulo || 'Serviços';
      de lá. Já que não existe crop "correto" pra copiar do site anterior
      aqui, a saída é usar a proporção real do arquivo (900×1216, conferida
      ao vivo) como aspect-ratio da caixa: com isso object-fit:cover não
-     corta nada (a caixa já nasce na proporção da imagem) e o quadro fica
-     maior nas duas larguras — 507px no mobile (era 250px) e ~855px no
-     desktop (era ~620px, esticado pra bater com o texto). align-self:start
+     corta nada (a caixa já nasce na proporção da imagem). align-self:start
      tira esse quadro do align-items:stretch da grade (que senão bateria por
      cima do aspect-ratio, esticando de novo pra altura da coluna de
-     texto). */
+     texto).
+     Depois de mostrar completa, a cliente achou desproporcional em relação
+     às outras duas (507px de altura no mobile contra 250px delas) e pediu
+     pra reduzir um pouco — por isso 85% de largura (centralizado com
+     margin:auto) em vez dos 100% originais, mantendo a proporção sem
+     cortar nada, só um pouco menor. */
   .dupla-servico.invertida .quadro-cheio {
     order: 1;
     aspect-ratio: 900 / 1216;
     align-self: start;
+    width: 85%;
+    margin: 0 auto;
+  }
+  /* Texto ficava colado no topo de uma coluna bem mais alta que ele (a
+     altura da linha agora é ditada pelo quadro, maior que o conteúdo do
+     texto) — pedido da cliente: centralizar verticalmente aqui, só nesta
+     variante (as outras duas continuam com align-items:stretch e o texto
+     colado no topo, como no original). */
+  .dupla-servico.invertida {
+    align-items: center;
   }
 
   /* Padding horizontal medido no original: 76px é o valor de desktop (ainda
