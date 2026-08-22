@@ -295,18 +295,23 @@ const titulo = conteudo?.titulo || 'Serviços';
      nossa (classe+atributo de escopo vs. duas classes) — o ".faixa-completa"
      repetido garante que esta vença o empate, não importa a ordem de
      carregamento dos estilos.
-     background-attachment:fixed também precisou ser desligado só aqui: pra
-     um fundo fixo, background-size/position são calculados contra a
-     JANELA (viewport), não contra a caixa do elemento — então aumentar a
-     altura da caixa (o aspect-ratio acima) não mudava nem um pixel do que
-     aparecia, só esticava o scroll até o próximo texto (exatamente o que a
-     cliente reportou: "a única coisa que você fez foi aumentar o tamanho
-     da rolagem"). Com scroll, cover volta a calcular contra a própria
-     caixa, e aí sim a imagem completa aparece. */
+     background-size:cover com background-attachment:fixed calcula o
+     tamanho contra a JANELA, não contra a caixa do elemento (é assim que a
+     especificação define "fixed") — por isso a primeira tentativa (trocar
+     cover por scroll) resolvia o corte mas tirava o efeito "gruda enquanto
+     rola" que as outras duas faixas têm, quebrando o padrão. A saída que
+     mantém as duas coisas: "100vw auto" em vez de "cover". 100vw é um
+     comprimento (não uma porcentagem), então não sofre esse recálculo
+     contra a janela — e como a faixa já é 100% da largura da tela, 100vw
+     bate exatamente com a largura real da caixa. A altura em "auto" segue
+     a proporção do arquivo (960×1280) a partir daí, dando exatamente os
+     mesmos pixels que a caixa já tem (via aspect-ratio) — sem sobrar corte
+     nenhum, com o fixed de volta. */
   :global(.faixa-completa.faixa-completa.faixa-completa) {
     aspect-ratio: 960 / 1280;
     min-height: 0;
-    background-attachment: scroll;
+    background-attachment: fixed;
+    background-size: 100vw auto;
   }
   @media (max-width: 900px) {
     :global(.faixa-completa.faixa-completa.faixa-completa) { min-height: 0; }
