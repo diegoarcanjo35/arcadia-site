@@ -89,8 +89,10 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
   {/* A ordem importa: no site anterior a foto do consultório vem ANTES de
       "Arcádia na Psicologia", não depois — ela separa o bloco do nome do
       bloco da psicologia, e não fecha a página. Tinha ficado no fim por
-      engano. */}
-  <FaixaFoto foto="/espaco/0f2a4516.webp" altura="66vh" />
+      engano. Altura medida ao vivo (wp-block-cover): min-height:100vh, igual
+      no mobile e no desktop — não os 66vh estimados que tínhamos, bem menor
+      que o original. */}
+  <FaixaFoto foto="/espaco/0f2a4516.webp" altura="100vh" alturaMobile={100} />
 
   <div class="corpo">
     {resto
@@ -177,10 +179,33 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
      eles (margem zero, não 1em). */
   .corpo :global(.prosa) { max-width: 832px; margin: 0 auto; }
   .corpo :global(.prosa p) { color: var(--terracota); margin: 0; }
+  /* Medido ao vivo no original: título com a mesma escala fluida "x-large"
+     do tema (30.2px no mobile subindo a 40px no desktop, clamp — igual às
+     outras instâncias desse preset no site) e um respiro vertical de
+     1.25em (cresce junto com a fonte, por isso em "em" e não em px fixo).
+     A margem negativa de -20px é o que puxa o título por cima do rodapé da
+     foto logo acima ("o texto corre por cima da imagem") — só não colide
+     com o texto porque o padding de 1.25em absorve o espaço. */
   .corpo :global(.prosa h2) {
-    font-size: 40px;
+    font-size: clamp(1.85rem, 1.85rem + ((1vw - 0.2rem) * 1.083), 2.5rem);
     font-weight: 400;
     text-align: center;
+    padding: 1.25em 0;
+    margin-top: -20px;
+  }
+  /* Prosa.astro zera a margem do primeiro título de propósito (evita respiro
+     indesejado quando o texto começa com "## "), com a mesma especificidade
+     da regra acima — por isso essa aqui repete .corpo pra vencer o empate e
+     preservar a sobreposição também no primeiro título, que é justamente o
+     que fica em cima da foto. */
+  .corpo.corpo :global(.prosa h2:first-child) {
+    margin-top: -20px;
+  }
+  /* No original só o SEGUNDO título ("Arcádia e o Ambiente Terapêutico")
+     tem a caixa clara sólida — o primeiro, que fica sobre a foto, é
+     transparente (por isso não está aqui, fica com o fundo padrão). */
+  .corpo :global(.prosa h2:last-of-type) {
+    background: rgb(243, 240, 231);
   }
   .pintura { margin: 0; }
   .pintura img {
