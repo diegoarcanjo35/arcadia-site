@@ -241,10 +241,13 @@ const semTurma = todas.filter((o) => !o.status);
     /* auto-fill + 1fr fazia a única oficina esticar só a primeira coluna e
        deixava as colunas vazias seguintes reservando espaço em branco à
        direita — cartão preso no canto esquerdo, não centralizado. Com
-       auto-fit (que colapsa colunas vazias) e um teto fixo em vez de 1fr,
-       sobra de espaço vira margem, e justify-content centraliza a fileira
-       inteira — com 1, 2 ou várias oficinas, sempre centralizada. */
-    grid-template-columns: repeat(auto-fit, minmax(280px, 345px));
+       auto-fit (que colapsa colunas vazias) o problema já sumia, mas um
+       teto fixo (345px) ainda deixava as bordas vazias quando só 1 ou 2
+       oficinas cabiam numa fileira larga. Voltando a 1fr — sem o auto-fill,
+       não sobra coluna fantasma — os cartões crescem pra dividir o espaço
+       disponível entre eles: 1 cartão ocupa a fileira quase inteira, 2
+       dividem ao meio, e assim por diante, sempre que mais entrarem. */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     justify-content: center;
     gap: var(--e-3);
     margin-top: var(--e-2);
