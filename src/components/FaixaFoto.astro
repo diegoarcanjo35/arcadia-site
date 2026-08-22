@@ -51,34 +51,41 @@ const alturaMobileSvh = alturaMobileFixa ? alturaMobile : `${alturaMobile}svh`;
   }
 
   @media (max-width: 900px) {
-    /* background-attachment:fixed não é seguro no mobile: o Safari do
-       iPhone tem anos de bugs conhecidos com essa propriedade — foi
-       exatamente isso que causou a faixa "sobrepondo" as outras seções
-       (nunca reproduzi em Chrome, só existe no Safari real). Em vez de
-       abrir mão do efeito "gruda enquanto rola" no celular, troquei a
-       técnica: position:sticky no lugar de background-attachment:fixed.
-       Sticky é bem suportado em qualquer navegador mobile (ao contrário de
-       fixed) e cria o mesmo tipo de sensação — a imagem "segura" no topo
-       da tela enquanto o resto rola por cima dela — mas precisa de uma
-       caixa por fora com um pouco mais de altura que o conteúdo, senão
-       sticky não tem "corda" nenhuma pra segurar.
-       IMPORTANTE, testado ao vivo: essa "corda" extra só funciona como
-       height de verdade no wrapper — padding-bottom (a primeira tentativa)
-       fica sem efeito nenhum aqui, o sticky nunca gruda. Por isso height
-       explícito (a altura da faixa + 120px), calculado a partir da mesma
-       variável que a faixa usa. */
-    .faixa-foto-caixa {
-      height: calc(var(--altura-mobile-svh) + 120px);
-    }
+    /* svh, não só vh: no Safari mobile a barra de endereço recolhe ao
+       rolar e vh muda de valor junto, fazendo a faixa "pular" de tamanho —
+       svh usa a menor altura possível e fica estável. Vale pra qualquer
+       navegador mobile, por isso fica fora do @supports abaixo: só a
+       técnica de "segurar" a foto muda por engine, a altura em si não. */
     .faixa-foto {
-      position: sticky;
-      top: 0;
-      background-attachment: scroll;
-      /* svh, não só vh: no Safari mobile a barra de endereço recolhe ao
-         rolar e vh muda de valor junto, fazendo a faixa "pular" de
-         tamanho — svh usa a menor altura possível e fica estável. */
       min-height: var(--altura-mobile);
       min-height: var(--altura-mobile-svh);
+    }
+
+    /* background-attachment:fixed continua igual ao site original em
+       QUALQUER navegador — Chrome/Android incluído — exceto no motor da
+       Apple: iOS tem anos de bugs conhecidos com fixed (foi o que causou a
+       faixa "sobrepondo" as outras seções; nunca reproduzi em Chrome, só
+       no Safari real). "iOS" aqui não é sinônimo de app Safari: todo
+       navegador no iPhone (Chrome, Firefox, o que for) roda sobre o mesmo
+       motor WebKit da Apple e herda o mesmo bug — por isso a detecção é
+       por ENGINE, via -webkit-touch-callout (propriedade que só o WebKit
+       do iOS reconhece, nem Android nem desktop), não por nome de app. Só
+       nesse caso trocamos fixed por position:sticky, que não tem esse
+       problema em navegador nenhum mas exige uma caixa por fora com mais
+       altura que o conteúdo (testado ao vivo: precisa ser height de
+       verdade no wrapper, padding-bottom fica sem efeito nenhum). O dobro
+       da altura dá uma janela "grudada" do tamanho da própria foto —
+       perto do tempo que o fixed original fica com essa aparência
+       parada. */
+    @supports (-webkit-touch-callout: none) {
+      .faixa-foto-caixa {
+        height: calc(var(--altura-mobile-svh) * 2);
+      }
+      .faixa-foto {
+        position: sticky;
+        top: 0;
+        background-attachment: scroll;
+      }
     }
   }
   @media (prefers-reduced-motion: reduce) {

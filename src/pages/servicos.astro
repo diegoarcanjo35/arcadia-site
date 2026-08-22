@@ -301,18 +301,21 @@ const titulo = conteudo?.titulo || 'Serviços';
      truque de tamanho nenhum.
      A classe chega tanto no wrapper (.faixa-foto-caixa) quanto na faixa em
      si (.faixa-foto) — por isso os dois seletores abaixo, cada um mais
-     específico que a classe sozinha pra acertar o elemento certo. O
-     wrapper precisa de um height próprio aqui (não o padrão do componente,
-     calc(altura-mobile + 120px)) porque a altura real desta faixa no
-     mobile não vem do prop alturaMobile (que seguiu "730px" só pra manter
-     o componente feliz) — vem do aspect-ratio abaixo. */
+     específico que a classe sozinha pra acertar o elemento certo. A altura
+     real desta faixa no mobile não vem do prop alturaMobile (que seguiu
+     "730px" só pra manter o componente feliz) — vem do aspect-ratio
+     abaixo; o wrapper só precisa de height próprio (o dobro, mesma lógica
+     do componente) no caso iOS, onde o wrapper vira a "corda" do sticky —
+     nos demais navegadores ele só acompanha a altura do filho. */
   :global(.faixa-completa.faixa-completa.faixa-completa.faixa-foto) {
     aspect-ratio: 960 / 1280;
     min-height: 0;
   }
   @media (max-width: 900px) {
-    :global(.faixa-completa.faixa-completa.faixa-completa.faixa-foto-caixa) {
-      height: calc(100vw * 1280 / 960 + 120px);
+    @supports (-webkit-touch-callout: none) {
+      :global(.faixa-completa.faixa-completa.faixa-completa.faixa-foto-caixa) {
+        height: calc((100vw * 1280 / 960) * 2);
+      }
     }
   }
   /* No desktop ("Web", que a cliente confirmou estar ok), em vez de
