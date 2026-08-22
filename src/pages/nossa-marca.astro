@@ -150,8 +150,14 @@ import Base from '../layouts/Base.astro';
     max-width: 1280px;
     margin: 0 auto;
   }
+  /* Cortar o arquivo rente ao desenho (ver comentário acima) resolveu a
+     descentralização, mas também tirou a margem que ele tinha embutida —
+     em 100% de largura a logo ficou colada nas bordas da coluna e no texto
+     abaixo (sem aquele respiro que antes vinha "de graça" dentro do
+     próprio PNG). Reduzida pra 80%, centralizada, com respiro próprio
+     antes do texto no empilhamento do mobile. */
   .logo-marca { margin: 0; }
-  .logo-marca img { display: block; width: 100%; height: auto; }
+  .logo-marca img { display: block; width: 80%; height: auto; margin: 0 auto; }
 
   /* Texto medido ao vivo: cor terracota, 16.8px, fonte de corpo (Inter) —
      "POR QUE ESSA IMAGEM?" não é título, é o primeiro parágrafo em negrito,
@@ -168,5 +174,6 @@ import Base from '../layouts/Base.astro';
   @media (max-width: 900px) {
     .marca-explicacao { grid-template-columns: 1fr; }
     .texto-marca { padding: 0 30px; }
+    .logo-marca { margin-bottom: var(--e-3); }
   }
 </style>
