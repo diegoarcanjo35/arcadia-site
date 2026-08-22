@@ -342,6 +342,13 @@ const SERVICOS = [
     text-align: center;
     padding: var(--e-2) var(--e-3);
   }
+  /* "A ARCÁDIA" usa um preset de tamanho menor que os outros títulos com
+     caixa (medido ao vivo: preset "large" do tema, não o padrão de 40px
+     desta classe) — por isso o escopo aqui, sem mexer em .titulo-caixa
+     genérica, que outros títulos (como "O que fazemos") também usam. */
+  .texto-arcadia .titulo-caixa {
+    font-size: clamp(1.39rem, 1.39rem + ((1vw - 0.2rem) * 0.767), 1.85rem);
+  }
   /* O site anterior usa a cor de contraste (terracota) como cor padrão do
      corpo de texto inteiro — não só nos títulos. Corrigido aqui e nos
      blocos abaixo, que ainda usavam --corpo/--tinta (cinza-marrom neutro,
@@ -376,14 +383,18 @@ const SERVICOS = [
   }
   .foto-arcadia img,
   .foto-arcadia video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  /* Medido ao vivo no original: Cardo normal (não itálico), 16.8px fixo
+     (não escala com a tela — é o preset "medium" do tema, sem clamp), com
+     fundo creme próprio (não fica solta sobre o fundo da página). */
   .legenda-arcadia {
     margin: var(--e-2) 0 0;
-    padding: 0 var(--e-2);
+    padding: var(--e-1) var(--e-4);
+    background: var(--creme);
     color: var(--terracota);
     font-family: var(--fonte-titulo);
-    font-style: italic;
+    font-style: normal;
     text-align: center;
-    font-size: var(--t-lg);
+    font-size: 16.8px;
     line-height: 1.4;
   }
 
