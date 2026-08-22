@@ -80,7 +80,7 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
     </Revelar>
   </div>
 
-  <div class="corpo">
+  <div class="corpo corpo-acao">
     {/* Link do site anterior: a página de nome ("Quem Somos") levava à página
         de marca ("Nossa Marca"). Mantido aqui pelo mesmo motivo do lá. */}
     <p class="acao-secao"><a class="botao" href="/nossa-marca">Conheça nossa marca</a></p>
@@ -106,7 +106,19 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
   /* Medido no original: o botão fica dentro de uma coluna mais estreita
      (800px), centralizada na página — não solto na borda esquerda do
      .corpo inteiro (1120px), que é como estava antes. */
-  .acao-secao { max-width: 800px; margin: var(--e-3) auto 0; }
+  .acao-secao { max-width: 800px; margin: 0 auto; }
+  /* O botão medido ao vivo cola direto no bloco do nome (imagem + texto),
+     sem o respiro grande de "corpo" (pensado pro bloco de prosa que vem
+     depois da faixa de foto) — gap zero entre os dois, tanto no mobile
+     quanto no desktop, não os ~120px que a gente tinha (padding do .corpo +
+     margem do .dupla-nome + margem do .acao-secao, tudo somado). No
+     desktop a imagem é mais alta que o texto e os dois ficam centralizados
+     na linha (align-items:center) — por isso o "respiro" abaixo do texto
+     que se via ali era só o efeito da centralização, não margem de
+     verdade; o botão gruda no fim da LINHA (a imagem), não no fim do
+     texto. */
+  .corpo-acao { padding-top: 0; }
+  .dupla-nome + .corpo-acao .acao-secao { margin-top: 0; }
 
   /* Mesma capa da Home (ver index.astro): só a foto, sem véu, sem texto por
      cima. Altura de tela cheia, foto vertical no celular. */
@@ -163,7 +175,7 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
     gap: 0;
     align-items: center;
     max-width: 1280px;
-    margin: 0 auto var(--e-4);
+    margin: 0 auto;
   }
   .texto-nome {
     padding: 0 var(--e-4);
