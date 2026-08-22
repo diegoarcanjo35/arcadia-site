@@ -217,12 +217,11 @@ const semTurma = todas.filter((o) => !o.status);
   }
   @media (max-width: 900px) {
     .sobre-oficinas { grid-template-columns: 1fr; }
-    /* 50vh deixava essa foto bem maior que no original — medido ao vivo, a
-       proporção real lá é 1,35:1 (mais baixa que alta). Troquei vh por
-       aspect-ratio de propósito: mantém o mesmo enquadramento nosso
-       (object-position 79% 96%, mais abaixo) só que numa caixa mais baixa
-       — a Wanda pediu pra manter o corte daqui, só reduzir o tamanho. */
-    .foto-sobre { aspect-ratio: 1.35; height: auto; }
+    /* Wanda pediu explicitamente pra manter o tamanho antigo daqui (50vh) —
+       ela quer o nosso maior, não o do site anterior (que é bem menor,
+       1,35:1 medido ao vivo). Só a faixa do título acima foi ajustada pro
+       tamanho do site anterior, não esta imagem. */
+    .foto-sobre { height: 50vh; }
     .texto-sobre { padding: var(--e-4) var(--e-3); }
     /* Os 72px de .faixa-titulo são medida de desktop — no celular a faixa
        do original é bem mais baixa (88px de altura total, medido ao vivo),
