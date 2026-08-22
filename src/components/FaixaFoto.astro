@@ -41,7 +41,13 @@ const alturaMobileSvh = alturaMobileFixa ? alturaMobile : `${alturaMobile}svh`;
 
   @media (max-width: 900px) {
     .faixa-foto {
-      background-attachment: scroll;
+      /* Continua fixed no mobile também — conferido ao vivo na regra real
+         do site anterior (.has-parallax { background-attachment: fixed })：
+         não existe breakpoint que desliga isso lá, só prefers-reduced-motion
+         (que já tratamos abaixo). É esse "fixa enquanto o texto rola" que dá
+         a sensação de o texto vir descendo por cima da foto; um "scroll"
+         aqui — que eu tinha posto por cautela, sem checar se era preciso —
+         fazia foto e texto se moverem juntos, "colados". */
       /* svh, não só vh: no Safari mobile a barra de endereço recolhe ao
          rolar e vh muda de valor junto, fazendo a faixa "pular" de
          tamanho — svh usa a menor altura possível e fica estável. */
