@@ -417,24 +417,31 @@ const SERVICOS = [
     border-radius: var(--raio);
     padding: var(--e-3);
   }
+  /* Medido ao vivo: 16.8px (não var(--t-sm)=15px), peso 900 (não 700),
+     sem letter-spacing (não 0.06em). */
   .servicos h3 {
     font-family: var(--fonte-texto);
-    font-size: var(--t-sm);
-    font-weight: 700;
-    letter-spacing: 0.06em;
+    font-size: 16.8px;
+    font-weight: 900;
+    letter-spacing: normal;
     color: var(--terracota);
     margin: 0 0 var(--e-2);
   }
-  .servicos p { margin: 0; font-size: var(--t-sm); color: var(--terracota); }
+  .servicos p { margin: 0; font-size: 16.8px; color: var(--terracota); }
 
   /* ------------------------------------------------------------- tese */
   /* Medido no original: caixa arredondada (radius 24px), fundo
      rgb(236,234,223), padding 52px, largura ~1617px — cabe numa linha só,
-     por isso sem max-width em "ch" (que forçava quebra). */
+     por isso sem max-width em "ch" (que forçava quebra). Tamanho fluido,
+     não os 29.6px fixos que estavam aqui — medido em 3 larguras
+     (375/800/1280px, valores batendo exatamente com a fórmula
+     reconstruída): 18.94px no mobile subindo até 28.8px no desktop. Fixo
+     em 29.6px deixava esse texto grande demais no celular, e nem batia
+     certo com o valor real do desktop (28.8px). */
   .tese {
     font-family: var(--fonte-titulo);
     font-style: italic;
-    font-size: 29.6px;
+    font-size: clamp(1.146rem, 1.146rem + ((1vw - 0.2rem) * 1.09), 1.8rem);
     line-height: 1.35;
     text-align: center;
     color: var(--terracota);
