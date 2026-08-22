@@ -331,13 +331,18 @@ const SERVICOS = [
     margin: 0 0 var(--e-2);
     color: var(--terracota);
   }
-  /* Caixa clara medida no original: fundo rgb(236,234,223), Cardo 40px,
-     centralizada, largura quase total da seção — mesma caixa usada nos
-     títulos de página em outras partes do site. */
+  /* Caixa clara medida no original: fundo rgb(236,234,223), centralizada,
+     largura quase total da seção — mesma caixa usada nos títulos de página
+     em outras partes do site. Tamanho fluido, não os 40px fixos que
+     estavam aqui antes — medido em 3 larguras (375/800/1280px) pra
+     reconstruir a fórmula exata: 29.6px no mobile subindo até 40px no
+     desktop (esse 40px era o único ponto certo que já tínhamos; faltava a
+     escala entre eles). "O que fazemos" usa este tamanho; "A ARCÁDIA" tem
+     escopo próprio, menor, logo abaixo. */
   .titulo-caixa {
     display: block;
     background: rgb(236, 234, 223);
-    font-size: 40px;
+    font-size: clamp(1.85rem, 1.85rem + ((1vw - 0.2rem) * 1.083), 2.5rem);
     font-weight: 400;
     text-align: center;
     padding: var(--e-2) var(--e-3);
