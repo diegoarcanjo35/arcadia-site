@@ -518,9 +518,17 @@ const SERVICOS = [
     flex-wrap: wrap;
   }
   .cabeca a { text-decoration: none; font-size: var(--t-sm); }
+  /* auto-fit em vez de auto-fill: com só 1 ou 2 oficinas em destaque (menos
+     que cabem numa fileira de 1120px), auto-fill ainda reservava a(s)
+     coluna(s) vazia(s) como se houvesse mais cartões, espremendo os
+     cartões reais para o canto esquerdo em vez de deixá-los crescer e
+     centralizar — por isso o cartão aparecia menor aqui do que na página
+     /oficinas (mesmo componente, mesma grade, só essa palavra diferente).
+     Mesma regra e mesmo justify-content da grade de /oficinas. */
   .grade {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    justify-content: center;
     gap: var(--e-3);
   }
 

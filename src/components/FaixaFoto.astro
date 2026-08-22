@@ -18,13 +18,13 @@
  * altura fixa igual no mobile e no desktop (min-height do wp-block-cover não
  * muda por breakpoint) — aí não faz sentido nenhuma das duas variantes vh.
  */
-const { foto, altura = '42vh', alturaMobile = 30 } = Astro.props;
+const { foto, altura = '42vh', alturaMobile = 30, class: classeExtra } = Astro.props;
 const alturaMobileFixa = typeof alturaMobile !== 'number';
 const alturaMobileVh = alturaMobileFixa ? alturaMobile : `${alturaMobile}vh`;
 const alturaMobileSvh = alturaMobileFixa ? alturaMobile : `${alturaMobile}svh`;
 ---
 <div
-  class="faixa-foto"
+  class:list={['faixa-foto', classeExtra]}
   style={`--altura: ${altura}; --altura-mobile: ${alturaMobileVh}; --altura-mobile-svh: ${alturaMobileSvh}; background-image: url(${foto})`}
   aria-hidden="true"
 ></div>

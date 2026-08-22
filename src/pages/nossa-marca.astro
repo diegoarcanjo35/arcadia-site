@@ -9,10 +9,10 @@ import Base from '../layouts/Base.astro';
 // escrita uma vez, transcrita do site anterior sem uma palavra alterada
 // (inclusive os trechos em negrito). Não é conteúdo que a clínica reescreve.
 //
-// A imagem à esquerda é a mesma logo-sombra.png do cabeçalho (arcos + nome +
-// sombra) — no site anterior este bloco usa exatamente essa arte
-// (nossamarca-1.png, mesmo desenho, só exportado como arquivo à parte),
-// não o símbolo isolado sem o nome.
+// A imagem à esquerda é o arquivo real do site anterior (nossamarca-1.png,
+// 959×968), baixado de lá com autorização — logo-sombra.png (300×274, feito
+// pro cabeçalho pequeno) ficava borrado nesse tamanho grande, ampliado 2x+
+// da resolução original.
 ---
 <Base
   titulo="Nossa Marca"
@@ -41,7 +41,7 @@ import Base from '../layouts/Base.astro';
       resto do texto. */}
   <div class="marca-explicacao">
     <figure class="logo-marca">
-      <img src="/logo-sombra.png" alt="A marca da Arcádia: arcos sobre um círculo, com o nome Arcádia Psicologia." width="300" height="274" loading="lazy" decoding="async" />
+      <img src="/nossamarca-1.png" alt="A marca da Arcádia: arcos sobre um círculo, com o nome Arcádia Psicologia." width="959" height="968" loading="lazy" decoding="async" />
     </figure>
 
     <div class="texto-marca">
@@ -61,7 +61,7 @@ import Base from '../layouts/Base.astro';
         uma compreensão mais ampla do universo.
       </p>
       <p>
-        <strong>O Círculo:</strong> Na psicologia e na filosofia, o círculo é um
+        <strong>O Círculo:</strong> Na psicologia e na filosofia, o círculo é um{' '}
         <strong>símbolo de totalidade, perfeição e unidade</strong>. Na psicologia
         junguiana, ele representa o self — <strong>a totalidade da psique </strong>—
         que integra tanto o consciente quanto o inconsciente. O self é visto como o
@@ -70,7 +70,7 @@ import Base from '../layouts/Base.astro';
         individuação, que é a jornada de autoconhecimento e crescimento pessoal.
       </p>
       <p>
-        <strong>Cor Laranja:</strong> O laranja é frequentemente associado à
+        <strong>Cor Laranja:</strong> O laranja é frequentemente associado à{' '}
         <strong>criatividade, vitalidade e transformação</strong>. Na psicologia das
         cores, ele é visto como uma cor energizante que pode estimular entusiasmo e
         um senso de propósito.

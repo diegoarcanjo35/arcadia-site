@@ -187,8 +187,16 @@ const titulo = conteudo?.titulo || 'Serviços';
 
   {/* Esta é a estante onde o próprio quadro da arteterapia está encostado —
       por isso ela abre justamente o bloco ART&TERAPIA, como no site
-      anterior. */}
-  <FaixaFoto foto="/espaco/atendimento.webp" altura="730px" alturaMobile="730px" />
+      anterior. Única das três faixas com pedido explícito da cliente pra
+      aparecer completa: no site anterior este ponto usa uma foto diferente,
+      horizontal (1280×853, uma outra sessão da mesma sala) — a nossa é
+      vertical (960×1280, sessão própria) e a 730px cortava a prateleira de
+      cima quase inteira (43% da foto visível no desktop). Sem uma foto
+      horizontal equivalente pra copiar, a saída é a mesma do quadro da
+      arteterapia: caixa na proporção real do arquivo, sem cortar nada — por
+      isso a classe própria (só esta faixa foge do 730px fixo das outras
+      duas). */}
+  <FaixaFoto foto="/espaco/atendimento.webp" altura="730px" alturaMobile="730px" class="faixa-completa" />
 
   <section class="servico">
     <Revelar direcao="esquerda">
@@ -278,6 +286,23 @@ const titulo = conteudo?.titulo || 'Serviços';
   @media (min-width: 900px) {
     .faixa-titulo { padding: 102px 0 39px; }
   }
+
+  /* A faixa da estante (única com esse pedido, ver comentário no markup):
+     em vez do min-height:730px fixo (que corta a foto vertical), a altura
+     nasce da proporção real do arquivo (960×1280) — object-fit/cover não
+     tem nada pra cortar quando a caixa já nasce do tamanho certo. A regra
+     do componente (.faixa-foto, escopada) tem a mesma especificidade da
+     nossa (classe+atributo de escopo vs. duas classes) — o ".faixa-completa"
+     repetido garante que esta vença o empate, não importa a ordem de
+     carregamento dos estilos. */
+  :global(.faixa-completa.faixa-completa.faixa-completa) {
+    aspect-ratio: 960 / 1280;
+    min-height: 0;
+  }
+  @media (max-width: 900px) {
+    :global(.faixa-completa.faixa-completa.faixa-completa) { min-height: 0; }
+  }
+
   .faixa-titulo h1 {
     max-width: 800px;
     margin: 0 auto;
@@ -301,7 +326,27 @@ const titulo = conteudo?.titulo || 'Serviços';
     align-items: stretch;
   }
   .dupla-servico.invertida .texto-servico { order: 2; }
-  .dupla-servico.invertida .quadro-cheio { order: 1; }
+  /* Este quadro (arteterapia.webp) é o único dos três com pedido explícito
+     da cliente pra aparecer "maior, ocupando mais a tela, se possível a
+     imagem completa" — medido ao vivo (getBoundingClientRect + Image()
+     forçando o load) que o site anterior CROPA esse mesmo quadro tanto
+     quanto ou mais que a gente (632.5×583.5px no desktop, visível ~68% da
+     altura da imagem; 375×250px no mobile, ~49% visível) — ou seja, não é
+     um caso de "estamos cortando mais que o original" pra copiar um valor
+     de lá. Já que não existe crop "correto" pra copiar do site anterior
+     aqui, a saída é usar a proporção real do arquivo (900×1216, conferida
+     ao vivo) como aspect-ratio da caixa: com isso object-fit:cover não
+     corta nada (a caixa já nasce na proporção da imagem) e o quadro fica
+     maior nas duas larguras — 507px no mobile (era 250px) e ~855px no
+     desktop (era ~620px, esticado pra bater com o texto). align-self:start
+     tira esse quadro do align-items:stretch da grade (que senão bateria por
+     cima do aspect-ratio, esticando de novo pra altura da coluna de
+     texto). */
+  .dupla-servico.invertida .quadro-cheio {
+    order: 1;
+    aspect-ratio: 900 / 1216;
+    align-self: start;
+  }
 
   /* Padding horizontal medido no original: 76px é o valor de desktop (ainda
      não conferido a fundo); no mobile o texto anterior ia bem mais perto da
@@ -382,5 +427,15 @@ const titulo = conteudo?.titulo || 'Serviços';
        não algo relativo a vh — 60vh media a ~490-505px, bem mais alto que
        o original). */
     .quadro-cheio { order: -1; height: 250px; }
+    /* Exceção pro quadro da arteterapia (ver comentário acima, junto do
+       align-self:start de desktop): no mobile a mesma lógica vale — em vez
+       do height:250px fixo (igual aos outros dois, e igual ao que o site
+       anterior também usa pra este), deixa a altura nascer da proporção
+       real do arquivo (900×1216) na largura cheia da tela, sem cortar
+       nada. */
+    .dupla-servico.invertida .quadro-cheio {
+      height: auto;
+      aspect-ratio: 900 / 1216;
+    }
   }
 </style>
