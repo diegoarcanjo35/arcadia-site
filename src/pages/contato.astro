@@ -37,15 +37,27 @@ const jsonLd = {
 <Base
   titulo="Contato"
   descricao="Fale com a Arcádia Psicologia. Atendimento clínico e oficinas em Brasília, presencial e online."
+  cabecalhoSobreImagem
 >
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
-  <div class="topo">
-    <div class="dentro">
-      <h1>Contato</h1>
-      <p>Para agendar uma conversa, tirar dúvida sobre uma oficina ou falar sobre atendimento.</p>
-    </div>
+  {/* Capa e faixa de título iguais às outras páginas internas — esta página
+      não tinha nenhuma das duas, renderizava o cabeçalho sólido padrão
+      direto em cima do H1. */}
+  <section class="capa">
+    <img class="foto-capa" src="/capa-arcos-vertical.jpg" alt="" width="720" height="990" fetchpriority="high" />
+    <img class="foto-capa desktop" src="/capa-arcos.jpg" alt="" width="960" height="528" fetchpriority="high" />
+  </section>
+
+  <div class="faixa-titulo">
+    <h1>Contato</h1>
   </div>
+
+  {/* O site anterior não tem esse subtítulo — a página lá é só "Contato" e
+      um formulário. Frase mantida (é conteúdo nosso, explicando os canais
+      novos que o site antigo não tinha), só sem o "topo" antigo que a
+      envolvia. */}
+  <p class="subtitulo">Para agendar uma conversa, tirar dúvida sobre uma oficina ou falar sobre atendimento.</p>
 
   <div class="colunas">
     <section class="canais">
@@ -108,10 +120,64 @@ const jsonLd = {
 </Base>
 
 <style>
-  .topo { background: var(--creme); border-bottom: 1px solid var(--linha); }
-  .dentro { max-width: 1120px; margin: 0 auto; padding: var(--e-5) var(--e-3); }
-  h1 { font-size: var(--t-3xl); margin: 0 0 var(--e-1); }
-  .dentro p { margin: 0; font-size: var(--t-lg); max-width: 54ch; }
+  /* Mesma capa das outras páginas internas: só a foto, sem véu nem título
+     por cima — o cabeçalho fica transparente sobre ela (cabecalhoSobreImagem
+     no Base). */
+  .capa {
+    background: var(--tinta);
+    position: relative;
+    overflow: hidden;
+    height: 100vh;
+  }
+  .foto-capa {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .foto-capa.desktop { display: none; }
+  @media (min-width: 900px) {
+    .foto-capa { display: none; }
+    .foto-capa.desktop { display: block; }
+  }
+  @media (max-width: 900px) {
+    .capa { height: auto; aspect-ratio: 1.1; }
+  }
+
+  /* Faixa de título medida ao vivo (mesmo padrão de A Arcádia/Serviços/
+     Nossa Marca): caixa sem padding próprio, cor terracota, escala fluida
+     "xx-large" (40,7px no mobile a 52,3px no desktop), respiro de 30px/11px
+     no mobile e 102px/39px no desktop. */
+  .faixa-titulo {
+    background: var(--creme);
+    padding: 30px 0 11px;
+  }
+  @media (min-width: 900px) {
+    .faixa-titulo { padding: 102px 0 39px; }
+  }
+  .faixa-titulo h1 {
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgb(236, 234, 223);
+    color: var(--terracota);
+    font-family: var(--fonte-titulo);
+    font-size: clamp(2.5rem, 2.5rem + ((1vw - 0.2rem) * 1.283), 3.27rem);
+    font-weight: 400;
+    text-align: center;
+  }
+
+  /* Sem equivalente no site anterior (ver comentário no markup) — estilo
+     simples, consistente com o resto do texto do site, não medido. */
+  .subtitulo {
+    max-width: 640px;
+    margin: var(--e-3) auto 0;
+    padding: 0 var(--e-3);
+    text-align: center;
+    font-size: var(--t-lg);
+    color: var(--corpo);
+  }
 
   .colunas {
     max-width: 1120px;
@@ -154,6 +220,5 @@ const jsonLd = {
 
   @media (max-width: 900px) {
     .colunas { grid-template-columns: 1fr; }
-    h1 { font-size: var(--t-2xl); }
   }
 </style>
