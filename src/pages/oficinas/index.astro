@@ -217,8 +217,20 @@ const semTurma = todas.filter((o) => !o.status);
   }
   @media (max-width: 900px) {
     .sobre-oficinas { grid-template-columns: 1fr; }
-    .foto-sobre { height: 50vh; }
+    /* 50vh deixava essa foto bem maior que no original — medido ao vivo, a
+       proporção real lá é 1,35:1 (mais baixa que alta). Troquei vh por
+       aspect-ratio de propósito: mantém o mesmo enquadramento nosso
+       (object-position 79% 96%, mais abaixo) só que numa caixa mais baixa
+       — a Wanda pediu pra manter o corte daqui, só reduzir o tamanho. */
+    .foto-sobre { aspect-ratio: 1.35; height: auto; }
     .texto-sobre { padding: var(--e-4) var(--e-3); }
+    /* Os 72px de .faixa-titulo são medida de desktop — no celular a faixa
+       do original é bem mais baixa (88px de altura total, medido ao vivo),
+       quase a metade do que os 72px em cima e embaixo davam aqui. Sem essa
+       redução, a imagem que vem logo depois (sem gap nenhum, dos dois
+       lados) parecia distante do título por a faixa inteira estar inflada,
+       não por sobrar espaço de verdade entre os blocos. */
+    .faixa-titulo { padding: var(--e-3) var(--e-3); }
   }
 
   .corpo { max-width: 1120px; margin: 0 auto; padding: var(--e-4) var(--e-3) 0; }
