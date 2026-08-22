@@ -119,10 +119,15 @@ const ano = new Date().getFullYear();
   }
   .base p { margin: 0; font-size: var(--t-xs); color: var(--terracota); opacity: 0.7; }
 
+  /* Medido ao vivo: abaixo de 860px o rodapé do site anterior NÃO empilha
+     tudo em 1 coluna só (era isso que tínhamos, achando que era o padrão
+     "mobile" óbvio) — a logo vira uma faixa própria de largura total, e as
+     três colunas de links (Sobre/Privacidade/Redes sociais) continuam em
+     2 colunas até 375px, com "Redes sociais" sobrando sozinha na própria
+     linha (3 itens em 2 colunas). Confirmado com getBoundingClientRect nos
+     dois tamanhos — nunca vira 1 coluna. */
   @media (max-width: 860px) {
     .faixa { grid-template-columns: 1fr 1fr; }
-  }
-  @media (max-width: 520px) {
-    .faixa { grid-template-columns: 1fr; }
+    .marca-col { grid-column: 1 / -1; }
   }
 </style>
