@@ -158,6 +158,10 @@ const semTurma = todas.filter((o) => !o.status);
     font-size: clamp(2.5rem, 2.5rem + ((1vw - 0.2rem) * 1.283), 3.27rem);
     font-weight: 400;
     text-align: center;
+    /* h1,h2,h3 no marca.css aplica -0.01em global (pensado pros títulos
+       normais do site) — medido ao vivo, este título específico no site
+       anterior não tem esse aperto, é letter-spacing normal. */
+    letter-spacing: normal;
   }
 
   /* "Sobre nossas oficinas": faixa de largura total, foto à esquerda /
