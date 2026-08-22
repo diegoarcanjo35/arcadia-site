@@ -288,19 +288,32 @@ const titulo = conteudo?.titulo || 'Serviços';
   }
 
   /* A faixa da estante (única com esse pedido, ver comentário no markup).
-     No mobile, o componente agora usa scroll por padrão (ver FaixaFoto.astro
-     sobre o bug do Safari do iPhone com background-attachment:fixed — era
-     exatamente isso que causava a faixa "sobrepondo" as outras seções que a
-     cliente reportou). Com scroll, background-size volta a calcular contra
-     a própria caixa (não a janela), então basta a caixa nascer na proporção
-     real do arquivo (960×1280, min-height:0 pra não brigar com os 730px
-     fixos que o componente herdaria do prop alturaMobile) — "cover" (padrão
-     do componente) não tem nada pra cortar quando a caixa já é do tamanho
+     No mobile, o componente agora usa scroll+sticky por padrão (ver
+     FaixaFoto.astro sobre o bug do Safari do iPhone com
+     background-attachment:fixed — era exatamente isso que causava a faixa
+     "sobrepondo" as outras seções que a cliente reportou). Com scroll,
+     background-size volta a calcular contra a própria caixa (não a
+     janela), então basta a caixa nascer na proporção real do arquivo
+     (960×1280, min-height:0 pra não brigar com os 730px fixos que o
+     componente herdaria do prop alturaMobile) — "cover" (padrão do
+     componente) não tem nada pra cortar quando a caixa já é do tamanho
      certo. Resultado: ~500px numa tela de 375px, imagem completa, sem
-     truque de tamanho nenhum. */
-  :global(.faixa-completa.faixa-completa.faixa-completa) {
+     truque de tamanho nenhum.
+     A classe chega tanto no wrapper (.faixa-foto-caixa) quanto na faixa em
+     si (.faixa-foto) — por isso os dois seletores abaixo, cada um mais
+     específico que a classe sozinha pra acertar o elemento certo. O
+     wrapper precisa de um height próprio aqui (não o padrão do componente,
+     calc(altura-mobile + 120px)) porque a altura real desta faixa no
+     mobile não vem do prop alturaMobile (que seguiu "730px" só pra manter
+     o componente feliz) — vem do aspect-ratio abaixo. */
+  :global(.faixa-completa.faixa-completa.faixa-completa.faixa-foto) {
     aspect-ratio: 960 / 1280;
     min-height: 0;
+  }
+  @media (max-width: 900px) {
+    :global(.faixa-completa.faixa-completa.faixa-completa.faixa-foto-caixa) {
+      height: calc(100vw * 1280 / 960 + 120px);
+    }
   }
   /* No desktop ("Web", que a cliente confirmou estar ok), em vez de
      "largura cheia + altura pela proporção" (1687px, dominava a página

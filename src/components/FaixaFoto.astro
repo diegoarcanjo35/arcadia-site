@@ -23,13 +23,24 @@ const alturaMobileFixa = typeof alturaMobile !== 'number';
 const alturaMobileVh = alturaMobileFixa ? alturaMobile : `${alturaMobile}vh`;
 const alturaMobileSvh = alturaMobileFixa ? alturaMobile : `${alturaMobile}svh`;
 ---
+{/* As variáveis de altura moram no wrapper, não na faixa em si: o wrapper
+    também precisa delas (pro height do "corda extra" do sticky, ver
+    comentário no <style>) e propriedade customizada só herda de fora pra
+    dentro — definida só na faixa, o wrapper (que é PAI dela, não filho)
+    não enxergava o valor. */}
 <div
-  class:list={['faixa-foto', classeExtra]}
-  style={`--altura: ${altura}; --altura-mobile: ${alturaMobileVh}; --altura-mobile-svh: ${alturaMobileSvh}; background-image: url(${foto})`}
-  aria-hidden="true"
-></div>
+  class:list={['faixa-foto-caixa', classeExtra]}
+  style={`--altura: ${altura}; --altura-mobile: ${alturaMobileVh}; --altura-mobile-svh: ${alturaMobileSvh}`}
+>
+  <div
+    class:list={['faixa-foto', classeExtra]}
+    style={`background-image: url(${foto})`}
+    aria-hidden="true"
+  ></div>
+</div>
 
 <style>
+  .faixa-foto-caixa { position: relative; }
   .faixa-foto {
     min-height: var(--altura);
     background-size: cover;
@@ -40,23 +51,28 @@ const alturaMobileSvh = alturaMobileFixa ? alturaMobile : `${alturaMobile}svh`;
   }
 
   @media (max-width: 900px) {
+    /* background-attachment:fixed não é seguro no mobile: o Safari do
+       iPhone tem anos de bugs conhecidos com essa propriedade — foi
+       exatamente isso que causou a faixa "sobrepondo" as outras seções
+       (nunca reproduzi em Chrome, só existe no Safari real). Em vez de
+       abrir mão do efeito "gruda enquanto rola" no celular, troquei a
+       técnica: position:sticky no lugar de background-attachment:fixed.
+       Sticky é bem suportado em qualquer navegador mobile (ao contrário de
+       fixed) e cria o mesmo tipo de sensação — a imagem "segura" no topo
+       da tela enquanto o resto rola por cima dela — mas precisa de uma
+       caixa por fora com um pouco mais de altura que o conteúdo, senão
+       sticky não tem "corda" nenhuma pra segurar.
+       IMPORTANTE, testado ao vivo: essa "corda" extra só funciona como
+       height de verdade no wrapper — padding-bottom (a primeira tentativa)
+       fica sem efeito nenhum aqui, o sticky nunca gruda. Por isso height
+       explícito (a altura da faixa + 120px), calculado a partir da mesma
+       variável que a faixa usa. */
+    .faixa-foto-caixa {
+      height: calc(var(--altura-mobile-svh) + 120px);
+    }
     .faixa-foto {
-      /* Volta pra scroll no mobile. A regra do site anterior (.has-parallax
-         { background-attachment: fixed }) de fato não tem breakpoint que
-         desligue isso no CSS — mas eu só tinha conferido essa regra lendo
-         o CSS e testando em Chrome desktop, nunca num iPhone de verdade.
-         O Safari do iPhone ignora background-attachment:fixed há anos (bug
-         conhecido, documentado antigamente neste mesmo componente antes de
-         eu "corrigir" errado) — ou seja, o site anterior TAMBÉM cai pra
-         scroll no celular de fato, só que silenciosamente, via bug do
-         navegador, não porque o CSS pedia isso. Deixar fixed explícito
-         aqui não reproduz esse comportamento com segurança: em vez de cair
-         limpo pra scroll, pode renderizar de forma inconsistente/quebrada
-         (a cliente reportou a faixa "sobrepondo" as outras seções, only no
-         celular — nunca reproduzi isso no Chrome, mas bate exatamente com
-         esse tipo de bug). Scroll explícito aqui garante o comportamento
-         seguro em vez de depender de como cada versão do Safari lida com
-         fixed. */
+      position: sticky;
+      top: 0;
       background-attachment: scroll;
       /* svh, não só vh: no Safari mobile a barra de endereço recolhe ao
          rolar e vh muda de valor junto, fazendo a faixa "pular" de
@@ -66,6 +82,7 @@ const alturaMobileSvh = alturaMobileFixa ? alturaMobile : `${alturaMobile}svh`;
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .faixa-foto { background-attachment: scroll; }
+    .faixa-foto { background-attachment: scroll; position: static; }
+    .faixa-foto-caixa { height: auto; }
   }
 </style>
