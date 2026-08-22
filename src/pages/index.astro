@@ -469,9 +469,12 @@ const SERVICOS = [
   .cabecalho-faixa .subtitulo-secao { color: #fff; margin-bottom: 0; }
 
   .texto-claro { color: rgb(236, 234, 223); }
+  /* 40px batia no desktop, mas era fixo — no original é a mesma escala
+     fluida "x-large" já usada em "O que fazemos" (30.1957px no mobile,
+     medido igual nos dois títulos "Atividades e conteúdos" e "Oficinas"). */
   .texto-claro .titulo-secao {
     color: var(--creme);
-    font-size: 40px;
+    font-size: clamp(1.85rem, 1.85rem + ((1vw - 0.2rem) * 1.083), 2.5rem);
     font-weight: 400;
   }
   .texto-claro p { margin: 0 0 1em; }
