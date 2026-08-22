@@ -467,6 +467,13 @@ const SERVICOS = [
      menor que o outro, como eu tinha suposto sem medir. */
   .cabecalho-faixa { margin-bottom: var(--e-5); text-align: center; }
   .cabecalho-faixa .subtitulo-secao { color: #fff; margin-bottom: 0; }
+  /* Medido ao vivo: só este título ("Atividades e conteúdos") é branco puro
+     no original — "Oficinas", que usa a mesma .titulo-secao/.texto-claro,
+     fica no creme (var(--creme)). Não é a mesma cor nos dois, por isso o
+     escopo aqui em vez de mudar a regra genérica. Precisa das duas classes
+     juntas (.texto-claro.cabecalho-faixa) pra ganhar em especificidade de
+     ".texto-claro .titulo-secao", que vem depois no arquivo. */
+  .texto-claro.cabecalho-faixa .titulo-secao { color: #fff; }
 
   .texto-claro { color: rgb(236, 234, 223); }
   /* 40px batia no desktop, mas era fixo — no original é a mesma escala
