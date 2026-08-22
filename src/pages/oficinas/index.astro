@@ -130,8 +130,13 @@ const semTurma = todas.filter((o) => !o.status);
     .foto-capa { display: none; }
     .foto-capa.desktop { display: block; }
   }
+  /* Mesma correção da Home (ver index.astro): no site anterior a capa no
+     mobile NÃO é altura de tela cheia — é o próprio cabeçalho, com altura
+     definida pelo conteúdo, não pela janela. Medido ao vivo aqui: 341px
+     numa tela de 375px — proporção 1,1:1, igual à Home. 60vh era estimado,
+     por isso ficava maior que o site anterior. */
   @media (max-width: 900px) {
-    .capa { height: 60vh; }
+    .capa { height: auto; aspect-ratio: 1.1; }
   }
 
   /* Título medido no original: caixa clara (236,234,223), Cardo 52px,
