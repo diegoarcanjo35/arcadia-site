@@ -110,12 +110,19 @@ const semTurma = todas.filter((o) => !o.status);
 
 <style>
   /* Mesma capa da Home (ver index.astro): só a foto, sem véu, sem texto por
-     cima. Altura de tela cheia, foto vertical no celular. */
+     cima. Altura de tela cheia, foto vertical no celular.
+     margin-bottom:0 sobrescreve a regra genérica "section { margin-bottom:
+     var(--e-5) }" (pensada pro ritmo entre as seções de conteúdo lá
+     embaixo) — sem isso, a capa (que também é uma <section>) ganhava 64px
+     de vão antes da faixa do título, sem nenhuma medida do site anterior
+     por trás disso. Era essa a causa real do vão que sobrava mesmo depois
+     de já ter reduzido o padding da própria faixa. */
   .capa {
     background: var(--tinta);
     position: relative;
     overflow: hidden;
     height: 100vh;
+    margin-bottom: 0;
   }
   .foto-capa {
     position: absolute;
