@@ -257,24 +257,32 @@ const titulo = conteudo?.titulo || 'Serviços';
     .foto-capa { display: none; }
     .foto-capa.desktop { display: block; }
   }
+  /* Medido ao vivo direto no cabeçalho do site anterior (mesmo elemento das
+     outras páginas internas — A Arcádia, Nossa Marca): 341px numa tela de
+     375px, não os 60vh (bem mais alto) que tínhamos. */
   @media (max-width: 900px) {
-    .capa { height: 60vh; }
+    .capa { height: auto; aspect-ratio: 1.1; }
   }
 
+  /* Faixa de título medida ao vivo (mesmo padrão de A Arcádia/Nossa Marca):
+     a caixa do h1 não tem padding próprio — vai de ponta a ponta da tela no
+     celular (sem os 24px de respiro lateral que tínhamos) e centralizada a
+     800px no desktop. O respiro fica no wrapper, como margem antes/depois:
+     30px/11px no mobile, 102px/39px no desktop — bem menor que os 72px
+     symétricos que tínhamos, que deixavam a faixa alta demais. Cor também
+     medida: terracota, não ocre. */
   .faixa-titulo {
     background: var(--creme);
-    padding: 72px var(--e-3);
+    padding: 30px 0 11px;
   }
-  /* Tamanho não é fixo no original — é a escala fluida do preset "xx-large"
-     do tema (clamp), 40px no mobile subindo até 52.32px no desktop (mesma
-     medição feita em a-arcadia.astro). Fixar em 52.32px pra qualquer
-     largura deixava o título grande demais e quebrando em duas linhas no
-     celular, onde no original cabe numa linha só. */
+  @media (min-width: 900px) {
+    .faixa-titulo { padding: 102px 0 39px; }
+  }
   .faixa-titulo h1 {
     max-width: 800px;
     margin: 0 auto;
     background: rgb(236, 234, 223);
-    color: var(--ocre);
+    color: var(--terracota);
     font-family: var(--fonte-titulo);
     font-size: clamp(2.5rem, 2.5rem + ((1vw - 0.2rem) * 1.283), 3.27rem);
     font-weight: 400;

@@ -104,17 +104,24 @@ import Base from '../layouts/Base.astro';
     .capa { height: auto; aspect-ratio: 1.1; }
   }
 
-  /* Faixa de título igual à de Serviços ("Áreas de atuação"): caixa clara
-     centralizada (800px), cor ocre, mesma escala fluida "xx-large". */
+  /* Faixa de título medida ao vivo (mesmo padrão de A Arcádia/Serviços): a
+     caixa do h1 não tem padding próprio — vai de ponta a ponta no celular e
+     centralizada a 800px no desktop. O respiro é margem do wrapper: 30px/
+     11px no mobile, 102px/39px no desktop. Cor terracota, não ocre — os
+     72px simétricos e a cor ocre que estavam aqui vieram de uma medição
+     antiga e imprecisa, corrigida agora junto com a de Serviços. */
   .faixa-titulo {
     background: var(--creme);
-    padding: 72px var(--e-3);
+    padding: 30px 0 11px;
+  }
+  @media (min-width: 900px) {
+    .faixa-titulo { padding: 102px 0 39px; }
   }
   .faixa-titulo h1 {
     max-width: 800px;
     margin: 0 auto;
     background: rgb(236, 234, 223);
-    color: var(--ocre);
+    color: var(--terracota);
     font-family: var(--fonte-titulo);
     font-size: clamp(2.5rem, 2.5rem + ((1vw - 0.2rem) * 1.283), 3.27rem);
     font-weight: 400;
