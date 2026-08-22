@@ -9,9 +9,10 @@ import Base from '../layouts/Base.astro';
 // escrita uma vez, transcrita do site anterior sem uma palavra alterada
 // (inclusive os trechos em negrito). Não é conteúdo que a clínica reescreve.
 //
-// O símbolo à esquerda é /simbolo.svg — versão vetorizada da mesma imagem
-// que o site anterior usava aqui (aradia_comsombra.png), já existente no
-// projeto para o favicon e para o retrato-ausente da Equipe.
+// A imagem à esquerda é a mesma logo-sombra.png do cabeçalho (arcos + nome +
+// sombra) — no site anterior este bloco usa exatamente essa arte
+// (nossamarca-1.png, mesmo desenho, só exportado como arquivo à parte),
+// não o símbolo isolado sem o nome.
 ---
 <Base
   titulo="Nossa Marca"
@@ -33,47 +34,48 @@ import Base from '../layouts/Base.astro';
     <h1>Nossa Marca</h1>
   </div>
 
-  <div class="corpo">
-    <div class="dupla">
-      <figure class="simbolo">
-        <img src="/simbolo.svg" alt="O símbolo da Arcádia: uma sequência de arcos sobre um círculo." width="389" height="480" loading="lazy" decoding="async" />
-      </figure>
+  {/* Bloco de largura total (não os 1120px do .corpo, que não existe mais
+      aqui) — medido ao vivo: imagem e texto dividem a faixa meio a meio,
+      igual à dupla-nome de A Arcádia. "POR QUE ESSA IMAGEM?" não é título
+      (h1/h2) no original — é parágrafo em negrito, do mesmo tamanho do
+      resto do texto. */}
+  <div class="marca-explicacao">
+    <figure class="logo-marca">
+      <img src="/logo-sombra.png" alt="A marca da Arcádia: arcos sobre um círculo, com o nome Arcádia Psicologia." width="300" height="274" loading="lazy" decoding="async" />
+    </figure>
 
-      <div class="texto">
-        <h1 class="titulo-secao">Por que essa imagem?</h1>
-        <p>
-          <strong>Os arcos:</strong> A passagem por arcos é uma <strong>metáfora de
-          transição, transformação e crescimento</strong>, evocando simbolismos de
-          harmonia e estabilidade. <strong>Psicologicamente</strong>, <strong>cada
-          arco funciona como um portal simbólico para um novo nível de
-          consciência, </strong>representando o avanço do indivíduo do consciente
-          para o inconsciente, em uma jornada contínua de autoconhecimento e
-          integração psíquica. <strong>Filosoficamente, busca por verdade e
-          sabedoria</strong>, com cada etapa representando um avanço dialético em
-          direção a uma síntese mais elevada. Atravessar uma sequência de arcos
-          simboliza, assim, tanto a integração interna quanto a expansão do
-          entendimento, unindo o crescimento psicológico à busca filosófica por
-          uma compreensão mais ampla do universo.
-        </p>
-      </div>
+    <div class="texto-marca">
+      <p><strong>POR QUE ESSA IMAGEM?</strong></p>
+      <p>
+        <strong>Os arcos:</strong> A passagem por arcos é uma <strong>metáfora de
+        transição, transformação e crescimento</strong>, evocando simbolismos de
+        harmonia e estabilidade. <strong>Psicologicamente</strong>, <strong>cada
+        arco funciona como um portal simbólico para um novo nível de
+        consciência, </strong>representando o avanço do indivíduo do consciente
+        para o inconsciente, em uma jornada contínua de autoconhecimento e
+        integração psíquica. <strong>Filosoficamente, busca por verdade e
+        sabedoria</strong>, com cada etapa representando um avanço dialético em
+        direção a uma síntese mais elevada. Atravessar uma sequência de arcos
+        simboliza, assim, tanto a integração interna quanto a expansão do
+        entendimento, unindo o crescimento psicológico à busca filosófica por
+        uma compreensão mais ampla do universo.
+      </p>
+      <p>
+        <strong>O Círculo:</strong> Na psicologia e na filosofia, o círculo é um
+        <strong>símbolo de totalidade, perfeição e unidade</strong>. Na psicologia
+        junguiana, ele representa o self — <strong>a totalidade da psique </strong>—
+        que integra tanto o consciente quanto o inconsciente. O self é visto como o
+        núcleo da personalidade, o ponto de equilíbrio e centralidade do indivíduo.
+        Nesse contexto, o círculo se torna um símbolo fundamental no processo de
+        individuação, que é a jornada de autoconhecimento e crescimento pessoal.
+      </p>
+      <p>
+        <strong>Cor Laranja:</strong> O laranja é frequentemente associado à
+        <strong>criatividade, vitalidade e transformação</strong>. Na psicologia das
+        cores, ele é visto como uma cor energizante que pode estimular entusiasmo e
+        um senso de propósito.
+      </p>
     </div>
-
-    <p>
-      <strong>O Círculo:</strong> Na psicologia e na filosofia, o círculo é um
-      <strong>símbolo de totalidade, perfeição e unidade</strong>. Na psicologia
-      junguiana, ele representa o self — <strong>a totalidade da psique </strong>—
-      que integra tanto o consciente quanto o inconsciente. O self é visto como o
-      núcleo da personalidade, o ponto de equilíbrio e centralidade do indivíduo.
-      Nesse contexto, o círculo se torna um símbolo fundamental no processo de
-      individuação, que é a jornada de autoconhecimento e crescimento pessoal.
-    </p>
-
-    <p>
-      <strong>Cor Laranja:</strong> O laranja é frequentemente associado à
-      <strong>criatividade, vitalidade e transformação</strong>. Na psicologia das
-      cores, ele é visto como uma cor energizante que pode estimular entusiasmo e
-      um senso de propósito.
-    </p>
   </div>
 </Base>
 
@@ -128,25 +130,36 @@ import Base from '../layouts/Base.astro';
     text-align: center;
   }
 
-  .corpo { max-width: 1120px; margin: 0 auto; padding: var(--e-4) var(--e-3) var(--e-6); }
-  .corpo > p { max-width: var(--medida); margin: 0 0 1em; }
-
-  .dupla {
+  /* Largura total, sem o max-width de 1120px que .corpo tinha — medido ao
+     vivo, imagem e texto dividem a faixa meio a meio (50/50), sem gap entre
+     as colunas. No mobile empilha, imagem em cima (mesma ordem do DOM, sem
+     precisar de order:-1 como em A Arcádia). Sem margem própria no topo: o
+     respiro até a faixa de título (39px desktop/11px mobile) já vem do
+     padding-bottom dela — duplicar aqui somava os dois. Sem respiro nenhum
+     depois (o rodapé vem colado, igual no original). */
+  .marca-explicacao {
     display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.6fr);
-    gap: var(--e-5);
-    align-items: center;
-    margin-bottom: var(--e-4);
+    grid-template-columns: 1fr 1fr;
+    max-width: 1280px;
+    margin: 0 auto;
   }
-  .simbolo { margin: 0; }
-  .simbolo img { display: block; width: 100%; height: auto; max-width: 260px; margin: 0 auto; }
+  .logo-marca { margin: 0; }
+  .logo-marca img { display: block; width: 100%; height: auto; }
 
-  .titulo-secao { font-size: var(--t-2xl); margin: 0 0 var(--e-2); color: var(--terracota); }
-  .texto p { max-width: var(--medida); margin: 0; }
+  /* Texto medido ao vivo: cor terracota, 16.8px, fonte de corpo (Inter) —
+     "POR QUE ESSA IMAGEM?" não é título, é o primeiro parágrafo em negrito,
+     do mesmo tamanho dos outros. Padding lateral da coluna: 50.6px no
+     desktop, 30px no mobile. */
+  .texto-marca { padding: 0 50.6px; }
+  .texto-marca p {
+    color: var(--terracota);
+    font-size: 16.8px;
+    margin: 0 0 16.8px;
+  }
+  .texto-marca p:last-child { margin-bottom: 0; }
 
-  @media (max-width: 720px) {
-    .dupla { grid-template-columns: 1fr; gap: var(--e-3); text-align: center; }
-    .simbolo img { max-width: 180px; }
-    .texto { text-align: left; }
+  @media (max-width: 900px) {
+    .marca-explicacao { grid-template-columns: 1fr; }
+    .texto-marca { padding: 0 30px; }
   }
 </style>
