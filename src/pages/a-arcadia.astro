@@ -30,7 +30,8 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
 <Base titulo={titulo} descricao="A história, a proposta e o conceito de marca da Arcádia Psicologia." cabecalhoSobreImagem>
   {/* Mesma capa da Home: só a foto dos arcos, sem véu nem título por cima —
       igual ao tratamento que a Wanda pediu para manter consistente entre as
-      páginas. */}
+      páginas. Sem animação de entrada — é a pintura logo abaixo que tem
+      isso, não a capa. */}
   <section class="capa">
     <img class="foto-capa" src="/capa-arcos-vertical.jpg" alt="" width="720" height="990" fetchpriority="high" />
     <img class="foto-capa desktop" src="/capa-arcos.jpg" alt="" width="960" height="528" fetchpriority="high" />
@@ -72,7 +73,7 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
         </p>
       </div>
     </Revelar>
-    <Revelar direcao="direita">
+    <Revelar direcao="esquerda" duracao={1800}>
       <figure class="pintura">
         <img src="/a-arcadia/arcadismo.jpg" alt="" width="846" height="697" loading="lazy" decoding="async" />
       </figure>
@@ -126,8 +127,13 @@ const resto = indiceCorte >= 0 ? corpo.slice(indiceCorte).trim() : '';
     .foto-capa { display: none; }
     .foto-capa.desktop { display: block; }
   }
+  /* Mesma correção da Home e das Oficinas: no site anterior a capa no
+     mobile não é altura de tela cheia — é o cabeçalho, com altura definida
+     pelo conteúdo. Medido ao vivo aqui (mesma imagem/proporção das outras
+     páginas): 341px numa tela de 375px — 1,1:1. 60vh era estimado, maior
+     que o original. */
   @media (max-width: 900px) {
-    .capa { height: 60vh; }
+    .capa { height: auto; aspect-ratio: 1.1; }
   }
 
   /* Título da página, medido ao vivo no original: cor ocre (não terracota),
