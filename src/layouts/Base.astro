@@ -91,5 +91,47 @@ const tituloCompleto = titulo ? `${titulo} · Arcádia Psicologia` : 'Arcádia P
       .botao.vazado { background: transparent; color: var(--terracota); border: 1.5px solid var(--terracota); }
       .botao.vazado:hover { background: var(--terracota); color: var(--creme); }
     </style>
+
+    {/* Toda página interna abre com uma <section class="capa"> (duas <img>,
+        uma por breakpoint — ver a-arcadia/servicos/contato/etc.). Numa rede
+        lenta, ela pintava em duas etapas: a página (cabeçalho, título) e só
+        depois, visivelmente por cima, a foto. Mesma filosofia do Revelar.astro:
+        nada começa escondido no HTML — só o próprio script, já rodando, é que
+        esconde a capa por um instante para revelar tudo junto quando a foto
+        certa (mobile ou desktop, a que está de fato visível) terminar de
+        carregar. Sem JS, ou com JS lento, a capa nunca fica escondida. */}
+    <style is:global>
+      html.js-capa .capa { opacity: 0; transition: opacity 400ms ease; }
+      html.js-capa .capa.carregada { opacity: 1; }
+      @media (prefers-reduced-motion: reduce) {
+        html.js-capa .capa { transition: none; }
+      }
+    </style>
+    <script>
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('js-capa');
+
+        document.querySelectorAll('section.capa').forEach((capa) => {
+          const fotos = Array.from(capa.querySelectorAll('img.foto-capa')).filter(
+            (img) => getComputedStyle(img).display !== 'none'
+          );
+          if (fotos.length === 0 || fotos.every((img) => img.complete && img.naturalWidth > 0)) {
+            capa.classList.add('carregada');
+            return;
+          }
+          let restantes = fotos.length;
+          const contar = () => {
+            if (--restantes <= 0) capa.classList.add('carregada');
+          };
+          fotos.forEach((img) => {
+            img.addEventListener('load', contar, { once: true });
+            img.addEventListener('error', contar, { once: true });
+          });
+          // Rede de segurança, mesmo prazo do Revelar.astro: se a foto nunca
+          // carregar (rede ruim, arquivo quebrado), mostra do mesmo jeito.
+          setTimeout(() => capa.classList.add('carregada'), 3000);
+        });
+      }
+    </script>
   </body>
 </html>
