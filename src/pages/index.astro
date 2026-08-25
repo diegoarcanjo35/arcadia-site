@@ -171,7 +171,16 @@ const SERVICOS = [
       <Revelar direcao="esquerda">
         <div class="texto-claro cabecalho-faixa">
           <h2 class="titulo-secao">Atividades e conteúdos</h2>
-          <p class="subtitulo-secao">Aqui você acessa oficinas e artigos.</p>
+          {/* Artigos ocultos por decisão conjunta (textos autorais saindo,
+              conteúdo novo ainda não definido) — sem nenhum publicado,
+              artigos.length é 0 e o bloco abaixo já não renderiza sozinho
+              (ver {artigos.length > 0 && (...)}); só esta frase, que promete
+              os dois, precisava de ajuste manual pra não anunciar algo que
+              não está lá. Volta a mencionar artigos assim que existir um
+              publicado de novo, sem precisar tocar aqui outra vez. */}
+          <p class="subtitulo-secao">
+            Aqui você acessa {artigos.length > 0 ? 'oficinas e artigos' : 'nossas oficinas'}.
+          </p>
         </div>
       </Revelar>
 

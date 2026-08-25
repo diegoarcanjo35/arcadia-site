@@ -18,9 +18,13 @@ const ano = new Date().getFullYear();
 
     {/* Títulos das colunas e agrupamento iguais ao site anterior: "Sobre",
         "Privacidade", "Redes sociais" — não "Navegação/Contato/Institucional",
-        que era uma reorganização nossa que a Wanda não pediu. Equipe e
-        Artigos são páginas novas (não existiam lá); entram no fim da lista
-        de "Sobre" em vez de criar uma coluna extra que não existia. */}
+        que era uma reorganização nossa que a Wanda não pediu. Equipe é
+        página nova (não existia lá); entra no fim da lista de "Sobre" em
+        vez de criar uma coluna extra que não existia.
+        Artigos decisão conjunta: o botão/link fica oculto (não aparece em
+        lugar nenhum do site) mas a seção continua existindo e indexável —
+        /artigos e /artigos/[slug] não foram removidos, só o link daqui.
+        Google encontra por busca direta mesmo sem link interno. */}
     <div class="col">
       <h2>Sobre</h2>
       <ul>
@@ -30,7 +34,6 @@ const ano = new Date().getFullYear();
         <li><a href="/oficinas">Oficinas</a></li>
         <li><a href="/contato">Contato</a></li>
         <li><a href="/equipe">Equipe</a></li>
-        <li><a href="/artigos">Artigos</a></li>
       </ul>
     </div>
 
