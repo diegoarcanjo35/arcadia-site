@@ -143,7 +143,10 @@ export async function salvarOficina(db, campos) {
   const nome = txt(campos.nome, 160);
   if (!nome) return { ok: false, erro: 'nome_obrigatorio' };
 
-  const resumo = txt(campos.resumo, 400);
+  // Mesmo limite do maxlength do textarea em admin/oficinas/[id].astro — os
+  // dois precisam ficar iguais. Truncar aqui é silencioso (slice sem aviso),
+  // foi assim que o resumo da Entre-Nós saiu cortado no meio de uma palavra.
+  const resumo = txt(campos.resumo, 800);
   if (!resumo) return { ok: false, erro: 'resumo_obrigatorio' };
 
   const slug = gerarSlug(txt(campos.slug, 80) || nome);
