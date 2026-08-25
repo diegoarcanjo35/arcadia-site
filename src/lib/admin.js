@@ -250,6 +250,10 @@ export async function salvarTurma(db, campos) {
   const inicio = bruta ? data(bruta) : null;
   if (bruta && !inicio) return { ok: false, erro: 'data_invalida' };
 
+  // Turma sem data fechada: mostra só mês/ano no site ("a partir de..."),
+  // sem prometer o dia exato — mas continua ordenando pela data gravada.
+  const aproximada = bool(campos.data_aproximada);
+
   const valores = [
     oficinaId,
     formato,
@@ -260,6 +264,7 @@ export async function salvarTurma(db, campos) {
     vagas,
     status,
     txt(campos.observacoes, 2000),
+    aproximada,
   ];
 
   const id = num(campos.id);
@@ -270,7 +275,7 @@ export async function salvarTurma(db, campos) {
     await db
       .prepare(
         `UPDATE turmas SET oficina_id=?, formato=?, local=?, data_inicio=?, encontros=?,
-                carga_horaria=?, vagas_total=?, status=?, observacoes=?,
+                carga_horaria=?, vagas_total=?, status=?, observacoes=?, data_aproximada=?,
                 atualizado_em=datetime('now')
           WHERE id=?`
       )
@@ -282,8 +287,8 @@ export async function salvarTurma(db, campos) {
   const r = await db
     .prepare(
       `INSERT INTO turmas (oficina_id, formato, local, data_inicio, encontros,
-                           carga_horaria, vagas_total, status, observacoes)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+                           carga_horaria, vagas_total, status, observacoes, data_aproximada)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     )
     .bind(...valores)
     .run();

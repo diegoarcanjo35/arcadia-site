@@ -1,0 +1,1 @@
+ALTER TABLE turmas ADD COLUMN data_aproximada INTEGER NOT NULL DEFAULT 0;

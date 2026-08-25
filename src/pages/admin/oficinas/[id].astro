@@ -188,7 +188,7 @@ const ROTULO_STATUS = {
             <tbody>
               {oficina.turmas.map((t) => (
                 <tr>
-                  <td>{t.data_inicio ? formatarData(t.data_inicio) : '—'}</td>
+                  <td>{t.data_inicio ? formatarData(t.data_inicio, !!t.data_aproximada) : '—'}</td>
                   <td>{t.formato}{t.local && <><br /><span class="fraco">{t.local}</span></>}</td>
                   <td>{t.vagas_total == null ? '—' : `${t.inscritos} de ${t.vagas_total}`}</td>
                   <td><span class="selo">{ROTULO_STATUS[t.status] ?? t.status}</span></td>
@@ -202,6 +202,10 @@ const ROTULO_STATUS = {
                         <input type="hidden" name="volta" value={volta} />
                         <div class="linha">
                           <label>Início<input type="date" name="data_inicio" value={t.data_inicio ?? ''} /></label>
+                          <label class="caixa">
+                            <input type="checkbox" name="data_aproximada" value="1" checked={Boolean(t.data_aproximada)} />
+                            Data ainda não fechada — mostrar só mês/ano ("a partir de...")
+                          </label>
                           <label>Formato
                             <select name="formato">
                               {FORMATOS.map((f) => <option value={f} selected={t.formato === f}>{f}</option>)}
@@ -299,6 +303,10 @@ const ROTULO_STATUS = {
         <input type="hidden" name="volta" value={volta} />
         <div class="linha">
           <label>Início<input type="date" name="data_inicio" /></label>
+          <label class="caixa">
+            <input type="checkbox" name="data_aproximada" value="1" />
+            Data ainda não fechada — mostrar só mês/ano ("a partir de...")
+          </label>
           <label>Formato
             <select name="formato">{FORMATOS.map((f) => <option value={f}>{f}</option>)}</select>
           </label>

@@ -189,7 +189,7 @@ const jsonLd = {
           <>
             <h2>Inscrição</h2>
             <dl>
-              {turma.data_inicio && (<><dt>Início</dt><dd>{formatarData(turma.data_inicio)}</dd></>)}
+              {turma.data_inicio && (<><dt>Início</dt><dd>{formatarData(turma.data_inicio, !!turma.data_aproximada)}</dd></>)}
               {turma.formato && (<><dt>Formato</dt><dd>{turma.formato}</dd></>)}
               {turma.encontros && (<><dt>Encontros</dt><dd>{turma.encontros}</dd></>)}
               {turma.carga_horaria && (<><dt>Carga horária</dt><dd>{turma.carga_horaria}h</dd></>)}

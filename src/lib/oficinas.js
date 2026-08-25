@@ -27,7 +27,7 @@ export async function listarOficinas(db) {
   const { results } = await db
     .prepare(
       `SELECT o.id, o.slug, o.nome, o.categoria, o.subtitulo, o.resumo, o.arte_key, o.arte_alt,
-              t.id AS turma_id, t.status, t.data_inicio, t.formato, t.vagas_total,
+              t.id AS turma_id, t.status, t.data_inicio, t.data_aproximada, t.formato, t.vagas_total,
               (SELECT COUNT(*) FROM inscricoes i
                 WHERE i.turma_id = t.id AND i.tipo = 'inscricao'
                   AND i.status <> 'cancelada') AS inscritos
@@ -282,21 +282,31 @@ function comVagasRestantes(t) {
  * Data sem hora é ponto no calendário, não instante no tempo: formatamos em
  * UTC para devolver exatamente o dia que foi gravado. Só valores com hora
  * explícita passam pela conversão para Brasília.
+ *
+ * `aproximada`: turma sem data fechada (pode antecipar se fechar turma antes,
+ * ou atrasar se demorar mais) — mostra só mês/ano, sem prometer um dia
+ * específico que a Wanda ainda não tem como garantir. O dia gravado em
+ * `data_inicio` continua servindo pra ordenação (turmas.js.data_inicio ASC),
+ * só a exibição pública muda.
  */
-export function formatarData(iso) {
+export function formatarData(iso, aproximada = false) {
   if (!iso) return null;
 
-  const opcoes = { day: 'numeric', month: 'long', year: 'numeric' };
+  const opcoes = aproximada
+    ? { month: 'long', year: 'numeric' }
+    : { day: 'numeric', month: 'long', year: 'numeric' };
   const soData = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
 
-  if (soData) {
-    const [, ano, mes, dia] = soData;
-    return new Intl.DateTimeFormat('pt-BR', { ...opcoes, timeZone: 'UTC' })
-      .format(new Date(Date.UTC(+ano, +mes - 1, +dia)));
-  }
+  const formatada = soData
+    ? (() => {
+        const [, ano, mes, dia] = soData;
+        return new Intl.DateTimeFormat('pt-BR', { ...opcoes, timeZone: 'UTC' })
+          .format(new Date(Date.UTC(+ano, +mes - 1, +dia)));
+      })()
+    : new Intl.DateTimeFormat('pt-BR', { ...opcoes, timeZone: 'America/Sao_Paulo' })
+        .format(new Date(iso));
 
-  return new Intl.DateTimeFormat('pt-BR', { ...opcoes, timeZone: 'America/Sao_Paulo' })
-    .format(new Date(iso));
+  return aproximada ? `a partir de ${formatada}` : formatada;
 }
 
 /**

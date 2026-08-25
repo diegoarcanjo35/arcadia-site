@@ -24,7 +24,7 @@ const arte = arteDaOficina(oficina);
 
       <dl class="meta">
         {oficina.data_inicio && (
-          <div><dt>Início</dt><dd>{formatarData(oficina.data_inicio)}</dd></div>
+          <div><dt>Início</dt><dd>{formatarData(oficina.data_inicio, !!oficina.data_aproximada)}</dd></div>
         )}
         {oficina.formato && (
           <div><dt>Formato</dt><dd>{oficina.formato}</dd></div>
