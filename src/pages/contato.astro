@@ -92,10 +92,12 @@ const jsonLd = {
           <dd>{ENDERECO}</dd>
         </div>
 
-        <div>
-          <dt>Atendimento</dt>
-          <dd>{HORARIO ?? <span class="pendente">horários a definir</span>}</dd>
-        </div>
+        {HORARIO && (
+          <div>
+            <dt>Atendimento</dt>
+            <dd>{HORARIO}</dd>
+          </div>
+        )}
       </dl>
     </section>
 
