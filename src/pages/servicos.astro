@@ -322,19 +322,26 @@ const titulo = conteudo?.titulo || 'Serviços';
      de lá. Já que não existe crop "correto" pra copiar do site anterior
      aqui, a saída é usar a proporção real do arquivo (900×1216, conferida
      ao vivo) como aspect-ratio da caixa: com isso object-fit:cover não
-     corta nada (a caixa já nasce na proporção da imagem). align-self:start
-     tira esse quadro do align-items:stretch da grade (que senão bateria por
-     cima do aspect-ratio, esticando de novo pra altura da coluna de
-     texto).
+     corta nada (a caixa já nasce na proporção da imagem).
      Depois de mostrar completa, a cliente achou desproporcional em relação
      às outras duas (507px de altura no mobile contra 250px delas) e pediu
      pra reduzir um pouco — por isso 85% de largura (centralizado com
      margin:auto) em vez dos 100% originais, mantendo a proporção sem
-     cortar nada, só um pouco menor. */
+     cortar nada, só um pouco menor.
+     Tinha um align-self:start aqui (herdado de uma época em que a linha
+     era align-items:stretch, e start evitava que o quadro fosse esticado
+     de novo por cima do aspect-ratio). Depois que a linha virou
+     align-items:center (ver abaixo), esse start ficou sem função — pior,
+     com texto comprido a coluna de texto define uma linha bem mais alta
+     que o quadro (900/1216 numa coluna estreita é baixo), e o quadro colado
+     no topo deixava um vão vazio embaixo dele enquanto o texto seguia até
+     o fim da linha: pareciam dois blocos soltos, não um par. Sem o
+     align-self:start o quadro agora centraliza igual o texto — mesma
+     altura completa, sem cortar nada, só que "acompanhando" o texto em vez
+     de ficar preso no topo. */
   .dupla-servico.invertida .quadro-cheio {
     order: 1;
     aspect-ratio: 900 / 1216;
-    align-self: start;
     width: 85%;
     margin: 0 auto;
   }
