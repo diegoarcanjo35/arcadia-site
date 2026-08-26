@@ -190,14 +190,12 @@ const semTurma = todas.filter((o) => !o.status);
     position: relative;
     overflow: hidden;
     margin: 0;
-    /* Proporção fixa — antes a altura vinha de align-items:stretch,
-       acompanhando a altura do texto ao lado. Como o texto não tem largura
-       máxima, numa tela bem larga ele quebra em poucas linhas, a faixa fica
-       baixa e o corte da imagem fica bem mais fechado do que numa janela
-       estreita — o mesmo bloco parecia "outra foto" dependendo do tamanho
-       da janela. Wanda pediu a mesma proporção sempre. Valor medido no
-       próprio corte que já ficava bom (~1100px de largura). */
-    aspect-ratio: 0.93;
+    /* Pedido explícito da Wanda: essa imagem não pode cortar de jeito
+       nenhum, nem a ponta de cima nem qualquer outra parte. A proporção
+       fixa aqui é a do próprio arquivo (814×1078, conferido com sharp) —
+       com isso object-fit:cover não tem nada pra cortar, a caixa já nasce
+       do tamanho certo pra imagem inteira caber. */
+    aspect-ratio: 814 / 1078;
   }
   .foto-sobre img {
     position: absolute;
@@ -206,10 +204,6 @@ const semTurma = todas.filter((o) => !o.status);
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* Medido no original: o corte não é centralizado — fica quase no canto
-       inferior direito, pra manter a figura saltando visível em vez da
-       flor no topo. */
-    object-position: 79% 96%;
   }
   .texto-sobre {
     padding: 0 71px;
@@ -233,11 +227,11 @@ const semTurma = todas.filter((o) => !o.status);
   }
   @media (max-width: 900px) {
     .sobre-oficinas { grid-template-columns: 1fr; }
-    /* Wanda pediu explicitamente pra manter o tamanho antigo daqui (50vh) —
-       ela quer o nosso maior, não o do site anterior (que é bem menor,
-       1,35:1 medido ao vivo). Só a faixa do título acima foi ajustada pro
-       tamanho do site anterior, não esta imagem. */
-    .foto-sobre { height: 50vh; }
+    /* Altura fixa (50vh) tirada: com object-fit:cover, uma altura solta da
+       proporção do arquivo corta a imagem de novo — exatamente o que a
+       Wanda pediu pra nunca acontecer aqui. Sem a altura própria, herda o
+       aspect-ratio de .foto-sobre (814/1078) e mostra completa em qualquer
+       largura, só muda o quanto de tela ela ocupa. */
     .texto-sobre { padding: var(--e-4) var(--e-3); }
     /* Os 72px de .faixa-titulo são medida de desktop — no celular a faixa
        do original é bem mais baixa (88px de altura total, medido ao vivo),
