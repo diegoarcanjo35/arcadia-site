@@ -379,21 +379,40 @@ const SERVICOS = [
   /* ---------------------------------------------------------- a arcádia */
   /* Medido ao vivo no original: esta faixa é mais larga que o miolo padrão
      (1760px, não 1120px) — quase edge-to-edge, não contida como o resto da
-     home. Proporção vídeo/texto medida também: ~1.4fr / 1fr. */
+     home. Mas as duas colunas não crescem pra preencher essa largura toda:
+     no original (colunas flex, não grid) sobra espaço depois do texto, que
+     nunca encosta na borda direita — fica bem mais folgado que aqui, onde
+     o grid com fr preenche 100% sempre. Reproduzido com padding-left (o
+     vídeo também não começa colado na borda esquerda) e um max-width no
+     texto (que já não crescia no original, ficava com largura quase fixa
+     enquanto o vídeo crescia) — a "sobra" à direita nasce sozinha quando a
+     faixa é larga o bastante, e some sozinha quando estreita, sem precisar
+     de duas versões. Com o texto sempre travado em 660px, o fr das duas
+     colunas quase não importa pro texto — 1fr:1fr (não mais 1.4fr:1fr)
+     é o valor que deixa a largura do vídeo perto dos ~800px medidos ao
+     vivo numa faixa de 1760px. */
   .dupla-arcadia {
     display: grid;
-    grid-template-columns: 1.4fr 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: var(--e-5);
     align-items: center;
     max-width: 1760px;
     margin: 0 auto;
+    padding-left: 4%;
   }
+  .texto-arcadia { max-width: 660px; }
   .foto-arcadia {
     position: relative;
     margin: 0;
     border-radius: var(--raio);
     overflow: hidden;
-    aspect-ratio: 960 / 528;
+    /* Altura fixa, não aspect-ratio: medido ao vivo, o vídeo original
+       (gravado vertical, 480×848) fica numa caixa de altura travada em
+       430px — a largura é que muda com a coluna. Com aspect-ratio fixo a
+       caixa ficava proporcionalmente mais larga (mais "horizontal") em
+       qualquer tela, cortando mais o vídeo na vertical e escondendo o
+       arco — foi exatamente o que a Wanda apontou ("perde o arco"). */
+    height: 430px;
   }
   .foto-arcadia img,
   .foto-arcadia video { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -606,14 +625,21 @@ const SERVICOS = [
        renderizado pelo componente Revelar, com o escopo dele — sem isso o
        seletor exige um atributo de escopo que esse elemento não tem. */
     .dupla > :global(:last-child) { order: -1; }
-    .dupla-arcadia { grid-template-columns: 1fr; }
+    /* padding-left e max-width do texto são coisa de tela larga (ver
+       comentário acima, no bloco desktop) — empilhado no mobile, cada
+       coluna já ocupa a largura inteira sozinha, sem "sobra" nenhuma pra
+       reproduzir. */
+    .dupla-arcadia { grid-template-columns: 1fr; padding-left: 0; }
+    .texto-arcadia { max-width: none; }
     /* No mobile, o vídeo do site anterior é bem mais vertical que no
        desktop — 352,5×430px medido ao vivo (proporção 0,82:1), perto do
        formato retrato original da gravação (480×848). Ocupa bastante mais
-       tela para baixo do que a proporção 960:528 usada no resto do site, que
-       é a do recorte de desktop — sem essa troca o vídeo ficava baixo demais
-       e o texto seguinte já aparecia colado, junto na mesma tela. */
-    .foto-arcadia { aspect-ratio: 352.5 / 430; }
+       tela para baixo do que a altura fixa de 430px usada no desktop —
+       sem essa troca o vídeo ficava baixo demais e o texto seguinte já
+       aparecia colado, junto na mesma tela. height:auto porque o desktop
+       fixa height:430px, e aspect-ratio não faz nada enquanto height
+       estiver travado por fora. */
+    .foto-arcadia { aspect-ratio: 352.5 / 430; height: auto; }
     /* Sem espaço pra uma linha só num celular — aqui a quebra volta. */
     .tese { white-space: normal; padding: var(--e-3); }
   }
