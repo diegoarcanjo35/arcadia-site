@@ -161,3 +161,4 @@ e uma cópia integral do código é entregue à clínica na conclusão do projet
 A titularidade do repositório é transferida à clínica quando solicitada.
 
 Nenhuma credencial, chave ou senha é versionada neste repositório.
+Reconect Claudflare
