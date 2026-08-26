@@ -19,6 +19,16 @@ const aberta = Boolean(turma);
 // qualquer parágrafo ser lido.
 const arte = arteDaOficina(oficina);
 
+// Assinatura "Facilitador(a): Nome (CRP)" automática, ver comentário mais
+// abaixo — pensada pra oficinas cuja descrição não fala em quem conduz. A
+// Entre-Nós é um caso à parte: a própria Wanda já escreveu "Facilitadoras:
+// ..." dentro do texto (em "Sobre os encontros"), e a assinatura duplicava
+// bem embaixo de "Para quem é" — pedido dela foi tirar a repetida, não a
+// automática das outras oficinas. Em vez de decidir por oficina (um campo a
+// mais pra lembrar de marcar), a assinatura só aparece quando o texto ainda
+// não menciona a palavra — reflete o painel sem repetir o que já foi dito.
+const jaMencionaFacilitador = /facilitador/i.test(oficina.descricao || '');
+
 /**
  * No site anterior, o título grande da página era um rótulo de categoria
  * ("Oficina de Colagem I:", "Oficina de Leitura:", "Oficina para Empresas:")
@@ -159,7 +169,7 @@ const jsonLd = {
         </>
       )}
 
-      {oficina.facilitadoras?.length > 0 && (
+      {oficina.facilitadoras?.length > 0 && !jaMencionaFacilitador && (
         <p class="assinatura">
           {oficina.facilitadoras.length > 1 ? 'Facilitadoras' : 'Facilitadora'}:{' '}
           {oficina.facilitadoras.map((f, i) => (
