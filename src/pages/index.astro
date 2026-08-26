@@ -299,6 +299,12 @@ const SERVICOS = [
     .foto-capa { display: none; }
     .foto-capa.desktop { display: block; }
   }
+  /* Medido ao vivo no original (desktop): só 24px entre a capa e o vídeo de
+     "A Arcádia" — bem menos que os 96px do preenchimento padrão de `.faixa`
+     (pensado pra separar seções no meio da página, não pra logo depois da
+     capa). Mesma lógica já usada no mobile abaixo, agora também no desktop.
+     A media query mobile mais abaixo sobrescreve este valor para var(--e-1). */
+  .capa + .faixa { padding-top: var(--e-3); }
   /* No mobile, o site anterior NÃO usa altura de tela cheia aqui — lá a capa
      é o próprio cabeçalho (logo por cima da foto), com altura definida pelo
      conteúdo (logo + preenchimento), não pela altura da janela. Medido ao
@@ -379,23 +385,18 @@ const SERVICOS = [
   /* ---------------------------------------------------------- a arcádia */
   /* Medido ao vivo no original: esta faixa é mais larga que o miolo padrão
      (1760px, não 1120px) — quase edge-to-edge, não contida como o resto da
-     home. Mas as duas colunas não crescem pra preencher essa largura toda:
-     no original (colunas flex, não grid) sobra espaço depois do texto, que
-     nunca encosta na borda direita — fica bem mais folgado que aqui, onde
-     o grid com fr preenche 100% sempre. Reproduzido com padding-left (o
-     vídeo também não começa colado na borda esquerda) e um max-width no
-     texto (que já não crescia no original, ficava com largura quase fixa
-     enquanto o vídeo crescia) — a "sobra" à direita nasce sozinha quando a
-     faixa é larga o bastante, e some sozinha quando estreita, sem precisar
-     de duas versões. Com o texto sempre travado em 660px, o fr das duas
-     colunas quase não importa pro texto — 1fr:1fr (não mais 1.4fr:1fr)
-     é o valor que deixa a largura do vídeo perto dos ~800px medidos ao
-     vivo numa faixa de 1760px. */
+     home. Pedido explícito: o vídeo fica travado em 800×430 (não mais um
+     fr flexível que variava com a coluna) — o mesmo tamanho medido ao vivo
+     no site anterior. Coluna de texto fica com o espaço restante.
+     align-items:start (não center) também vem do original: lá o vídeo fica
+     alinhado ao topo da linha, não centralizado com o texto (que é mais
+     alto) — medido ao vivo (textTop == topo da linha, vídeo só com um
+     respiro próprio pequeno por cima). */
   .dupla-arcadia {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 800px 1fr;
     gap: var(--e-5);
-    align-items: center;
+    align-items: start;
     max-width: 1760px;
     margin: 0 auto;
     padding-left: 4%;
@@ -406,12 +407,9 @@ const SERVICOS = [
     margin: 0;
     border-radius: var(--raio);
     overflow: hidden;
-    /* Altura fixa, não aspect-ratio: medido ao vivo, o vídeo original
-       (gravado vertical, 480×848) fica numa caixa de altura travada em
-       430px — a largura é que muda com a coluna. Com aspect-ratio fixo a
-       caixa ficava proporcionalmente mais larga (mais "horizontal") em
-       qualquer tela, cortando mais o vídeo na vertical e escondendo o
-       arco — foi exatamente o que a Wanda apontou ("perde o arco"). */
+    /* 800×430 fixo, igual ao medido ao vivo no site anterior — ver comentário
+       acima de .dupla-arcadia. */
+    width: 800px;
     height: 430px;
   }
   .foto-arcadia img,
@@ -639,7 +637,7 @@ const SERVICOS = [
        aparecia colado, junto na mesma tela. height:auto porque o desktop
        fixa height:430px, e aspect-ratio não faz nada enquanto height
        estiver travado por fora. */
-    .foto-arcadia { aspect-ratio: 352.5 / 430; height: auto; }
+    .foto-arcadia { width: 100%; aspect-ratio: 352.5 / 430; height: auto; }
     /* Sem espaço pra uma linha só num celular — aqui a quebra volta. */
     .tese { white-space: normal; padding: var(--e-3); }
   }
