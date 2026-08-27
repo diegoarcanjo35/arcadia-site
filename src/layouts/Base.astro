@@ -30,7 +30,13 @@ const tituloCompleto = titulo ? `${titulo} · Arcádia Psicologia` : 'Arcádia P
     <meta property="og:title" content={tituloCompleto} />
     <meta property="og:description" content={descricao} />
     <meta property="og:url" content={url} />
-    <meta property="og:image" content={new URL(imagem, Astro.site)} />
+    {/* new URL(imagem, Astro.url) — não Astro.site: assim a imagem sempre
+        resolve pro domínio que está servindo a página de fato. Enquanto o
+        domínio final (arcadiapsicologia.com.br) ainda for o WordPress
+        antigo, usar Astro.site aqui geraria uma URL de imagem que cai no
+        404 do site antigo, e o WhatsApp não mostra nada ao colar o link do
+        staging. */}
+    <meta property="og:image" content={new URL(imagem, Astro.url)} />
     <meta property="og:locale" content="pt_BR" />
     <meta property="og:site_name" content="Arcádia Psicologia" />
     <meta name="twitter:card" content="summary_large_image" />
